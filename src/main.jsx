@@ -1,31 +1,37 @@
-// [1]
-const reactShim = require('./react-shim')
-// [2]
 const React = require('react')
 const ReactDOM = require('react-dom')
-// [3]
-const App = require('./HelloForm.jsx')
+const Panel = require('./Panel.jsx')
+require('./react-shim')
 
-function main(selection) {
-  let dialog
+let panel
 
-  function getDialog() {
-    if (dialog == null) {
-      // [4]
-      dialog = document.createElement('dialog')
-      // [5]
-      ReactDOM.render(<App dialog={dialog} selection={selection} />, dialog)
-    }
-    return dialog
-  }
-
-  // [6]
-  return document.body.appendChild(getDialog()).showModal()
+const render = (selection = []) => {
+  ReactDOM.render(<Panel selection={selection} />, panel)
 }
 
-// [7]
+const hide = () => {
+  console.log('hide called')
+}
+
+const show = (evt) => {
+  console.log('show called')
+  if (!panel) {
+    panel = document.createElement('div')
+    render()
+    evt.node.appendChild(panel)
+  }
+}
+
+const update = (selection, documentRoot) => {
+  if (selection) render(selection.items)
+}
+
 module.exports = {
-  commands: {
-    main,
+  panels: {
+    gridnik: {
+      hide,
+      show,
+      update,
+    },
   },
 }

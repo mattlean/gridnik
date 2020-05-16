@@ -15,9 +15,9 @@
   },
   "uiEntryPoints": [
     {
-      "type": "menu",
+      "type": "panel",
       "label": "Gridnik",
-      "commandId": "main"
+      "panelId": "gridnik"
     }
   ]
 }
