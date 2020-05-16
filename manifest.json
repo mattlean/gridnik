@@ -6,18 +6,18 @@
   "languages": ["en"],
   "author": "Matthew Lean",
   "icons": [
-      { "width": 24, "height": 24, "path": "images/icon@1x.png" },
-      { "width": 48, "height": 48, "path": "images/icon@2x.png" }
+    { "width": 24, "height": 24, "path": "images/icon@1x.png" },
+    { "width": 48, "height": 48, "path": "images/icon@2x.png" }
   ],
   "host": {
-      "app": "XD",
-      "minVersion": "21.0"
+    "app": "XD",
+    "minVersion": "21.0"
   },
   "uiEntryPoints": [
-      {
-          "type": "menu",
-          "label": "Quick Start - React",
-          "commandId": "main"
-      }
+    {
+      "type": "menu",
+      "label": "Gridnik",
+      "commandId": "main"
+    }
   ]
 }
