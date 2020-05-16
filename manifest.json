@@ -1,0 +1,23 @@
+{
+  "id": "84349d5f",
+  "name": "Gridnik",
+  "version": "0.0.1",
+  "description": "Create more advanced grid systems with columns and rows",
+  "languages": ["en"],
+  "author": "Matthew Lean",
+  "icons": [
+      { "width": 24, "height": 24, "path": "images/icon@1x.png" },
+      { "width": 48, "height": 48, "path": "images/icon@2x.png" }
+  ],
+  "host": {
+      "app": "XD",
+      "minVersion": "21.0"
+  },
+  "uiEntryPoints": [
+      {
+          "type": "menu",
+          "label": "Quick Start - React",
+          "commandId": "main"
+      }
+  ]
+}
