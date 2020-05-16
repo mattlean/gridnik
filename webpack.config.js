@@ -1,7 +1,10 @@
+const CopyPlugin = require('copy-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
 module.exports = {
   entry: './src/main.jsx',
   output: {
-    path: __dirname,
+    path: `${__dirname}/dist`,
     filename: 'main.js',
     libraryTarget: 'commonjs2',
   },
@@ -25,4 +28,10 @@ module.exports = {
   externals: {
     scenegraph: 'scenegraph',
   },
+  plugins: [
+    new CleanWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [{ from: 'images/*' }, { from: 'manifest.json' }],
+    }),
+  ],
 }
