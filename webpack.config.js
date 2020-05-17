@@ -26,6 +26,7 @@ const config = {
     ],
   },
   externals: {
+    application: 'application',
     scenegraph: 'scenegraph',
   },
   resolve: {
@@ -34,7 +35,7 @@ const config = {
 }
 
 if (process.env.DEV) {
-  console.log('\n🤖 DEVELOPER MODE ACTIVATED 🤖\n')
+  console.log('\n🤖 DEVELOPER MODE ACTIVATED 🤖\n') // eslint-disable-line
   config.output.path = __dirname
 } else {
   config.output.path = `${__dirname}/dist`

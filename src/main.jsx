@@ -4,19 +4,19 @@ const Panel = require('./components/Panel')
 require('./react-shim')
 require('./style.css')
 
-let panel // Panel DOM element
+let panelEle // Panel DOM element
 
 /**
  * Render Panel component.
- * @param {*} [selection] List of selection items from Adobe XD
+ * @param {*} [selection] Current selection state from XD
  */
 const render = (selection = {}) => {
-  ReactDOM.render(<Panel selection={selection} />, panel)
+  ReactDOM.render(<Panel selection={selection} />, panelEle)
 }
 
 /**
  * Function called when panel is hidden/closed.
- * Set by Adobe XD's default panel object interface.
+ * Set by XD's default panel object interface.
  */
 const hide = () => {
   console.log('hide called')
@@ -24,16 +24,16 @@ const hide = () => {
 
 /**
  * Function called when panel is made visible.
- * Set by Adobe XD's default panel object interface.
+ * Set by XD's default panel object interface.
  * @param {*} evt Event
  */
 const show = (evt) => {
   console.log('show called')
-  if (!panel) {
+  if (!panelEle) {
     console.log('create panel ele')
-    panel = document.createElement('div')
+    panelEle = document.createElement('div')
     render()
-    evt.node.appendChild(panel)
+    evt.node.appendChild(panelEle)
   } else {
     console.log('panel ele already created')
   }
@@ -42,7 +42,7 @@ const show = (evt) => {
 /**
  * Function called when panel content should be updated.
  * This includes when the panel is shown, when the selection changes, or when the selected objects are mutated.
- * @param {*} selection Current selection state
+ * @param {*} selection Current selection state from XD
  * @param {*} docRoot Root node of the document's scenegraph
  */
 const update = (selection, docRoot) => {
