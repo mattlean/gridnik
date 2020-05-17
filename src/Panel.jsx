@@ -3,20 +3,26 @@ const React = require('react')
 
 const handleSubmit = (selection) => {
   console.log('submit called')
-  console.log(selection)
+  if (selection.items) {
+    console.log(selection.items)
+  }
 }
 
+/**
+ * Adobe XD panel used for plugin UI
+ */
 const Panel = ({ selection }) => {
   return (
     <form method="dialog" onSubmit={() => handleSubmit(selection)}>
+      <label className="row label-row">COLUMNS</label>
       <div className="row">
         <label>
-          <span>↕︎</span>
-          <input type="number" uxp-quiet="true" placeholder="Height" />
+          ↕︎
+          <input type="number" placeholder="Height" uxp-quiet="true" />
         </label>
         <label>
-          <span>↔︎</span>
-          <input type="number" uxp-quiet="true" placeholder="Width" />
+          ↔︎
+          <input type="number" placeholder="Width" uxp-quiet="true" />
         </label>
       </div>
       <footer>
@@ -29,7 +35,7 @@ const Panel = ({ selection }) => {
 }
 
 Panel.propTypes = {
-  selection: PropTypes.array,
+  selection: PropTypes.object,
 }
 
 module.exports = Panel
