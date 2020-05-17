@@ -28,6 +28,9 @@ const config = {
   externals: {
     scenegraph: 'scenegraph',
   },
+  resolve: {
+    extensions: ['.js', '.jsx'],
+  },
 }
 
 if (process.env.DEV) {

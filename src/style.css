@@ -1,9 +1,41 @@
-.label-row {
+.alert {
+  margin-left: 0;
+  margin-bottom: 1em;
+  font-weight: bold;
+}
+
+.alert.err {
+  color: red;
+  -webkit-text-stroke: 1px #000;
+}
+
+.alert.warn {
+  color: orange;
+  -webkit-text-stroke: 1px #000;
+}
+
+.text-input-combo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.text-input-combo > span {
+  margin-left: 0;
   font-size: 0.9em;
+}
+
+.text-input-combo input {
+  margin-left: 0;
+  width: 28px;
+}
+
+.title {
+  font-size: 0.9em;
+  margin-left: 0;
   margin-bottom: 2em;
   letter-spacing: 1px;
 }
 
-input {
-  margin-left: 0;
+#create {
+  margin-right: 0;
 }

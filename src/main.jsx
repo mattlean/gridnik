@@ -4,10 +4,10 @@ const Panel = require('./Panel.jsx')
 require('./react-shim')
 require('./style.css')
 
-let panel //
+let panel // Panel DOM element
 
 /**
- * Render Panel component
+ * Render Panel component.
  * @param {*} [selection] List of selection items from Adobe XD
  */
 const render = (selection = {}) => {
