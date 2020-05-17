@@ -1,13 +1,14 @@
 {
   "name": "gridnik",
   "version": "0.0.1",
-  "main": "src/main.jsx",
+  "main": "dist/main.js",
   "repository": "https://github.com/mattlean/gridnik.git",
   "author": "Matthew Lean <matt@mattlean.com>",
   "private": true,
   "scripts": {
-    "watch": "nodemon -w src -e js,jsx,css -w webpack.config.js -x yarn build",
-    "build": "webpack --mode development"
+    "build": "webpack --mode development",
+    "dev": "DEV=true yarn watch",
+    "watch": "nodemon -w src -e js,jsx,css -w webpack.config.js -x yarn build"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",

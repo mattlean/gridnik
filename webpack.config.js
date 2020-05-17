@@ -1,7 +1,7 @@
 const CopyPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
-module.exports = {
+const config = {
   entry: './src/main.jsx',
   output: {
     path: `${__dirname}/dist`,
@@ -28,10 +28,19 @@ module.exports = {
   externals: {
     scenegraph: 'scenegraph',
   },
-  plugins: [
+}
+
+if (process.env.DEV) {
+  console.log('\n🤖 DEVELOPER MODE ACTIVATED 🤖\n')
+  config.output.path = __dirname
+} else {
+  config.output.path = `${__dirname}/dist`
+  config.plugins = [
     new CleanWebpackPlugin(),
     new CopyPlugin({
       patterns: [{ from: 'images/*' }, { from: 'manifest.json' }],
     }),
-  ],
+  ]
 }
+
+module.exports = config
