@@ -26,6 +26,8 @@ const Panel = ({ selection }) => {
     }
   }
 
+  const alert = <Alert txt={msg} type="warn" />
+
   const form = (
     <form method="dialog" onSubmit={() => handleSubmit(selection)}>
       <label className="text-input-combo">
@@ -63,7 +65,7 @@ const Panel = ({ selection }) => {
     </form>
   )
 
-  const output = msg ? <Alert txt={msg} type="warn" /> : form
+  const output = msg ? alert : form
 
   return (
     <div>

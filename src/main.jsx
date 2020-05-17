@@ -1,6 +1,6 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const Panel = require('./Panel.jsx')
+const Panel = require('./components/Panel')
 require('./react-shim')
 require('./style.css')
 
