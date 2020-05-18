@@ -18,9 +18,7 @@ const render = (selection = {}) => {
  * Function called when panel is hidden/closed.
  * Set by XD's default panel object interface.
  */
-const hide = () => {
-  console.log('hide called')
-}
+// const hide = () => {}
 
 /**
  * Function called when panel is made visible.
@@ -28,14 +26,10 @@ const hide = () => {
  * @param {*} evt Event
  */
 const show = (evt) => {
-  console.log('show called')
   if (!panelEle) {
-    console.log('create panel ele')
     panelEle = document.createElement('div')
     render()
     evt.node.appendChild(panelEle)
-  } else {
-    console.log('panel ele already created')
   }
 }
 
@@ -45,14 +39,17 @@ const show = (evt) => {
  * @param {*} selection Current selection state from XD
  * @param {*} docRoot Root node of the document's scenegraph
  */
+// eslint-disable-next-line no-unused-vars
 const update = (selection, docRoot) => {
-  if (selection) render(selection)
+  if (selection) {
+    render(selection)
+  }
 }
 
 module.exports = {
   panels: {
     gridnik: {
-      hide,
+      // hide,
       show,
       update,
     },
