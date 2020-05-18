@@ -35,6 +35,10 @@ input.input-lg {
   width: 60px;
 }
 
+.text-input-combo > select {
+  margin-right: 0;
+}
+
 .text-input-combo input:last-child {
   margin-right: 0;
 }
@@ -74,7 +78,7 @@ input.input-lg {
   margin-top: 2em;
 }
 
-#margins {
+.multi-inputs {
   display: flex;
   flex-grow: 1;
   justify-content: flex-end;

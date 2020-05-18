@@ -2,6 +2,7 @@
  * Convert form data to floats.
  * Form data that are not numbers are skipped.
  * @param {Object} formData
+ * @returns {Object}
  */
 const convertFormDataToNum = (formData) => {
   for (let key in formData) {
@@ -10,6 +11,8 @@ const convertFormDataToNum = (formData) => {
       formData[key] = parseFloat(val)
     }
   }
+
+  return formData
 }
 
 module.exports.convertFormDataToNum = convertFormDataToNum
@@ -27,6 +30,29 @@ const isNumericString = (val) => {
 }
 
 module.exports.isNumericString = isNumericString
+
+const isValidFormData = ({
+  cols,
+  gutterWidth,
+  topMargin,
+  rightMargin,
+  bottomMargin,
+  leftMargin,
+}) => {
+  if (
+    cols > 0 &&
+    gutterWidth > -1 &&
+    topMargin > -1 &&
+    rightMargin > -1 &&
+    bottomMargin > -1 &&
+    leftMargin > -1
+  ) {
+    return true
+  }
+  return false
+}
+
+module.exports.isValidFormData = isValidFormData
 
 /**
  * Checks if selection state only has one item.

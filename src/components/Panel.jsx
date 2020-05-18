@@ -2,16 +2,12 @@ const PropTypes = require('prop-types')
 const React = require('react')
 const useState = React.useState
 const { calcColWidth } = require('../calc')
+const {
+  convertFormDataToNum,
+  isValidFormData,
+  isValidSelection,
+} = require('../util')
 const Alert = require('./Alert')
-
-/**
- * Handle form submission.
- * @param {*} selection List of selection items from Adobe XD
- */
-// const handleSubmit = (selection, formData) => {
-//   if (isValidSelection(selection)) {
-//   }
-// }
 
 /**
  * Adobe XD panel used for plugin UI.
@@ -22,6 +18,11 @@ const Panel = ({ selection }) => {
   const [gridWidth, setGridWidth] = useState('N/A')
   const [gutterWidthsSum, setGutterWidthsSum] = useState('N/A')
 
+  const [selectionData, setSelectionData] = useState({})
+  const [canvasType, setCanvasType] = useState('auto')
+  const [boundType, setBoundType] = useState('path')
+  const [canvasWidth, setCanvasWidth] = useState('')
+  const [canvasHeight, setCanvasHeight] = useState('')
   const [cols, setCols] = useState('')
   const [gutterWidth, setGutterWidth] = useState(0)
   const [colWidth, setColWidth] = useState('')
@@ -39,53 +40,161 @@ const Panel = ({ selection }) => {
     leftMargin,
   }
 
+  let alertMsg = ''
+
+  console.log('rerender triggered')
+
+  /**
+   * Attempt to update panel with new col width.
+   */
   const colWidthPanelUpdate = () => {
-    const results = calcColWidth(selection, formData)
+    if (
+      isValidSelection(selection) &&
+      isValidFormData(convertFormDataToNum(formData))
+    ) {
+      const results = calcColWidth(selection, formData)
 
-    if (!results.err) {
-      setColWidth(results.colWidth)
-      setColWidthsSum(results.colWidthsSum)
-      setGutterWidthsSum(results.gutterWidthsSum)
-      setGridWidth(results.gridWidth)
+      if (!results.err) {
+        setColWidth(results.colWidth)
+        setColWidthsSum(results.colWidthsSum)
+        setGutterWidthsSum(results.gutterWidthsSum)
+        setGridWidth(results.gridWidth)
+      }
+
+      console.log(results)
     }
-
-    console.log(results)
   }
 
-  let alertMsg = ''
-  let item = ''
-  let itemType = ''
+  /**
+   * Reset most of form to default values.
+   */
+  const resetForm = () => {
+    setCanvasType
+    setCols('')
+    setGutterWidth(0)
+    setColWidth('')
+    setTopMargin(0)
+    setRightMargin(0)
+    setBottomMargin(0)
+    setLeftMargin(0)
+    alertMsg = ''
+  }
 
-  if (selection) {
-    if (selection.items) {
-      if (selection.items.length > 1) {
-        alertMsg = 'You have selected multiple items.'
-        item = ''
-        itemType = ''
-      } else if (selection.items.length < 1) {
-        alertMsg = 'You have selected no items. Please select one.'
-        item = ''
-        itemType = ''
-      } else {
-        alertMsg = ''
-        item = selection.items[0].name
-        itemType = selection.items[0].constructor.name
+  /**
+   * Set canvas width and height values depending on bound type.
+   * @param {*} selectionData Current selection state from XD
+   * @param {string} overrideBoundType Bound type to override "boundType" state
+   */
+  const setCanvasDimensions = (selectionData, overrideBoundType) => {
+    console.log(boundType, overrideBoundType)
+    if (overrideBoundType === 'path') {
+      setCanvasWidth(selectionData.globalBounds.width)
+      setCanvasHeight(selectionData.globalBounds.height)
+    } else if (overrideBoundType === 'draw') {
+      setCanvasWidth(selectionData.globalDrawBounds.width)
+      setCanvasHeight(selectionData.globalDrawBounds.height)
+    } else if (boundType === 'draw') {
+      setCanvasWidth(selectionData.globalDrawBounds.width)
+      setCanvasHeight(selectionData.globalDrawBounds.height)
+    } else {
+      setCanvasWidth(selectionData.globalBounds.width)
+      setCanvasHeight(selectionData.globalBounds.height)
+    }
+  }
+
+  /**
+   * Handle form submission.
+   */
+  const handleSubmit = () => {
+    console.log('submit triggered')
+  }
+
+  if (isValidSelection(selection)) {
+    if (selectionData.guid !== selection.items[0].guid) {
+      setSelectionData(selection.items[0])
+
+      if (canvasType === 'auto') {
+        setCanvasDimensions(selection.items[0])
+        resetForm()
       }
     }
+  } else if (selection && Array.isArray(selection.items)) {
+    if (selection.items.length < 1) {
+      alertMsg = 'You have selected no items. Please selected one.'
+    } else {
+      alertMsg = 'You have selected multiple items.'
+    }
+  } else if (selectionData.guid !== undefined) {
+    setSelectionData({})
+    resetForm()
   }
-
-  const alert = <Alert txt={alertMsg} type="warn" />
 
   const form = (
     <form method="dialog">
+      <label className="text-input-combo">
+        <span>Canvas Type</span>
+        <select
+          onChange={(evt) => {
+            setCanvasType(evt.target.value)
+            console.log('change canvas type', evt.target.value)
+            if (evt.target.value === 'auto') {
+              setCanvasDimensions(selectionData)
+            }
+          }}
+          defaultValue={canvasType}
+        >
+          <option value="auto">Auto</option>
+          <option value="manual">Manual</option>
+        </select>
+      </label>
+      <label className="text-input-combo">
+        <span>Bound Type</span>
+        <select
+          onChange={(evt) => {
+            console.log('change bound type!', evt.target.value)
+            setBoundType(evt.target.value)
+            setCanvasDimensions(selectionData, evt.target.value)
+          }}
+          defaultValue={boundType}
+          disabled={canvasType !== 'auto'}
+        >
+          <option value="path">Path</option>
+          <option value="draw">Draw</option>
+        </select>
+      </label>
+      <label className="text-input-combo">
+        <span>Canvas Size</span>
+        <div className="multi-inputs">
+          <input
+            type="number"
+            min="1"
+            value={canvasWidth}
+            onChange={(evt) => setCanvasWidth(evt.target.value)}
+            className="input-lg"
+            placeholder="Width"
+            disabled={canvasType === 'auto'}
+            uxp-quiet="true"
+          />
+          <input
+            type="number"
+            min="1"
+            value={canvasHeight}
+            onChange={(evt) => setCanvasHeight(evt.target.value)}
+            className="input-lg"
+            placeholder="Height"
+            disabled={canvasType === 'auto'}
+            uxp-quiet="true"
+          />
+        </div>
+      </label>
       <label className="text-input-combo">
         <span>Columns</span>
         <input
           type="number"
           min="1"
           value={cols}
-          onChange={(evt) => setCols(evt.target.value)}
           onBlur={() => colWidthPanelUpdate()}
+          onChange={(evt) => setCols(evt.target.value)}
           className="input-lg"
           uxp-quiet="true"
         />
@@ -96,8 +205,8 @@ const Panel = ({ selection }) => {
           type="number"
           min="0"
           value={gutterWidth}
-          onChange={(evt) => setGutterWidth(evt.target.value)}
           onBlur={() => colWidthPanelUpdate()}
+          onChange={(evt) => setGutterWidth(evt.target.value)}
           className="input-lg"
           uxp-quiet="true"
         />
@@ -115,7 +224,7 @@ const Panel = ({ selection }) => {
       </label>
       <label className="text-input-combo">
         <span>Margins</span>
-        <div id="margins">
+        <div className="multi-inputs">
           <input
             type="number"
             min="0"
@@ -152,11 +261,11 @@ const Panel = ({ selection }) => {
         <hr />
         <div>
           <span>Selected:</span>
-          {item}
+          {selectionData.name}
         </div>
         <div>
           <span>Selected Type:</span>
-          {itemType}
+          {selectionData.constructor.name}
         </div>
         <div>
           <span>Column Width Sum:</span>
@@ -177,19 +286,22 @@ const Panel = ({ selection }) => {
         <hr />
       </div>
       <footer>
-        <button id="create" type="submit" uxp-variant="cta">
+        <button onClick={() => resetForm()} uxp-variant="secondary">
+          Reset
+        </button>
+        <button id="create" onClick={() => handleSubmit()} uxp-variant="cta">
           Create
         </button>
       </footer>
     </form>
   )
 
-  const output = alertMsg ? alert : form
+  const content = alertMsg ? <Alert txt={alertMsg} type="warn" /> : form
 
   return (
     <div>
       <h1 className="title">GRID GENERATOR</h1>
-      {output}
+      {content}
     </div>
   )
 }
