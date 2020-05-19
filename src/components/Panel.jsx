@@ -1,6 +1,7 @@
 const PropTypes = require('prop-types')
 const React = require('react')
 const useState = React.useState
+const GridCalcError = require('../GridCalcError')
 const { calcColWidth, calcGridHeight, calcGutterWidth } = require('../calc')
 const {
   convertFormDataToNum,
@@ -15,6 +16,8 @@ const Alert = require('./Alert')
  * Adobe XD panel used for plugin UI.
  */
 const Panel = ({ selection }) => {
+  const [calcAlertMsg, setCalcAlertMsg] = useState('')
+
   const [colWidthsSum, setColWidthsSum] = useState('N/A')
   const [gridHeight, setGridHeight] = useState('N/A')
   const [gridWidth, setGridWidth] = useState('N/A')
@@ -44,7 +47,7 @@ const Panel = ({ selection }) => {
     leftMargin,
   }
 
-  let alertMsg = ''
+  let selectAlertMsg = ''
 
   console.log('render triggered')
 
@@ -61,7 +64,7 @@ const Panel = ({ selection }) => {
       return calcColWidth(formattedFormData)
     }
     return {
-      err: 'Invalid form data for column width calculations.',
+      err: new GridCalcError(6),
     }
   }
 
@@ -78,7 +81,7 @@ const Panel = ({ selection }) => {
       return calcGutterWidth(formattedFormData)
     }
     return {
-      err: 'Invalid form data for gutter width calculations.',
+      err: new GridCalcError(7),
     }
   }
 
@@ -95,7 +98,7 @@ const Panel = ({ selection }) => {
       return calcGridHeight(formattedFormData)
     }
     return {
-      err: 'Invalid form data for grid height calculations.',
+      err: new GridCalcError(8),
     }
   }
 
@@ -103,14 +106,38 @@ const Panel = ({ selection }) => {
    * Attempt to update panel with new column width.
    */
   const colWidthPanelUpdate = (formDataOverride) => {
+    setCalcAlertMsg('')
+
     const f = formDataOverride || formData
-    const results = attemptCalcColWidth(f)
+    let results = attemptCalcColWidth(f)
 
     if (!results.err) {
+      // Column width >= 1
       setColWidth(results.colWidth)
       setColWidthsSum(results.colWidthsSum)
       setGutterWidthsSum(results.gutterWidthsSum)
       setGridWidth(results.gridWidth)
+    } else {
+      if (results.err.code === 1) {
+        // Column width < 1
+        console.log(results)
+        results = attemptCalcGutterWidth({
+          ...f,
+          colWidth: 1,
+        })
+
+        if (!results.err) {
+          setCalcAlertMsg(
+            'Column width was calculated to be less than 1. Recalculated gutter width with column width of 1.'
+          )
+
+          setColWidth(results.colWidth)
+          setColWidthsSum(results.colWidthsSum)
+          setGutterWidth(results.gutterWidth)
+          setGutterWidthsSum(results.gutterWidthsSum)
+          setGridWidth(results.gridWidth)
+        }
+      }
     }
 
     console.log(results)
@@ -119,14 +146,39 @@ const Panel = ({ selection }) => {
   /**
    * Attempt to update panel with new gutter width.
    */
-  const gutterWidthPanelUpdate = () => {
-    const results = attemptCalcGutterWidth(formData)
+  const gutterWidthPanelUpdate = (formDataOverride) => {
+    setCalcAlertMsg('')
+
+    const f = formDataOverride || formData
+    let results = attemptCalcGutterWidth(f)
 
     if (!results.err) {
+      // Gutter width >= 0
       setColWidthsSum(results.colWidthsSum)
       setGutterWidth(results.gutterWidth)
       setGutterWidthsSum(results.gutterWidthsSum)
       setGridWidth(results.gridWidth)
+    } else {
+      if (results.err.code === 4) {
+        // Gutter width < 0
+        console.log(results)
+        results = attemptCalcColWidth({
+          ...f,
+          columnWidth: 0,
+        })
+
+        if (!results.err) {
+          setCalcAlertMsg(
+            'Gutter width was calculated to be less than 0. Recalculated column width with gutter width of 0.'
+          )
+
+          setColWidth(results.colWidth)
+          setColWidthsSum(results.colWidthsSum)
+          setGutterWidth(results.gutterWidth)
+          setGutterWidthsSum(results.gutterWidthsSum)
+          setGridWidth(results.gridWidth)
+        }
+      }
     }
 
     console.log(results)
@@ -136,6 +188,8 @@ const Panel = ({ selection }) => {
    * Attempt to update panel with new grid height.
    */
   const gridHeightPanelUpdate = (formDataOverride) => {
+    setCalcAlertMsg('')
+
     const f = formDataOverride || formData
     const results = attemptCalcGridHeight(f)
 
@@ -160,24 +214,19 @@ const Panel = ({ selection }) => {
     if (overrideBoundType === 'path') {
       output.width = selectionData.globalBounds.width
       output.height = selectionData.globalBounds.height
-      setCanvasWidth(output.width)
-      setCanvasHeight(output.height)
     } else if (overrideBoundType === 'draw') {
       output.width = selectionData.globalDrawBounds.width
       output.height = selectionData.globalDrawBounds.height
-      setCanvasWidth(output.width)
-      setCanvasHeight(output.height)
     } else if (boundType === 'draw') {
       output.width = selectionData.globalDrawBounds.width
       output.height = selectionData.globalDrawBounds.height
-      setCanvasWidth(output.width)
-      setCanvasHeight(output.height)
     } else {
       output.width = selectionData.globalBounds.width
       output.height = selectionData.globalBounds.height
-      setCanvasWidth(output.width)
-      setCanvasHeight(output.height)
     }
+
+    setCanvasWidth(output.width)
+    setCanvasHeight(output.height)
 
     return output
   }
@@ -197,7 +246,7 @@ const Panel = ({ selection }) => {
     setRightMargin(0)
     setBottomMargin(0)
     setLeftMargin(0)
-    alertMsg = ''
+    selectAlertMsg = ''
   }
 
   if (isValidSelection(selection)) {
@@ -267,40 +316,57 @@ const Panel = ({ selection }) => {
   } else if (selection && Array.isArray(selection.items)) {
     // Handle cases when there are less than 1 or more than 1 selection
     if (selection.items.length < 1) {
-      alertMsg = 'You have selected no items. Please select one.'
+      selectAlertMsg = 'You have selected no items. Please select one.'
     } else {
-      alertMsg = 'You have selected multiple items. Please only select one.'
+      selectAlertMsg =
+        'You have selected multiple items. Please only select one.'
     }
+  }
+
+  const handleCanvasTypeChange = (evt) => {
+    setCanvasType(evt.target.value)
+    if (evt.target.value === 'auto') {
+      const {
+        width: newCanvasWidth,
+        height: newCanvasHeight,
+      } = setCanvasDimensions(selectionData)
+
+      gridHeightPanelUpdate({
+        canvasHeight: newCanvasHeight,
+        topMargin,
+        bottomMargin,
+      })
+
+      const newFormData = {
+        ...formData,
+        canvasWidth: newCanvasWidth,
+        canvasHeight: newCanvasHeight,
+      }
+
+      colWidthPanelUpdate(newFormData)
+    }
+  }
+
+  const handleBoundTypeChange = (evt) => {
+    setBoundType(evt.target.value)
+
+    const { height: newCanvasHeight } = setCanvasDimensions(
+      selectionData,
+      evt.target.value
+    )
+
+    gridHeightPanelUpdate({
+      canvasHeight: newCanvasHeight,
+      topMargin,
+      bottomMargin,
+    })
   }
 
   const form = (
     <form method="dialog">
       <label className="text-input-combo">
         <span>Canvas Type</span>
-        <select
-          onChange={(evt) => {
-            setCanvasType(evt.target.value)
-            if (evt.target.value === 'auto') {
-              const {
-                width: newCanvasWidth,
-                height: newCanvasHeight,
-              } = setCanvasDimensions(selectionData)
-
-              gridHeightPanelUpdate({
-                canvasHeight: newCanvasHeight,
-                topMargin,
-                bottomMargin,
-              })
-
-              const newFormData = formData
-              newFormData.canvasWidth = newCanvasWidth
-              newFormData.canvasHeight = newCanvasHeight
-
-              attemptCalcColWidth(formData)
-            }
-          }}
-          defaultValue={canvasType}
-        >
+        <select onChange={handleCanvasTypeChange} defaultValue={canvasType}>
           <option value="auto">Auto</option>
           <option value="manual">Manual</option>
         </select>
@@ -308,20 +374,7 @@ const Panel = ({ selection }) => {
       <label className="text-input-combo">
         <span>Bound Type</span>
         <select
-          onChange={(evt) => {
-            setBoundType(evt.target.value)
-
-            const { height: newCanvasHeight } = setCanvasDimensions(
-              selectionData,
-              evt.target.value
-            )
-
-            gridHeightPanelUpdate({
-              canvasHeight: newCanvasHeight,
-              topMargin,
-              bottomMargin,
-            })
-          }}
+          onChange={handleBoundTypeChange}
           defaultValue={boundType}
           disabled={canvasType !== 'auto'}
         >
@@ -429,6 +482,7 @@ const Panel = ({ selection }) => {
           />
         </div>
       </label>
+      {calcAlertMsg && <Alert txt={calcAlertMsg} type="err" />}
       <div id="info-section">
         <hr />
         <div>
@@ -468,7 +522,11 @@ const Panel = ({ selection }) => {
     </form>
   )
 
-  const content = alertMsg ? <Alert txt={alertMsg} type="warn" /> : form
+  const content = selectAlertMsg ? (
+    <Alert txt={selectAlertMsg} type="warn" />
+  ) : (
+    form
+  )
 
   return (
     <div>

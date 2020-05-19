@@ -4,11 +4,17 @@
     "plugin:react/recommended",
     "plugin:prettier/recommended"
   ],
+  "ecmaFeatures": {
+    "experimentalObjectRestSpread": true
+  },
   "env": {
     "browser": true,
     "es6": true,
     "jest/globals": true,
     "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018
   },
   "plugins": ["react-hooks", "jest"],
   "rules": {

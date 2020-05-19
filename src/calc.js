@@ -1,3 +1,5 @@
+const GridCalcError = require('./GridCalcError')
+
 /**
  * Calculate column width.
  * @param {Object} formattedFormData Form data from panel UI formatted with convertFormDataToNum()
@@ -22,14 +24,15 @@ const calcColWidth = (formattedFormData) => {
   output.colWidth = newColWidth
   output.colWidthsSum = colWidthsSum
   output.gridWidth = gridWidth
+  output.gutterWidth = gutterWidth
   output.gutterWidthsSum = gutterWidthsSum
 
   if (gridWidth < 1 && newColWidth > 0) {
-    output.err = 'Grid width and column width are less than 1.'
-  } else if (gridWidth < 1) {
-    output.err = 'Grid width is less than 1.'
+    output.err = new GridCalcError(3)
   } else if (newColWidth < 1) {
-    output.err = 'Column width is less than 1.'
+    output.err = new GridCalcError(1)
+  } else if (gridWidth < 1) {
+    output.err = new GridCalcError(2)
   }
 
   return output
@@ -49,7 +52,7 @@ const calcGridHeight = (formattedFormData) => {
   output.gridHeight = canvasHeight - (topMargin + bottomMargin)
 
   if (output.gridHeight < 1) {
-    output.err = 'Grid height is less than 1.'
+    output.err = new GridCalcError(5)
   }
 
   return output
@@ -78,13 +81,14 @@ const calcGutterWidth = (formattedFormData) => {
   const colWidthsSum = colWidth * cols
   const gridWidth = colWidthsSum + gutterWidthsSum - (rightMargin + leftMargin)
 
+  output.colWidth = colWidth
   output.colWidthsSum = colWidthsSum
   output.gridWidth = gridWidth
   output.gutterWidth = newGutterWidth
   output.gutterWidthsSum = gutterWidthsSum
 
   if (newGutterWidth < 0) {
-    output.err = 'Gutter width is less than 0.'
+    output.err = new GridCalcError(4)
   }
 
   return output
