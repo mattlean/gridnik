@@ -1,18 +1,21 @@
 /**
  * Convert form data to floats.
  * Form data that are not numbers are skipped.
- * @param {Object} formData
- * @returns {Object}
+ * @param {Object} formData  Form data from panel UI
+ * @returns {Object} Shallow clone of formData with data formatted as floats where possible
  */
 const convertFormDataToNum = (formData) => {
+  const formattedFormData = {}
   for (let key in formData) {
     const val = formData[key]
     if (isNumericString(val)) {
-      formData[key] = parseFloat(val)
+      formattedFormData[key] = parseFloat(val)
+    } else {
+      formattedFormData[key] = val
     }
   }
 
-  return formData
+  return formattedFormData
 }
 
 module.exports.convertFormDataToNum = convertFormDataToNum
@@ -31,7 +34,14 @@ const isNumericString = (val) => {
 
 module.exports.isNumericString = isNumericString
 
+/**
+ * Validate form data.
+ * @param {Object} formattedFormData Form data from panel UI formatted with convertFormDataToNum()
+ * @returns {boolean} True if form data is valid, false otherwise
+ */
 const isValidFormData = ({
+  canvasWidth,
+  canvasHeight,
   cols,
   gutterWidth,
   topMargin,
@@ -40,6 +50,8 @@ const isValidFormData = ({
   leftMargin,
 }) => {
   if (
+    canvasWidth > 0 &&
+    canvasHeight > 0 &&
     cols > 0 &&
     gutterWidth > -1 &&
     topMargin > -1 &&
@@ -57,7 +69,7 @@ module.exports.isValidFormData = isValidFormData
 /**
  * Checks if selection state only has one item.
  * @param {*} [selection] Current selection state from XD
- * @returns {boolean} True if selection state only has one item, false otherwise
+ * @returns {boolean} True if selection state is formatted properly and only has one item, false otherwise
  */
 const isValidSelection = (selection) => {
   if (selection) {

@@ -1,7 +1,7 @@
 const PropTypes = require('prop-types')
 const React = require('react')
 const useState = React.useState
-const { calcColWidth } = require('../calc')
+const { calcColWidth, calcGridHeight } = require('../calc')
 const {
   convertFormDataToNum,
   isValidFormData,
@@ -31,6 +31,8 @@ const Panel = ({ selection }) => {
   const [bottomMargin, setBottomMargin] = useState(0)
   const [leftMargin, setLeftMargin] = useState(0)
   const formData = {
+    canvasWidth,
+    canvasHeight,
     cols,
     gutterWidth,
     colWidth,
@@ -45,30 +47,42 @@ const Panel = ({ selection }) => {
   console.log('rerender triggered')
 
   /**
-   * Attempt to update panel with new col width.
+   * Attempt to update panel with new column width.
    */
   const colWidthPanelUpdate = () => {
-    if (
-      isValidSelection(selection) &&
-      isValidFormData(convertFormDataToNum(formData))
-    ) {
-      const results = calcColWidth(selection, formData)
+    const results = attemptCalcColWidth(formData)
 
-      if (!results.err) {
-        setColWidth(results.colWidth)
-        setColWidthsSum(results.colWidthsSum)
-        setGutterWidthsSum(results.gutterWidthsSum)
-        setGridWidth(results.gridWidth)
-      }
-
-      console.log(results)
+    if (!results.err) {
+      setColWidth(results.colWidth)
+      setColWidthsSum(results.colWidthsSum)
+      setGutterWidthsSum(results.gutterWidthsSum)
+      setGridWidth(results.gridWidth)
     }
+
+    console.log(results)
+  }
+
+  /**
+   * Attempt to update panel with new grid height.
+   */
+  const gridHeightPanelUpdate = () => {
+    const results = attemptCalcGridHeight(formData)
+
+    if (!results.err) {
+      setGridHeight(results.gridHeight)
+    }
+
+    console.log(results)
   }
 
   /**
    * Reset most of form to default values.
    */
   const resetForm = () => {
+    setColWidthsSum('N/A')
+    setGridHeight('N/A')
+    setGridWidth('N/A')
+    setGutterWidthsSum('N/A')
     setCanvasType
     setCols('')
     setGutterWidth(0)
@@ -84,21 +98,69 @@ const Panel = ({ selection }) => {
    * Set canvas width and height values depending on bound type.
    * @param {*} selectionData Current selection state from XD
    * @param {string} overrideBoundType Bound type to override "boundType" state
+   * @returns {Object} Object with new canvas width & height values
    */
   const setCanvasDimensions = (selectionData, overrideBoundType) => {
-    console.log(boundType, overrideBoundType)
+    const output = {
+      width: null,
+      height: null,
+    }
     if (overrideBoundType === 'path') {
-      setCanvasWidth(selectionData.globalBounds.width)
-      setCanvasHeight(selectionData.globalBounds.height)
+      output.width = selectionData.globalBounds.width
+      output.height = selectionData.globalBounds.height
+      setCanvasWidth(output.width)
+      setCanvasHeight(output.height)
     } else if (overrideBoundType === 'draw') {
-      setCanvasWidth(selectionData.globalDrawBounds.width)
-      setCanvasHeight(selectionData.globalDrawBounds.height)
+      output.width = selectionData.globalDrawBounds.width
+      output.height = selectionData.globalDrawBounds.height
+      setCanvasWidth(output.width)
+      setCanvasHeight(output.height)
     } else if (boundType === 'draw') {
-      setCanvasWidth(selectionData.globalDrawBounds.width)
-      setCanvasHeight(selectionData.globalDrawBounds.height)
+      output.width = selectionData.globalDrawBounds.width
+      output.height = selectionData.globalDrawBounds.height
+      setCanvasWidth(output.width)
+      setCanvasHeight(output.height)
     } else {
-      setCanvasWidth(selectionData.globalBounds.width)
-      setCanvasHeight(selectionData.globalBounds.height)
+      output.width = selectionData.globalBounds.width
+      output.height = selectionData.globalBounds.height
+      setCanvasWidth(output.width)
+      setCanvasHeight(output.height)
+    }
+
+    return output
+  }
+
+  /**
+   * Wrapper function that formats & validates form data before calculating column width.
+   * If validation fails, an object with error message is thrown.
+   * Otherwise calcColWidth() is called and the result from that is returned.
+   * @param {Object} formData Form data from panel UI
+   * @returns {Object} Result that contains colCalcWidth() calculations or error
+   */
+  const attemptCalcColWidth = (formData) => {
+    const formattedFormData = convertFormDataToNum(formData)
+    if (isValidFormData(formattedFormData)) {
+      return calcColWidth(formattedFormData)
+    }
+    return {
+      err: 'Invalid form data',
+    }
+  }
+
+  /**
+   * Wrapper function that formats & validates form data before calculating column height.
+   * If validation fails, an object with error message is thrown.
+   * Otherwise calcGridHeight() is called and the result from that is returned.
+   * @param {Object} formData Form data from panel UI
+   * @returns {Object} Result that contains colCalcHeight() calculations or error
+   */
+  const attemptCalcGridHeight = (formData) => {
+    const formattedFormData = convertFormDataToNum(formData)
+    if (isValidFormData(formattedFormData)) {
+      return calcGridHeight(formattedFormData)
+    }
+    return {
+      err: 'Invalid form data',
     }
   }
 
@@ -120,9 +182,9 @@ const Panel = ({ selection }) => {
     }
   } else if (selection && Array.isArray(selection.items)) {
     if (selection.items.length < 1) {
-      alertMsg = 'You have selected no items. Please selected one.'
+      alertMsg = 'You have selected no items. Please select one.'
     } else {
-      alertMsg = 'You have selected multiple items.'
+      alertMsg = 'You have selected multiple items. Please only select one.'
     }
   } else if (selectionData.guid !== undefined) {
     setSelectionData({})
@@ -136,9 +198,13 @@ const Panel = ({ selection }) => {
         <select
           onChange={(evt) => {
             setCanvasType(evt.target.value)
-            console.log('change canvas type', evt.target.value)
             if (evt.target.value === 'auto') {
-              setCanvasDimensions(selectionData)
+              const newWidthHeight = setCanvasDimensions(selectionData)
+              const newFormData = formData
+              newFormData.canvasWidth = newWidthHeight.width
+              newFormData.canvasHeight = newWidthHeight.height
+
+              attemptCalcColWidth(formData)
             }
           }}
           defaultValue={canvasType}
@@ -151,7 +217,6 @@ const Panel = ({ selection }) => {
         <span>Bound Type</span>
         <select
           onChange={(evt) => {
-            console.log('change bound type!', evt.target.value)
             setBoundType(evt.target.value)
             setCanvasDimensions(selectionData, evt.target.value)
           }}
@@ -170,6 +235,7 @@ const Panel = ({ selection }) => {
             min="1"
             value={canvasWidth}
             onChange={(evt) => setCanvasWidth(evt.target.value)}
+            onBlur={() => colWidthPanelUpdate()}
             className="input-lg"
             placeholder="Width"
             disabled={canvasType === 'auto'}
@@ -180,6 +246,7 @@ const Panel = ({ selection }) => {
             min="1"
             value={canvasHeight}
             onChange={(evt) => setCanvasHeight(evt.target.value)}
+            onBlur={() => colWidthPanelUpdate()}
             className="input-lg"
             placeholder="Height"
             disabled={canvasType === 'auto'}
@@ -230,6 +297,7 @@ const Panel = ({ selection }) => {
             min="0"
             value={topMargin}
             onChange={(evt) => setTopMargin(evt.target.value)}
+            onBlur={() => gridHeightPanelUpdate()}
             uxp-quiet="true"
           />
           <input
@@ -245,6 +313,7 @@ const Panel = ({ selection }) => {
             min="0"
             value={bottomMargin}
             onChange={(evt) => setBottomMargin(evt.target.value)}
+            onBlur={() => gridHeightPanelUpdate()}
             uxp-quiet="true"
           />
           <input
