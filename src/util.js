@@ -35,13 +35,12 @@ const isNumericString = (val) => {
 module.exports.isNumericString = isNumericString
 
 /**
- * Validate form data.
+ * Validate form data for column width calculations.
  * @param {Object} formattedFormData Form data from panel UI formatted with convertFormDataToNum()
  * @returns {boolean} True if form data is valid, false otherwise
  */
-const isValidFormData = ({
+const isValidColWidthFormData = ({
   canvasWidth,
-  canvasHeight,
   cols,
   gutterWidth,
   topMargin,
@@ -51,12 +50,9 @@ const isValidFormData = ({
 }) => {
   if (
     canvasWidth > 0 &&
-    canvasHeight > 0 &&
     cols > 0 &&
     gutterWidth > -1 &&
-    topMargin > -1 &&
     rightMargin > -1 &&
-    bottomMargin > -1 &&
     leftMargin > -1
   ) {
     return true
@@ -64,7 +60,21 @@ const isValidFormData = ({
   return false
 }
 
-module.exports.isValidFormData = isValidFormData
+module.exports.isValidColWidthFormData = isValidColWidthFormData
+
+const isValidGridHeightFormData = ({
+  canvasHeight,
+  topMargin,
+  bottomMargin,
+}) => {
+  console.log(canvasHeight, topMargin, bottomMargin)
+  if (canvasHeight > 0 && topMargin > -1 && bottomMargin > -1) {
+    return true
+  }
+  return false
+}
+
+module.exports.isValidGridHeightFormData = isValidGridHeightFormData
 
 /**
  * Checks if selection state only has one item.

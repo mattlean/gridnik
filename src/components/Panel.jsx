@@ -4,7 +4,8 @@ const useState = React.useState
 const { calcColWidth, calcGridHeight } = require('../calc')
 const {
   convertFormDataToNum,
-  isValidFormData,
+  isValidColWidthFormData,
+  isValidGridHeightFormData,
   isValidSelection,
 } = require('../util')
 const Alert = require('./Alert')
@@ -65,8 +66,9 @@ const Panel = ({ selection }) => {
   /**
    * Attempt to update panel with new grid height.
    */
-  const gridHeightPanelUpdate = () => {
-    const results = attemptCalcGridHeight(formData)
+  const gridHeightPanelUpdate = (formDataOverride) => {
+    const f = formDataOverride || formData
+    const results = attemptCalcGridHeight(f)
 
     if (!results.err) {
       setGridHeight(results.gridHeight)
@@ -139,11 +141,11 @@ const Panel = ({ selection }) => {
    */
   const attemptCalcColWidth = (formData) => {
     const formattedFormData = convertFormDataToNum(formData)
-    if (isValidFormData(formattedFormData)) {
+    if (isValidColWidthFormData(formattedFormData)) {
       return calcColWidth(formattedFormData)
     }
     return {
-      err: 'Invalid form data',
+      err: 'Invalid form data for column width calculations.',
     }
   }
 
@@ -156,11 +158,11 @@ const Panel = ({ selection }) => {
    */
   const attemptCalcGridHeight = (formData) => {
     const formattedFormData = convertFormDataToNum(formData)
-    if (isValidFormData(formattedFormData)) {
+    if (isValidGridHeightFormData(formattedFormData)) {
       return calcGridHeight(formattedFormData)
     }
     return {
-      err: 'Invalid form data',
+      err: 'Invalid form data for grid height calculations.',
     }
   }
 
@@ -176,8 +178,17 @@ const Panel = ({ selection }) => {
       setSelectionData(selection.items[0])
 
       if (canvasType === 'auto') {
-        setCanvasDimensions(selection.items[0])
         resetForm()
+
+        const { height: newCanvasHeight } = setCanvasDimensions(
+          selection.items[0]
+        )
+
+        gridHeightPanelUpdate({
+          canvasHeight: newCanvasHeight,
+          topMargin: 0,
+          bottomMargin: 0,
+        })
       }
     }
   } else if (selection && Array.isArray(selection.items)) {
@@ -199,10 +210,20 @@ const Panel = ({ selection }) => {
           onChange={(evt) => {
             setCanvasType(evt.target.value)
             if (evt.target.value === 'auto') {
-              const newWidthHeight = setCanvasDimensions(selectionData)
+              const {
+                width: newCanvasWidth,
+                height: newCanvasHeight,
+              } = setCanvasDimensions(selectionData)
+
+              gridHeightPanelUpdate({
+                canvasHeight: newCanvasHeight,
+                topMargin,
+                bottomMargin,
+              })
+
               const newFormData = formData
-              newFormData.canvasWidth = newWidthHeight.width
-              newFormData.canvasHeight = newWidthHeight.height
+              newFormData.canvasWidth = newCanvasWidth
+              newFormData.canvasHeight = newCanvasHeight
 
               attemptCalcColWidth(formData)
             }
@@ -218,7 +239,17 @@ const Panel = ({ selection }) => {
         <select
           onChange={(evt) => {
             setBoundType(evt.target.value)
-            setCanvasDimensions(selectionData, evt.target.value)
+
+            const { height: newCanvasHeight } = setCanvasDimensions(
+              selectionData,
+              evt.target.value
+            )
+
+            gridHeightPanelUpdate({
+              canvasHeight: newCanvasHeight,
+              topMargin,
+              bottomMargin,
+            })
           }}
           defaultValue={boundType}
           disabled={canvasType !== 'auto'}
@@ -246,7 +277,7 @@ const Panel = ({ selection }) => {
             min="1"
             value={canvasHeight}
             onChange={(evt) => setCanvasHeight(evt.target.value)}
-            onBlur={() => colWidthPanelUpdate()}
+            onBlur={() => gridHeightPanelUpdate()}
             className="input-lg"
             placeholder="Height"
             disabled={canvasType === 'auto'}
