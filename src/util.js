@@ -43,9 +43,7 @@ const isValidColWidthFormData = ({
   canvasWidth,
   cols,
   gutterWidth,
-  topMargin,
   rightMargin,
-  bottomMargin,
   leftMargin,
 }) => {
   if (

@@ -50,8 +50,9 @@ const Panel = ({ selection }) => {
   /**
    * Attempt to update panel with new column width.
    */
-  const colWidthPanelUpdate = () => {
-    const results = attemptCalcColWidth(formData)
+  const colWidthPanelUpdate = (formDataOverride) => {
+    const f = formDataOverride || formData
+    const results = attemptCalcColWidth(f)
 
     if (!results.err) {
       setColWidth(results.colWidth)
@@ -174,6 +175,7 @@ const Panel = ({ selection }) => {
   }
 
   if (isValidSelection(selection)) {
+    // Handle case where new selection is made
     if (selectionData.guid !== selection.items[0].guid) {
       setSelectionData(selection.items[0])
 
@@ -190,14 +192,61 @@ const Panel = ({ selection }) => {
           bottomMargin: 0,
         })
       }
+    } else if (canvasType === 'auto') {
+      // Handle case where same selection is resized
+      const currItem = selection.items[0]
+
+      if (boundType === 'draw') {
+        if (currItem.globalDrawBounds.width !== canvasWidth) {
+          setCanvasWidth(currItem.globalDrawBounds.width)
+          colWidthPanelUpdate({
+            canvasWidth: currItem.globalDrawBounds.width,
+            cols,
+            gutterWidth,
+            rightMargin,
+            leftMargin,
+          })
+        }
+
+        if (currItem.globalDrawBounds.height !== canvasHeight) {
+          setCanvasHeight(currItem.globalDrawBounds.height)
+          gridHeightPanelUpdate({
+            canvasHeight: currItem.globalDrawBounds.height,
+            topMargin,
+            bottomMargin,
+          })
+        }
+      } else {
+        if (currItem.globalBounds.width !== canvasWidth) {
+          setCanvasWidth(currItem.globalBounds.width)
+          colWidthPanelUpdate({
+            canvasWidth: currItem.globalBounds.width,
+            cols,
+            gutterWidth,
+            rightMargin,
+            leftMargin,
+          })
+        }
+
+        if (currItem.globalBounds.height !== canvasHeight) {
+          setCanvasHeight(currItem.globalBounds.height)
+          gridHeightPanelUpdate({
+            canvasHeight: currItem.globalBounds.height,
+            topMargin,
+            bottomMargin,
+          })
+        }
+      }
     }
   } else if (selection && Array.isArray(selection.items)) {
+    // Handle cases when there are less than 1 or more than 1 selection
     if (selection.items.length < 1) {
       alertMsg = 'You have selected no items. Please select one.'
     } else {
       alertMsg = 'You have selected multiple items. Please only select one.'
     }
   } else if (selectionData.guid !== undefined) {
+    // CHECK: what was this for?? i feel like this case is unnecessary. leave comments earlier, me! LOL
     setSelectionData({})
     resetForm()
   }
