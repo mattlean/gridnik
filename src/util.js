@@ -60,12 +60,42 @@ const isValidColWidthFormData = ({
 
 module.exports.isValidColWidthFormData = isValidColWidthFormData
 
+/**
+ * Validate form data for gutter width calculations.
+ * @param {Object} formattedFormData Form data from panel UI formatted with convertFormDataToNum()
+ * @returns {boolean} True if form data is valid, false otherwise
+ */
+const isValidGutterWidthFormData = ({
+  canvasWidth,
+  cols,
+  colWidth,
+  rightMargin,
+  leftMargin,
+}) => {
+  if (
+    canvasWidth > 0 &&
+    cols > 0 &&
+    colWidth > 0 &&
+    rightMargin > -1 &&
+    leftMargin > -1
+  ) {
+    return true
+  }
+  return false
+}
+
+module.exports.isValidGutterWidthFormData = isValidGutterWidthFormData
+
+/**
+ * Validate form data for grid height calculations.
+ * @param {Object} formattedFormData Form data from panel UI formatted with convertFormDataToNum()
+ * @returns {boolean} True if form data is valid, false otherwise
+ */
 const isValidGridHeightFormData = ({
   canvasHeight,
   topMargin,
   bottomMargin,
 }) => {
-  console.log(canvasHeight, topMargin, bottomMargin)
   if (canvasHeight > 0 && topMargin > -1 && bottomMargin > -1) {
     return true
   }

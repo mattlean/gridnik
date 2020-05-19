@@ -3,14 +3,21 @@
  * @param {Object} formattedFormData Form data from panel UI formatted with convertFormDataToNum()
  * @returns {Object} Result that contains calculations and error if it exists
  */
-const calcColWidth = (formData) => {
+const calcColWidth = (formattedFormData) => {
   const output = {}
-  const { canvasWidth, cols, gutterWidth, rightMargin, leftMargin } = formData
+  const {
+    canvasWidth,
+    cols,
+    gutterWidth,
+    rightMargin,
+    leftMargin,
+  } = formattedFormData
 
-  const gridWidth = canvasWidth - (rightMargin + leftMargin)
   const gutterWidthsSum = gutterWidth * (cols - 1)
-  const newColWidth = (gridWidth - gutterWidthsSum) / cols
+  const newColWidth =
+    (canvasWidth - (rightMargin + leftMargin) - gutterWidthsSum) / cols
   const colWidthsSum = newColWidth * cols
+  const gridWidth = colWidthsSum + gutterWidthsSum - (rightMargin + leftMargin)
 
   output.colWidth = newColWidth
   output.colWidthsSum = colWidthsSum
@@ -18,7 +25,7 @@ const calcColWidth = (formData) => {
   output.gutterWidthsSum = gutterWidthsSum
 
   if (gridWidth < 1 && newColWidth > 0) {
-    output.err - 'Grid width and column width are less than 1.'
+    output.err = 'Grid width and column width are less than 1.'
   } else if (gridWidth < 1) {
     output.err = 'Grid width is less than 1.'
   } else if (newColWidth < 1) {
@@ -35,9 +42,9 @@ module.exports.calcColWidth = calcColWidth
  * @param {Object} formattedFormData Form data from panel UI formatted with convertFormDataToNum()
  * @returns {Object} Result that contains calculations and error if it exists
  */
-const calcGridHeight = (formData) => {
+const calcGridHeight = (formattedFormData) => {
   const output = {}
-  const { canvasHeight, topMargin, bottomMargin } = formData
+  const { canvasHeight, topMargin, bottomMargin } = formattedFormData
 
   output.gridHeight = canvasHeight - (topMargin + bottomMargin)
 
@@ -49,3 +56,38 @@ const calcGridHeight = (formData) => {
 }
 
 module.exports.calcGridHeight = calcGridHeight
+
+/**
+ * Calculate gutter width.
+ * @param {Object} formattedFormData Form data from panel UI formatted with convertFormDataToNum()
+ * @returns {Object} Result that contains calculations and error if it exists
+ */
+const calcGutterWidth = (formattedFormData) => {
+  const output = {}
+  const {
+    canvasWidth,
+    cols,
+    colWidth,
+    rightMargin,
+    leftMargin,
+  } = formattedFormData
+
+  const newGutterWidth =
+    (canvasWidth - (rightMargin + leftMargin) - colWidth * cols) / (cols - 1)
+  const gutterWidthsSum = newGutterWidth * (cols - 1)
+  const colWidthsSum = colWidth * cols
+  const gridWidth = colWidthsSum + gutterWidthsSum - (rightMargin + leftMargin)
+
+  output.colWidthsSum = colWidthsSum
+  output.gridWidth = gridWidth
+  output.gutterWidth = newGutterWidth
+  output.gutterWidthsSum = gutterWidthsSum
+
+  if (newGutterWidth < 0) {
+    output.err = 'Gutter width is less than 0.'
+  }
+
+  return output
+}
+
+module.exports.calcGutterWidth = calcGutterWidth

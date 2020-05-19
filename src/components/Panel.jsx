@@ -1,11 +1,12 @@
 const PropTypes = require('prop-types')
 const React = require('react')
 const useState = React.useState
-const { calcColWidth, calcGridHeight } = require('../calc')
+const { calcColWidth, calcGridHeight, calcGutterWidth } = require('../calc')
 const {
   convertFormDataToNum,
   isValidColWidthFormData,
   isValidGridHeightFormData,
+  isValidGutterWidthFormData,
   isValidSelection,
 } = require('../util')
 const Alert = require('./Alert')
@@ -45,7 +46,58 @@ const Panel = ({ selection }) => {
 
   let alertMsg = ''
 
-  console.log('rerender triggered')
+  console.log('render triggered')
+
+  /**
+   * Wrapper function that formats & validates form data before calculating column width.
+   * If validation fails, an object with error message is thrown.
+   * Otherwise calcColWidth() is called and the result from that is returned.
+   * @param {Object} formData Form data from panel UI
+   * @returns {Object} Result that contains colCalcWidth() calculations or error
+   */
+  const attemptCalcColWidth = (formData) => {
+    const formattedFormData = convertFormDataToNum(formData)
+    if (isValidColWidthFormData(formattedFormData)) {
+      return calcColWidth(formattedFormData)
+    }
+    return {
+      err: 'Invalid form data for column width calculations.',
+    }
+  }
+
+  /**
+   * Wrapper function that formats & validates form data before calculating gutter width.
+   * If validation fails, an object with error message is thrown.
+   * Otherwise calcGutterWidth() is called and the result from that is returned.
+   * @param {Object} formData Form data from panel UI
+   * @returns {Object} Result that contains calcGutterWidth() calculations or error
+   */
+  const attemptCalcGutterWidth = (formData) => {
+    const formattedFormData = convertFormDataToNum(formData)
+    if (isValidGutterWidthFormData(formattedFormData)) {
+      return calcGutterWidth(formattedFormData)
+    }
+    return {
+      err: 'Invalid form data for gutter width calculations.',
+    }
+  }
+
+  /**
+   * Wrapper function that formats & validates form data before calculating column height.
+   * If validation fails, an object with error message is thrown.
+   * Otherwise calcGridHeight() is called and the result from that is returned.
+   * @param {Object} formData Form data from panel UI
+   * @returns {Object} Result that contains colCalcHeight() calculations or error
+   */
+  const attemptCalcGridHeight = (formData) => {
+    const formattedFormData = convertFormDataToNum(formData)
+    if (isValidGridHeightFormData(formattedFormData)) {
+      return calcGridHeight(formattedFormData)
+    }
+    return {
+      err: 'Invalid form data for grid height calculations.',
+    }
+  }
 
   /**
    * Attempt to update panel with new column width.
@@ -65,6 +117,22 @@ const Panel = ({ selection }) => {
   }
 
   /**
+   * Attempt to update panel with new gutter width.
+   */
+  const gutterWidthPanelUpdate = () => {
+    const results = attemptCalcGutterWidth(formData)
+
+    if (!results.err) {
+      setColWidthsSum(results.colWidthsSum)
+      setGutterWidth(results.gutterWidth)
+      setGutterWidthsSum(results.gutterWidthsSum)
+      setGridWidth(results.gridWidth)
+    }
+
+    console.log(results)
+  }
+
+  /**
    * Attempt to update panel with new grid height.
    */
   const gridHeightPanelUpdate = (formDataOverride) => {
@@ -76,25 +144,6 @@ const Panel = ({ selection }) => {
     }
 
     console.log(results)
-  }
-
-  /**
-   * Reset most of form to default values.
-   */
-  const resetForm = () => {
-    setColWidthsSum('N/A')
-    setGridHeight('N/A')
-    setGridWidth('N/A')
-    setGutterWidthsSum('N/A')
-    setCanvasType
-    setCols('')
-    setGutterWidth(0)
-    setColWidth('')
-    setTopMargin(0)
-    setRightMargin(0)
-    setBottomMargin(0)
-    setLeftMargin(0)
-    alertMsg = ''
   }
 
   /**
@@ -134,44 +183,21 @@ const Panel = ({ selection }) => {
   }
 
   /**
-   * Wrapper function that formats & validates form data before calculating column width.
-   * If validation fails, an object with error message is thrown.
-   * Otherwise calcColWidth() is called and the result from that is returned.
-   * @param {Object} formData Form data from panel UI
-   * @returns {Object} Result that contains colCalcWidth() calculations or error
+   * Reset most of form to default values.
    */
-  const attemptCalcColWidth = (formData) => {
-    const formattedFormData = convertFormDataToNum(formData)
-    if (isValidColWidthFormData(formattedFormData)) {
-      return calcColWidth(formattedFormData)
-    }
-    return {
-      err: 'Invalid form data for column width calculations.',
-    }
-  }
-
-  /**
-   * Wrapper function that formats & validates form data before calculating column height.
-   * If validation fails, an object with error message is thrown.
-   * Otherwise calcGridHeight() is called and the result from that is returned.
-   * @param {Object} formData Form data from panel UI
-   * @returns {Object} Result that contains colCalcHeight() calculations or error
-   */
-  const attemptCalcGridHeight = (formData) => {
-    const formattedFormData = convertFormDataToNum(formData)
-    if (isValidGridHeightFormData(formattedFormData)) {
-      return calcGridHeight(formattedFormData)
-    }
-    return {
-      err: 'Invalid form data for grid height calculations.',
-    }
-  }
-
-  /**
-   * Handle form submission.
-   */
-  const handleSubmit = () => {
-    console.log('submit triggered')
+  const resetForm = () => {
+    setColWidthsSum('N/A')
+    setGridHeight('N/A')
+    setGridWidth('N/A')
+    setGutterWidthsSum('N/A')
+    setCols('')
+    setGutterWidth(0)
+    setColWidth('')
+    setTopMargin(0)
+    setRightMargin(0)
+    setBottomMargin(0)
+    setLeftMargin(0)
+    alertMsg = ''
   }
 
   if (isValidSelection(selection)) {
@@ -245,10 +271,6 @@ const Panel = ({ selection }) => {
     } else {
       alertMsg = 'You have selected multiple items. Please only select one.'
     }
-  } else if (selectionData.guid !== undefined) {
-    // CHECK: what was this for?? i feel like this case is unnecessary. leave comments earlier, me! LOL
-    setSelectionData({})
-    resetForm()
   }
 
   const form = (
@@ -364,6 +386,7 @@ const Panel = ({ selection }) => {
           type="number"
           min="1"
           value={colWidth}
+          onBlur={() => gutterWidthPanelUpdate()}
           onChange={(evt) => setColWidth(evt.target.value)}
           className="input-lg"
           uxp-quiet="true"
@@ -438,7 +461,7 @@ const Panel = ({ selection }) => {
         <button onClick={() => resetForm()} uxp-variant="secondary">
           Reset
         </button>
-        <button id="create" onClick={() => handleSubmit()} uxp-variant="cta">
+        <button id="create" uxp-variant="cta">
           Create
         </button>
       </footer>
