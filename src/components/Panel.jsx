@@ -6,8 +6,8 @@ const {
   attemptCalcColWidth,
   attemptCalcGridHeight,
   attemptCalcGutterWidth,
+  isValidSelection,
 } = require('../scripts/validate')
-const { isValidSelection } = require('../scripts/util')
 
 /**
  * Adobe XD panel used for plugin UI.
