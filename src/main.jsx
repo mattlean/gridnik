@@ -1,7 +1,7 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 const Panel = require('./components/Panel')
-require('./react-shim')
+require('./scripts/react-shim')
 require('./style.css')
 
 let panelEle // Panel DOM element

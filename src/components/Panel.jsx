@@ -1,16 +1,13 @@
 const PropTypes = require('prop-types')
 const React = require('react')
 const useState = React.useState
-const GridCalcError = require('../GridCalcError')
-const { calcColWidth, calcGridHeight, calcGutterWidth } = require('../calc')
-const {
-  convertFormDataToNum,
-  isValidColWidthFormData,
-  isValidGridHeightFormData,
-  isValidGutterWidthFormData,
-  isValidSelection,
-} = require('../util')
 const Alert = require('./Alert')
+const {
+  attemptCalcColWidth,
+  attemptCalcGridHeight,
+  attemptCalcGutterWidth,
+} = require('../scripts/validate')
+const { isValidSelection } = require('../scripts/util')
 
 /**
  * Adobe XD panel used for plugin UI.
@@ -52,57 +49,6 @@ const Panel = ({ selection }) => {
   console.log('render triggered')
 
   /**
-   * Wrapper function that formats & validates form data before calculating column width.
-   * If validation fails, an object with error message is thrown.
-   * Otherwise calcColWidth() is called and the result from that is returned.
-   * @param {Object} formData Form data from panel UI
-   * @returns {Object} Result that contains colCalcWidth() calculations or error
-   */
-  const attemptCalcColWidth = (formData) => {
-    const formattedFormData = convertFormDataToNum(formData)
-    if (isValidColWidthFormData(formattedFormData)) {
-      return calcColWidth(formattedFormData)
-    }
-    return {
-      err: new GridCalcError(6),
-    }
-  }
-
-  /**
-   * Wrapper function that formats & validates form data before calculating gutter width.
-   * If validation fails, an object with error message is thrown.
-   * Otherwise calcGutterWidth() is called and the result from that is returned.
-   * @param {Object} formData Form data from panel UI
-   * @returns {Object} Result that contains calcGutterWidth() calculations or error
-   */
-  const attemptCalcGutterWidth = (formData) => {
-    const formattedFormData = convertFormDataToNum(formData)
-    if (isValidGutterWidthFormData(formattedFormData)) {
-      return calcGutterWidth(formattedFormData)
-    }
-    return {
-      err: new GridCalcError(7),
-    }
-  }
-
-  /**
-   * Wrapper function that formats & validates form data before calculating column height.
-   * If validation fails, an object with error message is thrown.
-   * Otherwise calcGridHeight() is called and the result from that is returned.
-   * @param {Object} formData Form data from panel UI
-   * @returns {Object} Result that contains colCalcHeight() calculations or error
-   */
-  const attemptCalcGridHeight = (formData) => {
-    const formattedFormData = convertFormDataToNum(formData)
-    if (isValidGridHeightFormData(formattedFormData)) {
-      return calcGridHeight(formattedFormData)
-    }
-    return {
-      err: new GridCalcError(8),
-    }
-  }
-
-  /**
    * Attempt to update panel with new column width.
    */
   const colWidthPanelUpdate = (formDataOverride) => {
@@ -124,7 +70,7 @@ const Panel = ({ selection }) => {
       setLeftMargin(results.leftMargin)
     } else if (results.err.code === 1) {
       // Column width < 1
-      console.log(results)
+      console.log('a', results)
       results = attemptCalcGutterWidth({
         ...f,
         colWidth: 1,
@@ -149,7 +95,7 @@ const Panel = ({ selection }) => {
       resetStats()
     }
 
-    console.log(results)
+    console.log('b', results)
   }
 
   /**
@@ -173,7 +119,7 @@ const Panel = ({ selection }) => {
       setLeftMargin(results.leftMargin)
     } else if (results.err.code === 4) {
       // Gutter width < 0
-      console.log(results)
+      console.log('c', results)
       results = attemptCalcColWidth({
         ...f,
         columnWidth: 0,
@@ -198,7 +144,7 @@ const Panel = ({ selection }) => {
       resetStats()
     }
 
-    console.log(results)
+    console.log('d', results)
   }
 
   /**
@@ -221,7 +167,7 @@ const Panel = ({ selection }) => {
       resetStats()
     }
 
-    console.log(results)
+    console.log('e', results)
   }
 
   /**
@@ -294,8 +240,11 @@ const Panel = ({ selection }) => {
 
         gridHeightPanelUpdate({
           canvasHeight: newCanvasHeight,
+          gutterWidth,
           topMargin: 0,
+          rightMargin,
           bottomMargin: 0,
+          leftMargin,
         })
       }
     } else if (canvasType === 'auto') {
@@ -309,7 +258,9 @@ const Panel = ({ selection }) => {
             canvasWidth: currItem.globalDrawBounds.width,
             cols,
             gutterWidth,
+            topMargin,
             rightMargin,
+            bottomMargin,
             leftMargin,
           })
         }
@@ -318,8 +269,11 @@ const Panel = ({ selection }) => {
           setCanvasHeight(currItem.globalDrawBounds.height)
           gridHeightPanelUpdate({
             canvasHeight: currItem.globalDrawBounds.height,
+            gutterWidth,
             topMargin,
+            rightMargin,
             bottomMargin,
+            leftMargin,
           })
         }
       } else {
@@ -329,7 +283,9 @@ const Panel = ({ selection }) => {
             canvasWidth: currItem.globalBounds.width,
             cols,
             gutterWidth,
+            topMargin,
             rightMargin,
+            bottomMargin,
             leftMargin,
           })
         }
@@ -338,8 +294,11 @@ const Panel = ({ selection }) => {
           setCanvasHeight(currItem.globalBounds.height)
           gridHeightPanelUpdate({
             canvasHeight: currItem.globalBounds.height,
+            gutterWidth,
             topMargin,
+            rightMargin,
             bottomMargin,
+            leftMargin,
           })
         }
       }
@@ -364,8 +323,11 @@ const Panel = ({ selection }) => {
 
       gridHeightPanelUpdate({
         canvasHeight: newCanvasHeight,
+        gutterWidth,
         topMargin,
+        rightMargin,
         bottomMargin,
+        leftMargin,
       })
 
       const newFormData = {
@@ -388,8 +350,11 @@ const Panel = ({ selection }) => {
 
     gridHeightPanelUpdate({
       canvasHeight: newCanvasHeight,
+      gutterWidth,
       topMargin,
+      rightMargin,
       bottomMargin,
+      leftMargin,
     })
   }
 
