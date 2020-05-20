@@ -115,29 +115,38 @@ const Panel = ({ selection }) => {
       // Column width >= 1
       setColWidth(results.colWidth)
       setColWidthsSum(results.colWidthsSum)
+      setGutterWidth(results.gutterWidth)
       setGutterWidthsSum(results.gutterWidthsSum)
       setGridWidth(results.gridWidth)
-    } else {
-      if (results.err.code === 1) {
-        // Column width < 1
-        console.log(results)
-        results = attemptCalcGutterWidth({
-          ...f,
-          colWidth: 1,
-        })
+      setTopMargin(results.topMargin)
+      setRightMargin(results.rightMargin)
+      setBottomMargin(results.bottomMargin)
+      setLeftMargin(results.leftMargin)
+    } else if (results.err.code === 1) {
+      // Column width < 1
+      console.log(results)
+      results = attemptCalcGutterWidth({
+        ...f,
+        colWidth: 1,
+      })
 
-        if (!results.err) {
-          setCalcAlertMsg(
-            'Column width was calculated to be less than 1. Recalculated gutter width with column width of 1.'
-          )
+      if (!results.err) {
+        setCalcAlertMsg(
+          'Column width was calculated to be less than 1. Recalculated gutter width with column width of 1.'
+        )
 
-          setColWidth(results.colWidth)
-          setColWidthsSum(results.colWidthsSum)
-          setGutterWidth(results.gutterWidth)
-          setGutterWidthsSum(results.gutterWidthsSum)
-          setGridWidth(results.gridWidth)
-        }
+        setColWidth(results.colWidth)
+        setColWidthsSum(results.colWidthsSum)
+        setGutterWidth(results.gutterWidth)
+        setGutterWidthsSum(results.gutterWidthsSum)
+        setGridWidth(results.gridWidth)
+        setTopMargin(results.topMargin)
+        setRightMargin(results.rightMargin)
+        setBottomMargin(results.bottomMargin)
+        setLeftMargin(results.leftMargin)
       }
+    } else if (results.err.code === 6) {
+      resetStats()
     }
 
     console.log(results)
@@ -158,27 +167,35 @@ const Panel = ({ selection }) => {
       setGutterWidth(results.gutterWidth)
       setGutterWidthsSum(results.gutterWidthsSum)
       setGridWidth(results.gridWidth)
-    } else {
-      if (results.err.code === 4) {
-        // Gutter width < 0
-        console.log(results)
-        results = attemptCalcColWidth({
-          ...f,
-          columnWidth: 0,
-        })
+      setTopMargin(results.topMargin)
+      setRightMargin(results.rightMargin)
+      setBottomMargin(results.bottomMargin)
+      setLeftMargin(results.leftMargin)
+    } else if (results.err.code === 4) {
+      // Gutter width < 0
+      console.log(results)
+      results = attemptCalcColWidth({
+        ...f,
+        columnWidth: 0,
+      })
 
-        if (!results.err) {
-          setCalcAlertMsg(
-            'Gutter width was calculated to be less than 0. Recalculated column width with gutter width of 0.'
-          )
+      if (!results.err) {
+        setCalcAlertMsg(
+          'Gutter width was calculated to be less than 0. Recalculated column width with gutter width of 0.'
+        )
 
-          setColWidth(results.colWidth)
-          setColWidthsSum(results.colWidthsSum)
-          setGutterWidth(results.gutterWidth)
-          setGutterWidthsSum(results.gutterWidthsSum)
-          setGridWidth(results.gridWidth)
-        }
+        setColWidth(results.colWidth)
+        setColWidthsSum(results.colWidthsSum)
+        setGutterWidth(results.gutterWidth)
+        setGutterWidthsSum(results.gutterWidthsSum)
+        setGridWidth(results.gridWidth)
+        setTopMargin(results.topMargin)
+        setRightMargin(results.rightMargin)
+        setBottomMargin(results.bottomMargin)
+        setLeftMargin(results.leftMargin)
       }
+    } else if (results.err.code === 7) {
+      resetStats()
     }
 
     console.log(results)
@@ -195,6 +212,13 @@ const Panel = ({ selection }) => {
 
     if (!results.err) {
       setGridHeight(results.gridHeight)
+      setGutterWidth(results.gutterWidth)
+      setTopMargin(results.topMargin)
+      setRightMargin(results.rightMargin)
+      setBottomMargin(results.bottomMargin)
+      setLeftMargin(results.leftMargin)
+    } else if (results.err.code === 8) {
+      resetStats()
     }
 
     console.log(results)
@@ -232,13 +256,19 @@ const Panel = ({ selection }) => {
   }
 
   /**
-   * Reset most of form to default values.
+   * Reset stats.
    */
-  const resetForm = () => {
+  const resetStats = () => {
     setColWidthsSum('N/A')
     setGridHeight('N/A')
     setGridWidth('N/A')
     setGutterWidthsSum('N/A')
+  }
+
+  /**
+   * Reset most of form to default values.
+   */
+  const resetForm = () => {
     setCols('')
     setGutterWidth(0)
     setColWidth('')
@@ -246,6 +276,7 @@ const Panel = ({ selection }) => {
     setRightMargin(0)
     setBottomMargin(0)
     setLeftMargin(0)
+    resetStats()
     selectAlertMsg = ''
   }
 

@@ -10,6 +10,15 @@ const convertFormDataToNum = (formData) => {
     const val = formData[key]
     if (isNumericString(val)) {
       formattedFormData[key] = parseFloat(val)
+    } else if (
+      (key === 'gutterWidth' ||
+        key === 'topMargin' ||
+        key === 'rightMargin' ||
+        key === 'bottomMargin' ||
+        key === 'leftMargin') &&
+      val === ''
+    ) {
+      formattedFormData[key] = 0
     } else {
       formattedFormData[key] = val
     }

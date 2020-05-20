@@ -11,7 +11,9 @@ const calcColWidth = (formattedFormData) => {
     canvasWidth,
     cols,
     gutterWidth,
+    topMargin,
     rightMargin,
+    bottomMargin,
     leftMargin,
   } = formattedFormData
 
@@ -26,6 +28,10 @@ const calcColWidth = (formattedFormData) => {
   output.gridWidth = gridWidth
   output.gutterWidth = gutterWidth
   output.gutterWidthsSum = gutterWidthsSum
+  output.topMargin = topMargin
+  output.rightMargin = rightMargin
+  output.bottomMargin = bottomMargin
+  output.leftMargin = leftMargin
 
   if (gridWidth < 1 && newColWidth > 0) {
     output.err = new GridCalcError(3)
@@ -47,9 +53,21 @@ module.exports.calcColWidth = calcColWidth
  */
 const calcGridHeight = (formattedFormData) => {
   const output = {}
-  const { canvasHeight, topMargin, bottomMargin } = formattedFormData
+  const {
+    canvasHeight,
+    gutterWidth,
+    topMargin,
+    rightMargin,
+    bottomMargin,
+    leftMargin,
+  } = formattedFormData
 
   output.gridHeight = canvasHeight - (topMargin + bottomMargin)
+  output.gutterWidth = gutterWidth
+  output.topMargin = topMargin
+  output.rightMargin = rightMargin
+  output.bottomMargin = bottomMargin
+  output.leftMargin = leftMargin
 
   if (output.gridHeight < 1) {
     output.err = new GridCalcError(5)
@@ -71,7 +89,9 @@ const calcGutterWidth = (formattedFormData) => {
     canvasWidth,
     cols,
     colWidth,
+    topMargin,
     rightMargin,
+    bottomMargin,
     leftMargin,
   } = formattedFormData
 
@@ -86,6 +106,10 @@ const calcGutterWidth = (formattedFormData) => {
   output.gridWidth = gridWidth
   output.gutterWidth = newGutterWidth
   output.gutterWidthsSum = gutterWidthsSum
+  output.topMargin = topMargin
+  output.rightMargin = rightMargin
+  output.bottomMargin = bottomMargin
+  output.leftMargin = leftMargin
 
   if (newGutterWidth < 0) {
     output.err = new GridCalcError(4)
