@@ -410,6 +410,7 @@ const Panel = ({ selection }) => {
         <input
           type="number"
           min="1"
+          max={canvasWidth}
           value={cols}
           onBlur={() => colWidthPanelUpdate()}
           onChange={(evt) => setCols(evt.target.value)}

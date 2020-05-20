@@ -9,7 +9,7 @@ class GridCalcError extends Error {
           message = 'Grid width is less than 1.'
           break
         case 3:
-          message = 'Grid width and column width are less than 1.'
+          message = 'Column widths sum is greater than grid width.'
           break
         case 4:
           message = 'Gutter width is less than 0.'
