@@ -70,7 +70,7 @@ const Panel = ({ selection }) => {
       setLeftMargin(results.leftMargin)
     } else if (results.err.code === 1) {
       // Column width < 1
-      console.log('a', results)
+      console.log('Invalid colWidth', results)
       results = attemptCalcGutterWidth({
         ...f,
         colWidth: 1,
@@ -95,7 +95,7 @@ const Panel = ({ selection }) => {
       resetStats()
     }
 
-    console.log('b', results)
+    console.log('End colWidthPanelUpdate', results)
   }
 
   /**
@@ -119,7 +119,7 @@ const Panel = ({ selection }) => {
       setLeftMargin(results.leftMargin)
     } else if (results.err.code === 4) {
       // Gutter width < 0
-      console.log('c', results)
+      console.log('Invalid gutterWidth', results)
       results = attemptCalcColWidth({
         ...f,
         columnWidth: 0,
@@ -144,7 +144,7 @@ const Panel = ({ selection }) => {
       resetStats()
     }
 
-    console.log('d', results)
+    console.log('End gutterWidth', results)
   }
 
   /**
@@ -167,7 +167,7 @@ const Panel = ({ selection }) => {
       resetStats()
     }
 
-    console.log('e', results)
+    console.log('End gridHeight', results)
   }
 
   /**
@@ -232,8 +232,6 @@ const Panel = ({ selection }) => {
       setSelectionData(selection.items[0])
 
       if (canvasType === 'auto') {
-        resetForm()
-
         const { height: newCanvasHeight } = setCanvasDimensions(
           selection.items[0]
         )
@@ -246,6 +244,8 @@ const Panel = ({ selection }) => {
           bottomMargin: 0,
           leftMargin,
         })
+
+        resetForm()
       }
     } else if (canvasType === 'auto') {
       // Handle case where same selection is resized

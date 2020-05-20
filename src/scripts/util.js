@@ -62,7 +62,6 @@ const isValidColWidthFormData = ({
     rightMargin > -1 &&
     leftMargin > -1
   ) {
-    console.log(canvasWidth, cols, gutterWidth, rightMargin, leftMargin)
     return true
   }
   return false
