@@ -423,6 +423,7 @@ const Panel = ({ selection }) => {
         <input
           type="number"
           min="0"
+          max={canvasWidth - 1}
           value={gutterWidth}
           onBlur={() => colWidthPanelUpdate()}
           onChange={(evt) => setGutterWidth(evt.target.value)}
@@ -435,6 +436,7 @@ const Panel = ({ selection }) => {
         <input
           type="number"
           min="1"
+          max={canvasWidth}
           value={colWidth}
           onBlur={() => gutterWidthPanelUpdate()}
           onChange={(evt) => setColWidth(evt.target.value)}
@@ -448,6 +450,7 @@ const Panel = ({ selection }) => {
           <input
             type="number"
             min="0"
+            max={canvasHeight - 1}
             value={topMargin}
             onChange={(evt) => setTopMargin(evt.target.value)}
             onBlur={() => gridHeightPanelUpdate()}
@@ -456,6 +459,7 @@ const Panel = ({ selection }) => {
           <input
             type="number"
             min="0"
+            max={canvasWidth - 1}
             value={rightMargin}
             onChange={(evt) => setRightMargin(evt.target.value)}
             onBlur={() => colWidthPanelUpdate()}
@@ -464,6 +468,7 @@ const Panel = ({ selection }) => {
           <input
             type="number"
             min="0"
+            max={canvasHeight - 1}
             value={bottomMargin}
             onChange={(evt) => setBottomMargin(evt.target.value)}
             onBlur={() => gridHeightPanelUpdate()}
@@ -472,6 +477,7 @@ const Panel = ({ selection }) => {
           <input
             type="number"
             min="0"
+            max={canvasWidth - 1}
             value={leftMargin}
             onChange={(evt) => setLeftMargin(evt.target.value)}
             onBlur={() => colWidthPanelUpdate()}
