@@ -1,6 +1,95 @@
 const GridCalcError = require('./GridCalcError')
 const { calcColWidth, calcGridHeight, calcGutterWidth } = require('./calc')
-const { convertFormDataToNum } = require('./util')
+const { convertCalcStateToNum } = require('./util')
+
+const validateInputs = (calcState) => {
+  const MIN_CANVAS_WIDTH = 1
+  const MIN_CANVAS_HEIGHT = 1
+  const MIN_COLS = 1
+  const MIN_GUTTER_WIDTH = 0
+  const MIN_COL_WIDTH = 1
+  const MIN_MARGIN = 0
+  const {
+    canvasWidth,
+    canvasHeight,
+    cols,
+    gutterWidth,
+    colWidth,
+    topMargin,
+    rightMargin,
+    bottomMargin,
+    leftMargin,
+  } = calcState
+  convertCalcStateToNum(calcState)
+
+  // Correct empty values and values less than minimum
+  if (canvasWidth === undefined || canvasWidth < MIN_CANVAS_WIDTH) {
+    calcState.canvasWidth = MIN_CANVAS_WIDTH
+  }
+
+  if (canvasHeight === undefined || canvasWidth < MIN_CANVAS_HEIGHT) {
+    calcState.canvasHeight = MIN_CANVAS_HEIGHT
+  }
+
+  if (typeof cols === 'number' && cols < MIN_COLS) {
+    calcState.cols = MIN_COLS
+  }
+
+  if (gutterWidth === undefined || gutterWidth < MIN_GUTTER_WIDTH) {
+    calcState.gutterWidth = MIN_GUTTER_WIDTH
+  }
+
+  if (typeof colWidth === 'number' && colWidth < MIN_COL_WIDTH) {
+    calcState.colWidth = MIN_COL_WIDTH
+  }
+
+  if (topMargin === undefined || topMargin < MIN_MARGIN) {
+    calcState.topMargin = MIN_MARGIN
+  }
+
+  if (rightMargin === undefined || rightMargin < MIN_MARGIN) {
+    calcState.rightMargin = MIN_MARGIN
+  }
+
+  if (bottomMargin === undefined || bottomMargin < MIN_MARGIN) {
+    calcState.bottomMargin = MIN_MARGIN
+  }
+
+  if (leftMargin === undefined || leftMargin < MIN_MARGIN) {
+    calcState.leftMargin = MIN_MARGIN
+  }
+
+  // Correct values larger than maximum
+  if (typeof cols === 'number' && cols > canvasWidth) {
+    calcState.cols = canvasWidth
+  }
+
+  if (typeof gutterWidth === 'number' && gutterWidth > canvasWidth - 1) {
+    calcState.gutterWidth = canvasWidth - 1
+  }
+
+  if (typeof colWidth === 'number' && colWidth > canvasWidth) {
+    calcState.colWidth = canvasWidth
+  }
+
+  if (typeof canvasHeight === 'number' && topMargin > canvasHeight - 1) {
+    calcState.topMargin = canvasHeight - 1
+  }
+
+  if (typeof rightMargin === 'number' && rightMargin > canvasHeight - 1) {
+    calcState.rightMargin = canvasHeight - 1
+  }
+
+  if (typeof bottomMargin === 'number' && bottomMargin > canvasHeight - 1) {
+    calcState.bottomMargin = canvasHeight - 1
+  }
+
+  if (typeof rightMargin === 'number' && rightMargin > canvasHeight - 1) {
+    calcState.rightMargin = canvasHeight - 1
+  }
+}
+
+module.exports.validateInputs = validateInputs
 
 /**
  * Validate form data for column width calculations.

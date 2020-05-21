@@ -1,15 +1,22 @@
 /**
- * Convert form data to floats.
- * Form data that are not numbers are skipped.
- * @param {Object} formData  Form data from panel UI
- * @returns {Object} Shallow clone of formData with data formatted as floats where possible
+ * Convert calcState non-number values to numbers if possible.
+ * Mutates the calcState.
+ * @param {Object} calcState State used for calculations
+ * @param {'float'|'int'} [type=int] Determines what type of number to convert value to
+ * @returns {boolean} Returns true if at least one value was converted, false otherwise
  */
-const convertFormDataToNum = (formData) => {
-  const formattedFormData = {}
-  for (let key in formData) {
-    const val = formData[key]
+const convertCalcStateToNum = (calcState, type = 'int') => {
+  let isConverted = false
+
+  for (let key in calcState) {
+    const val = calcState[key]
     if (isNumericString(val)) {
-      formattedFormData[key] = parseFloat(val)
+      if (type === 'float') {
+        calcState[key] = parseFloat(val)
+      } else {
+        calcState[key] = parseInt(val)
+      }
+      isConverted = true
     } else if (
       (key === 'gutterWidth' ||
         key === 'topMargin' ||
@@ -18,16 +25,15 @@ const convertFormDataToNum = (formData) => {
         key === 'leftMargin') &&
       val === ''
     ) {
-      formattedFormData[key] = 0
-    } else {
-      formattedFormData[key] = val
+      calcState[key] = 0
+      isConverted = true
     }
   }
 
-  return formattedFormData
+  return isConverted
 }
 
-module.exports.convertFormDataToNum = convertFormDataToNum
+module.exports.convertCalcStateToNum = convertCalcStateToNum
 
 /**
  * Checks if string value is numeric.
