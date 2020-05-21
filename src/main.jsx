@@ -5,13 +5,47 @@ require('./scripts/react-shim')
 require('./style.css')
 
 let panelEle // Panel DOM element
+const prevMainState = {
+  selectionAmount: 0,
+  validSelection: {},
+}
 
 /**
  * Render Panel component.
  * @param {*} [selection] Current selection state from XD
+ * @param {boolean} [enableForce] True if render is forced, false otherwise
  */
-const render = (selection = {}) => {
-  ReactDOM.render(<Panel selection={selection} />, panelEle)
+const render = (selection = {}, enableForce) => {
+  let triggerRender = false
+
+  if (selection && Array.isArray(selection.items)) {
+    if (selection.items.length !== prevMainState.selectionAmount) {
+      // Trigger render if selection amount has changed
+      prevMainState.selectionAmount = selection.items.length
+      triggerRender = true
+    }
+
+    if (selection.items.length === 1 && selection.items[0].guid) {
+      // Trigger render if valid selection is encountered
+      prevMainState.validSelection = selection.items[0]
+      triggerRender = true
+    }
+  }
+
+  if (triggerRender || enableForce) {
+    if (triggerRender) {
+      console.log('[ Render triggered ]')
+    } else {
+      console.log('[ Render forced ]')
+    }
+    ReactDOM.render(
+      <Panel
+        selectionAmount={prevMainState.selectionAmount}
+        validSelection={prevMainState.validSelection}
+      />,
+      panelEle
+    )
+  }
 }
 
 /**
@@ -28,7 +62,8 @@ const render = (selection = {}) => {
 const show = (evt) => {
   if (!panelEle) {
     panelEle = document.createElement('div')
-    render()
+    console.log('[ Show called ]')
+    render({}, true)
     evt.node.appendChild(panelEle)
   }
 }
@@ -42,6 +77,7 @@ const show = (evt) => {
 // eslint-disable-next-line no-unused-vars
 const update = (selection, docRoot) => {
   if (selection) {
+    console.log('[ Update called ]')
     render(selection)
   }
 }

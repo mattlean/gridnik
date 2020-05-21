@@ -9,6 +9,8 @@ const validateInputs = (calcState) => {
   const MIN_GUTTER_WIDTH = 0
   const MIN_COL_WIDTH = 1
   const MIN_MARGIN = 0
+
+  convertCalcStateToNum(calcState, 'float')
   const {
     canvasWidth,
     canvasHeight,
@@ -20,7 +22,7 @@ const validateInputs = (calcState) => {
     bottomMargin,
     leftMargin,
   } = calcState
-  convertCalcStateToNum(calcState)
+  console.log('First validateinputs', calcState)
 
   // Correct empty values and values less than minimum
   if (canvasWidth === undefined || canvasWidth < MIN_CANVAS_WIDTH) {
@@ -76,16 +78,16 @@ const validateInputs = (calcState) => {
     calcState.topMargin = canvasHeight - 1
   }
 
-  if (typeof rightMargin === 'number' && rightMargin > canvasHeight - 1) {
-    calcState.rightMargin = canvasHeight - 1
+  if (typeof rightMargin === 'number' && rightMargin > canvasWidth - 1) {
+    calcState.rightMargin = canvasWidth - 1
   }
 
   if (typeof bottomMargin === 'number' && bottomMargin > canvasHeight - 1) {
     calcState.bottomMargin = canvasHeight - 1
   }
 
-  if (typeof rightMargin === 'number' && rightMargin > canvasHeight - 1) {
-    calcState.rightMargin = canvasHeight - 1
+  if (typeof leftMargin === 'number' && leftMargin > canvasWidth - 1) {
+    calcState.leftMargin = canvasWidth - 1
   }
 }
 
