@@ -26,7 +26,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [gutterWidthsSum, setGutterWidthsSum] = useState('N/A')
 
   const [calcAlertMsg, setCalcAlertMsg] = useState('')
-  const [selectAlertMsg, setSelectAlertMsg] = useState('')
 
   const calcState = {
     cols,

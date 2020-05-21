@@ -2,6 +2,10 @@ const GridCalcError = require('./GridCalcError')
 const { calcColWidth, calcGridHeight, calcGutterWidth } = require('./calc')
 const { convertCalcStateToNum } = require('./util')
 
+/**
+ * Validate and correct input data to ensure they are all valid for potential calculations.
+ * @param {Object} calcState State for calculations
+ */
 const validateInputs = (calcState) => {
   const MIN_CANVAS_WIDTH = 1
   const MIN_CANVAS_HEIGHT = 1
@@ -22,7 +26,6 @@ const validateInputs = (calcState) => {
     bottomMargin,
     leftMargin,
   } = calcState
-  console.log('First validateinputs', calcState)
 
   // Correct empty values and values less than minimum
   if (canvasWidth === undefined || canvasWidth < MIN_CANVAS_WIDTH) {
@@ -74,7 +77,7 @@ const validateInputs = (calcState) => {
     calcState.colWidth = canvasWidth
   }
 
-  if (typeof canvasHeight === 'number' && topMargin > canvasHeight - 1) {
+  if (typeof topMargin === 'number' && topMargin > canvasHeight - 1) {
     calcState.topMargin = canvasHeight - 1
   }
 
@@ -92,6 +95,66 @@ const validateInputs = (calcState) => {
 }
 
 module.exports.validateInputs = validateInputs
+
+/**
+ * Validate that all required input data for colWidthCalc() is defined.
+ * @param {Object} calcState
+ */
+const validateColWidthCalc = (calcState) => {
+  const {
+    canvasWidth,
+    canvasHeight,
+    cols,
+    gutterWidth,
+    topMargin,
+    rightMargin,
+    bottomMargin,
+    leftMargin,
+  } = calcState
+
+  if (
+    typeof canvasWidth === 'number' &&
+    typeof canvasHeight === 'number' &&
+    typeof cols === 'number' &&
+    typeof gutterWidth === 'number' &&
+    typeof topMargin === 'number' &&
+    typeof rightMargin === 'number' &&
+    typeof bottomMargin === 'number' &&
+    typeof leftMargin === 'number'
+  ) {
+    return true
+  }
+  return false
+}
+
+const validateGutterWidthCalc = (calcState) => {
+  const {
+    canvasWidth,
+    canvasHeight,
+    cols,
+    colWidth,
+    topMargin,
+    rightMargin,
+    bottomMargin,
+    leftMargin,
+  } = calcState
+
+  if (
+    typeof canvasWidth === 'number' &&
+    typeof canvasHeight === 'number' &&
+    typeof cols === 'number' &&
+    typeof colWidth === 'number' &&
+    typeof topMargin === 'number' &&
+    typeof rightMargin === 'number' &&
+    typeof bottomMargin === 'number' &&
+    typeof leftMargin === 'number'
+  ) {
+    return true
+  }
+  return false
+}
+
+module.exports.validateColWidthCalc = validateColWidthCalc
 
 /**
  * Validate form data for column width calculations.
