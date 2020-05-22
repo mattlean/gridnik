@@ -2,45 +2,49 @@ const GridCalcError = require('./GridCalcError')
 
 /**
  * Calculate column width.
- * @param {Object} formattedFormData Form data from panel UI formatted with convertFormDataToNum()
+ * Can mutate calcState.
+ * @param {Object} calcState State for calculations. Should be validated beforehand.
  * @returns {Object} Result that contains calculations and error if it exists
  */
-const calcColWidth = (formattedFormData) => {
-  const {
-    canvasWidth,
-    cols,
-    gutterWidth,
-    topMargin,
-    rightMargin,
-    bottomMargin,
-    leftMargin,
-  } = formattedFormData
+
+const calcColWidth = (calcData, orderOfCorrections = [], results = []) => {
+  const { canvasWidth, cols, gutterWidth, rightMargin, leftMargin } = calcData
+  const currResult = {
+    errs: [],
+  }
+
+  // Make sure that left + right margins are possible numbers
+  let leftRightMarginsSum = rightMargin + leftMargin
+  if (leftRightMarginsSum > canvasWidth - 1) {
+    currResult.errs.push(new GridCalcError(3))
+    calcData.rightMargin = (canvasWidth - 1) / 2
+    calcData.leftMargin = calcData.rightMargin
+    leftRightMarginsSum = calcData.rightMargin + calcData.leftMargin
+  }
 
   const gutterWidthsSum = gutterWidth * (cols - 1)
-  const newColWidth =
-    (canvasWidth - (rightMargin + leftMargin) - gutterWidthsSum) / cols
-  const colWidthsSum = newColWidth * cols
-  const gridWidth = colWidthsSum + gutterWidthsSum - (rightMargin + leftMargin)
+  const colWidth = (canvasWidth - leftRightMarginsSum - gutterWidthsSum) / cols
+  const colWidthsSum = colWidth * cols
+  const gridWidth = colWidthsSum + gutterWidthsSum
 
-  const output = {
-    colWidth: newColWidth,
-    colWidthsSum: colWidthsSum,
-    gridWidth: gridWidth,
-    gutterWidth: gutterWidth,
-    gutterWidthsSum: gutterWidthsSum,
-    topMargin: topMargin,
-    rightMargin: rightMargin,
-    bottomMargin: bottomMargin,
-    leftMargin: leftMargin,
+  currResult.colWidth = colWidth
+  currResult.colWidthsSum = colWidthsSum
+  currResult.gridWidth = gridWidth
+  currResult.gutterWidthsSum = gutterWidthsSum
+
+  if (colWidth < 1) {
+    currResult.errs.push(new GridCalcError(1))
   }
 
-  if (newColWidth < 1) {
-    output.err = new GridCalcError(1)
-  } else if (gridWidth < 1) {
-    output.err = new GridCalcError(2)
+  if (gridWidth < 1) {
+    currResult.errs.push(new GridCalcError(2))
   }
 
-  return output
+  const correction = orderOfCorrections.pop()
+
+  results.push(currResult)
+
+  return results
 }
 
 module.exports.calcColWidth = calcColWidth

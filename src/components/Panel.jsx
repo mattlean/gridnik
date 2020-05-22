@@ -2,7 +2,8 @@ const PropTypes = require('prop-types')
 const React = require('react')
 const useState = React.useState
 const Alert = require('./Alert')
-const { validateInputs } = require('../scripts/validate')
+const { calcColWidth } = require('../scripts/calc')
+const { validateColWidthCalc, validateInputs } = require('../scripts/validate')
 
 /**
  * Adobe XD panel used for plugin UI.
@@ -63,9 +64,14 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
   console.log('[ Init calcState ]', calcState)
 
-  const attemptCalc = () => {
+  const attemptColWidthCalc = () => {
     validateInputs(calcState)
     console.log('[ Validate inputs ]', calcState)
+
+    if (validateColWidthCalc(calcState)) {
+      calcColWidth(calcState)
+    }
+
     setCanvasWidth(calcState.canvasWidth)
     setCanvasHeight(calcState.canvasHeight)
     setCols(calcState.cols)
@@ -127,7 +133,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             min="1"
             max={canvasWidth}
             value={cols}
-            onBlur={attemptCalc}
+            onBlur={attemptColWidthCalc}
             onChange={(evt) => setCols(evt.target.value)}
             className="input-lg"
             uxp-quiet="true"
@@ -140,7 +146,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             min="0"
             max={canvasWidth - 1}
             value={gutterWidth}
-            onBlur={attemptCalc}
+            onBlur={attemptColWidthCalc}
             onChange={(evt) => setGutterWidth(evt.target.value)}
             className="input-lg"
             uxp-quiet="true"
@@ -153,7 +159,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             min="1"
             max={canvasWidth}
             value={colWidth}
-            onBlur={attemptCalc}
+            onBlur={attemptColWidthCalc}
             onChange={(evt) => setColWidth(evt.target.value)}
             className="input-lg"
             uxp-quiet="true"
@@ -167,7 +173,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasHeight - 1}
               value={topMargin}
-              onBlur={attemptCalc}
+              onBlur={attemptColWidthCalc}
               onChange={(evt) => setTopMargin(evt.target.value)}
               uxp-quiet="true"
             />
@@ -176,7 +182,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasWidth - 1}
               value={rightMargin}
-              onBlur={attemptCalc}
+              onBlur={attemptColWidthCalc}
               onChange={(evt) => setRightMargin(evt.target.value)}
               uxp-quiet="true"
             />
@@ -185,7 +191,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasHeight - 1}
               value={bottomMargin}
-              onBlur={attemptCalc}
+              onBlur={attemptColWidthCalc}
               onChange={(evt) => setBottomMargin(evt.target.value)}
               uxp-quiet="true"
             />
@@ -194,7 +200,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasWidth - 1}
               value={leftMargin}
-              onBlur={attemptCalc}
+              onBlur={attemptColWidthCalc}
               onChange={(evt) => setLeftMargin(evt.target.value)}
               uxp-quiet="true"
             />
