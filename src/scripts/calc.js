@@ -1,5 +1,6 @@
 const GridCalcError = require('./GridCalcError')
 const { validateCalcResult } = require('./validate')
+const { GRID_CALC_ERROR_TYPE_SILENT } = require('./consts')
 
 /**
  * Calculate right & left margins.
@@ -12,7 +13,7 @@ const calcRightLeftMargins = (calcState, currResult = { errs: [] }) => {
   const leftRightMarginsSum = rightMargin + leftMargin
 
   if (leftRightMarginsSum > canvasWidth - 1) {
-    currResult.errs.push(new GridCalcError(3))
+    currResult.errs.push(new GridCalcError(3, GRID_CALC_ERROR_TYPE_SILENT))
 
     const rightMarginPercentage = calcState.rightMargin / leftRightMarginsSum
     const leftMarginPercentage = calcState.leftMargin / leftRightMarginsSum
@@ -28,6 +29,8 @@ const calcRightLeftMargins = (calcState, currResult = { errs: [] }) => {
 
   return currResult
 }
+
+module.exports.calcRightLeftMargins = calcRightLeftMargins
 
 /**
  * Calculate column width.

@@ -1,20 +1,14 @@
 const GridCalcError = require('./GridCalcError')
 const { convertCalcStateToNum } = require('./util')
-
-const MIN_CANVAS_WIDTH = 1
-const MIN_CANVAS_HEIGHT = 1
-const MIN_COL_WIDTH = 1
-const MIN_COLS = 1
-const MIN_MARGIN = 0
-const MIN_GRID_WIDTH = 1
-const MIN_GUTTER_WIDTH = 0
-module.exports.MIN_CANVAS_WIDTH = MIN_CANVAS_WIDTH
-module.exports.MIN_CANVAS_HEIGHT = MIN_CANVAS_HEIGHT
-module.exports.MIN_COL_WIDTH = MIN_COL_WIDTH
-module.exports.MIN_COLS = MIN_COLS
-module.exports.MIN_MARGIN = MIN_MARGIN
-module.exports.MIN_GRID_WIDTH = MIN_GRID_WIDTH
-module.exports.MIN_GUTTER_WIDTH = MIN_GUTTER_WIDTH
+const {
+  MIN_CANVAS_WIDTH,
+  MIN_CANVAS_HEIGHT,
+  MIN_COL_WIDTH,
+  MIN_COLS,
+  MIN_MARGIN,
+  MIN_GRID_WIDTH,
+  MIN_GUTTER_WIDTH,
+} = require('./consts')
 
 /**
  * Validate result from calculation.
