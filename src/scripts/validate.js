@@ -1,19 +1,56 @@
 const GridCalcError = require('./GridCalcError')
-const { calcColWidth, calcGridHeight, calcGutterWidth } = require('./calc')
 const { convertCalcStateToNum } = require('./util')
+
+const MIN_CANVAS_WIDTH = 1
+const MIN_CANVAS_HEIGHT = 1
+const MIN_COL_WIDTH = 1
+const MIN_COLS = 1
+const MIN_MARGIN = 0
+const MIN_GRID_WIDTH = 1
+const MIN_GUTTER_WIDTH = 0
+module.exports.MIN_CANVAS_WIDTH = MIN_CANVAS_WIDTH
+module.exports.MIN_CANVAS_HEIGHT = MIN_CANVAS_HEIGHT
+module.exports.MIN_COL_WIDTH = MIN_COL_WIDTH
+module.exports.MIN_COLS = MIN_COLS
+module.exports.MIN_MARGIN = MIN_MARGIN
+module.exports.MIN_GRID_WIDTH = MIN_GRID_WIDTH
+module.exports.MIN_GUTTER_WIDTH = MIN_GUTTER_WIDTH
+
+/**
+ * Validate result from calculation.
+ * Can mutate result by adding GridCalcErrors to result.errs.
+ * @param {Object} result Result from calculation
+ * @returns {boolean} True if result valid, false otherwise
+ */
+const validateCalcResult = (result) => {
+  const { colWidth, gutterWidth, gridWidth } = result
+  let isValid = true
+
+  if (typeof colWidth === 'number' && colWidth < MIN_COL_WIDTH) {
+    result.errs.push(new GridCalcError(1))
+    isValid = false
+  }
+
+  if (typeof gridWidth === 'number' && gridWidth < MIN_GRID_WIDTH) {
+    result.errs.push(new GridCalcError(2))
+    isValid = false
+  }
+
+  if (typeof gutterWidth === 'number' && gutterWidth < MIN_GUTTER_WIDTH) {
+    result.errs.push(new GridCalcError(4))
+    isValid = false
+  }
+
+  return isValid
+}
+
+module.exports.validateCalcResult = validateCalcResult
 
 /**
  * Validate and correct input data to ensure they are all valid for potential calculations.
  * @param {Object} calcState State for calculations
  */
 const validateInputs = (calcState) => {
-  const MIN_CANVAS_WIDTH = 1
-  const MIN_CANVAS_HEIGHT = 1
-  const MIN_COLS = 1
-  const MIN_GUTTER_WIDTH = 0
-  const MIN_COL_WIDTH = 1
-  const MIN_MARGIN = 0
-
   convertCalcStateToNum(calcState, 'float')
   const {
     canvasWidth,
