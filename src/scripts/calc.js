@@ -102,7 +102,7 @@ module.exports.calcColWidth = calcColWidth
  * @returns {Array} Array of results from chain of calculations
  */
 const calcGutterWidth = (calcState, orderOfCorrections = [], results = []) => {
-  const { canvasWidth, cols, colWidth, rightMargin, leftMargin } = calcState
+  const { canvasWidth, cols, colWidth } = calcState
 
   // Make sure that left + margins are possible numbers
   const currResult = calcRightLeftMargins(calcState)
@@ -113,28 +113,44 @@ const calcGutterWidth = (calcState, orderOfCorrections = [], results = []) => {
     (canvasWidth - leftRightMarginsSum - colWidth * cols) / (cols - 1)
   const gutterWidthsSum = gutterWidth * (cols - 1)
   const colWidthsSum = colWidth * cols
-  const gridWidth = colWidthsSum + gutterWidthsSum - leftRightMarginsSum
+  const gridWidth = colWidthsSum + gutterWidthsSum
+
+  currResult.colWidthsSum = colWidthsSum
+  currResult.gridWidth = gridWidth
+  currResult.gutterWidth = gutterWidth
+  currResult.gutterWidthsSum = gutterWidthsSum
 
   results.push(currResult)
 
-  // if (colWidth < 1)
-  //   const output = {
-  //     colWidth: colWidth,
-  //     colWidthsSum: colWidthsSum,
-  //     gridWidth: gridWidth,
-  //     gutterWidth: gutterWidth,
-  //     gutterWidthsSum: gutterWidthsSum,
-  //     topMargin: topMargin,
-  //     rightMargin: rightMargin,
-  //     bottomMargin: bottomMargin,
-  //     leftMargin: leftMargin,
-  //   }
+  if (validateCalcResult(currResult)) {
+    orderOfCorrections = []
+    return results
+  }
 
-  // if (gutterWidth < 0) {
-  //   output.err = new GridCalcError(4)
-  // }
+  const correction = orderOfCorrections.pop()
 
-  // return output
+  if (correction === 'colWidth') {
+    calcState.colWidth = 1
+    return calcGutterWidth(calcState, orderOfCorrections, results)
+  }
+
+  if (correction === 'gutterWidth') {
+    calcState.gutterWidth = 0
+    return calcColWidth(calcState, orderOfCorrections, results)
+  }
+
+  if (correction === 'col') {
+    calcState.col = 1
+    return calcColWidth(calcState, orderOfCorrections, results)
+  }
+
+  if (correction === 'leftRightMargins') {
+    calcState.leftMargin = 0
+    calcState.bottomMargin = 0
+    return calcColWidth(calcState, orderOfCorrections, results)
+  }
+
+  return results
 }
 
 module.exports.calcGutterWidth = calcGutterWidth

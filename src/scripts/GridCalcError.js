@@ -1,12 +1,10 @@
 const {
   GRID_CALC_ERROR_TYPE_CRITICAL,
   GRID_CALC_ERROR_TYPE_SILENT,
-} = require('./consts')
-const {
   MIN_COL_WIDTH,
   MIN_GRID_WIDTH,
   MIN_GUTTER_WIDTH,
-} = require('./validate')
+} = require('./consts')
 
 class GridCalcError extends Error {
   constructor(code, type = GRID_CALC_ERROR_TYPE_CRITICAL, message) {
