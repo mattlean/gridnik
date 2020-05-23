@@ -1,6 +1,6 @@
 const PropTypes = require('prop-types')
 const React = require('react')
-const useState = React.useState
+const { useEffect, useRef, useState } = React
 const Alert = require('./Alert')
 const { calcColWidth, calcGutterWidth } = require('../scripts/calc')
 const {
@@ -42,32 +42,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
     bottomMargin,
     leftMargin,
   }
-
-  if (canvasType === 'auto' && validSelection && validSelection.guid) {
-    if (calcState.boundType === 'draw') {
-      // Bound type is "draw"
-      calcState.canvasWidth = validSelection.globalDrawBounds.width
-      calcState.canvasHeight = validSelection.globalDrawBounds.height
-    } else {
-      // Assume bound type is "path"
-      calcState.canvasWidth = validSelection.globalBounds.width
-      calcState.canvasHeight = validSelection.globalBounds.height
-    }
-
-    if (calcState.canvasWidth !== canvasWidth) {
-      setCanvasWidth(calcState.canvasWidth)
-    }
-
-    if (calcState.canvasHeight !== canvasHeight) {
-      setCanvasHeight(calcState.canvasHeight)
-    }
-  } else {
-    // Use manual canvas values
-    calcState.canvasWidth = canvasWidth
-    calcState.canvasHeight = canvasHeight
-  }
-
-  console.log('[ Init calcState ]', calcState)
 
   /**
    * Reset stats on panel UI.
@@ -175,6 +149,47 @@ const Panel = ({ selectionAmount, validSelection }) => {
       setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
     }
   }
+
+  // Reset form when different validSelection is encountered
+  let prevRef = useRef()
+  useEffect(() => {
+    prevRef.current = validSelection
+  })
+  if (
+    prevRef &&
+    validSelection &&
+    prevRef.current &&
+    prevRef.current.guid !== validSelection.guid
+  ) {
+    prevRef.current = validSelection
+    resetForm()
+  }
+
+  if (canvasType === 'auto' && validSelection && validSelection.guid) {
+    if (calcState.boundType === 'draw') {
+      // Bound type is "draw"
+      calcState.canvasWidth = validSelection.globalDrawBounds.width
+      calcState.canvasHeight = validSelection.globalDrawBounds.height
+    } else {
+      // Assume bound type is "path"
+      calcState.canvasWidth = validSelection.globalBounds.width
+      calcState.canvasHeight = validSelection.globalBounds.height
+    }
+
+    if (calcState.canvasWidth !== canvasWidth) {
+      setCanvasWidth(calcState.canvasWidth)
+    }
+
+    if (calcState.canvasHeight !== canvasHeight) {
+      setCanvasHeight(calcState.canvasHeight)
+    }
+  } else {
+    // Use manual canvas values
+    calcState.canvasWidth = canvasWidth
+    calcState.canvasHeight = canvasHeight
+  }
+
+  console.log('[ Init calcState ]', calcState)
 
   let content
   if (selectionAmount === 1) {
