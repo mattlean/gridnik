@@ -27,6 +27,7 @@ const config = {
   },
   externals: {
     application: 'application',
+    commands: 'commands',
     scenegraph: 'scenegraph',
   },
   resolve: {

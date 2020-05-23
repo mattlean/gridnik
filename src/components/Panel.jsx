@@ -2,6 +2,7 @@ const PropTypes = require('prop-types')
 const React = require('react')
 const { useEffect, useRef, useState } = React
 const Alert = require('./Alert')
+const draw = require('../scripts/draw')
 const {
   calcColWidth,
   calcGridHeight,
@@ -40,8 +41,9 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
   const calcState = {
     cols,
-    gutterWidth,
     colWidth,
+    gridHeight,
+    gutterWidth,
     topMargin,
     rightMargin,
     bottomMargin,
@@ -119,7 +121,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
 
       const calcGridHeightResult = calcGridHeight(calcState)
-      setGridHeight(calcGridHeightResult.gridHeight)
+      setGridHeight(calcState.gridHeight)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
     }
 
@@ -156,7 +158,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
 
       const calcGridHeightResult = calcGridHeight(calcState)
-      setGridHeight(calcGridHeightResult.gridHeight)
+      setGridHeight(calcState.gridHeight)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
     }
 
@@ -413,7 +415,14 @@ const Panel = ({ selectionAmount, validSelection }) => {
           <button onClick={() => resetForm()} uxp-variant="secondary">
             Reset
           </button>
-          <button id="create" uxp-variant="cta">
+          <button
+            id="create"
+            onClick={() => {
+              // TODO: validate calcData to see if draw is possible first
+              draw(calcState)
+            }}
+            uxp-variant="cta"
+          >
             Create
           </button>
         </footer>
