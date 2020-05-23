@@ -6,6 +6,20 @@ const {
 } = require('./calc')
 
 describe('calcRightLeftMargins', () => {
+  test('Successfully calculate right & left margin sum with valid margins', () => {
+    const calcData = {
+      canvasWidth: 1920,
+      rightMargin: 500,
+      leftMargin: 500,
+    }
+    const results = calcRightLeftMargins(calcData)
+
+    expect(results).toMatchObject({
+      rightLeftMarginsSum: 1000,
+    })
+    expect(results.errs.length).toBe(0)
+  })
+
   test('Correct right & left margins that are too large, maintaining ratios of original margins', () => {
     const calcData = {
       canvasWidth: 1920,
@@ -294,6 +308,20 @@ describe('calcGutterWidth', () => {
 })
 
 describe('calcGridHeight', () => {
+  test('Successfully calculate grid height with valid margins', () => {
+    const calcData = {
+      canvasHeight: 1080,
+      topMargin: 500,
+      bottomMargin: 500,
+    }
+    const results = calcGridHeight(calcData)
+
+    expect(results).toMatchObject({
+      topBottomMarginsSum: 1000,
+    })
+    expect(results.errs.length).toBe(0)
+  })
+
   test('Correct top & bottom margins that are too large, maintaining ratios of original margins', () => {
     const calcData = {
       canvasHeight: 1080,
