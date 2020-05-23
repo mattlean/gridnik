@@ -35,6 +35,7 @@ describe('calcColWidth', () => {
     const results = calcColWidth(calcData)
 
     expect(results[0]).toMatchObject({
+      type: 'calcColWidth',
       leftRightMarginsSum: 780,
       colWidth: 81.25,
       colWidthsSum: 975,
@@ -42,6 +43,15 @@ describe('calcColWidth', () => {
       gutterWidthsSum: 165,
     })
     expect(results[0].errs.length).toBe(0)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 12,
+      colWidth: 81.25,
+      gutterWidth: 15,
+      rightMargin: 390,
+      leftMargin: 390,
+    })
   })
 
   test('Fail to calculate colWidth when gutterWidth is too large', () => {
@@ -55,6 +65,7 @@ describe('calcColWidth', () => {
     const results = calcColWidth(calcData)
 
     expect(results[0]).toMatchObject({
+      type: 'calcColWidth',
       leftRightMarginsSum: 780,
       colWidth: -820.75,
       colWidthsSum: -9849,
@@ -63,6 +74,62 @@ describe('calcColWidth', () => {
     })
     expect(results[0].errs.length).toBe(1)
     expect(results[0].errs[0].code).toBe(1)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 12,
+      gutterWidth: 999,
+      rightMargin: 390,
+      leftMargin: 390,
+    })
+  })
+
+  test('Successfully calculate colWidth with orderOfCorrections when gutterWidth is too large', () => {
+    const calcData = {
+      canvasWidth: 1920,
+      cols: 12,
+      gutterWidth: 999,
+      rightMargin: 390,
+      leftMargin: 390,
+    }
+    const results = calcColWidth(calcData, [
+      'leftRightMargins',
+      'col',
+      'gutterWidth',
+      'colWidth',
+    ])
+
+    expect(results.length).toBe(2)
+    expect(results[0]).toMatchObject({
+      type: 'calcColWidth',
+      leftRightMarginsSum: 780,
+      colWidth: -820.75,
+      colWidthsSum: -9849,
+      gridWidth: 1140,
+      gutterWidthsSum: 10989,
+    })
+    expect(results[0].errs.length).toBe(1)
+    expect(results[0].errs[0].code).toBe(1)
+
+    expect(results[1]).toMatchObject({
+      type: 'calcGutterWidth',
+      colWidth: 1,
+      leftRightMarginsSum: 780,
+      colWidthsSum: 12,
+      gridWidth: 1140,
+      gutterWidth: 102.54545454545455,
+      gutterWidthsSum: 1128,
+    })
+    expect(results[1].errs.length).toBe(0)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 12,
+      colWidth: 1,
+      gutterWidth: 102.54545454545455,
+      rightMargin: 390,
+      leftMargin: 390,
+    })
   })
 })
 
@@ -78,6 +145,7 @@ describe('calcGutterWidth', () => {
     const results = calcGutterWidth(calcData)
 
     expect(results[0]).toMatchObject({
+      type: 'calcGutterWidth',
       leftRightMarginsSum: 780,
       colWidthsSum: 975,
       gridWidth: 1140,
@@ -85,6 +153,14 @@ describe('calcGutterWidth', () => {
       gutterWidthsSum: 165,
     })
     expect(results[0].errs.length).toBe(0)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 12,
+      gutterWidth: 15,
+      rightMargin: 390,
+      leftMargin: 390,
+    })
   })
 
   test('Fail to calculate gutterWidth when colWidth is too large', () => {
@@ -98,6 +174,7 @@ describe('calcGutterWidth', () => {
     const results = calcGutterWidth(calcData)
 
     expect(results[0]).toMatchObject({
+      type: 'calcGutterWidth',
       leftRightMarginsSum: 780,
       colWidthsSum: 11988,
       gridWidth: 1140,
@@ -106,5 +183,61 @@ describe('calcGutterWidth', () => {
     })
     expect(results[0].errs.length).toBe(1)
     expect(results[0].errs[0].code).toBe(4)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 12,
+      colWidth: 999,
+      rightMargin: 390,
+      leftMargin: 390,
+    })
+  })
+
+  test('Successfully calculate gutterWidth with orderOfCorrections when colWidth is too large', () => {
+    const calcData = {
+      canvasWidth: 1920,
+      cols: 12,
+      colWidth: 999,
+      rightMargin: 390,
+      leftMargin: 390,
+    }
+    const results = calcGutterWidth(calcData, [
+      'leftRightMargins',
+      'col',
+      'colWidth',
+      'gutterWidth',
+    ])
+
+    expect(results.length).toBe(2)
+    expect(results[0]).toMatchObject({
+      type: 'calcGutterWidth',
+      leftRightMarginsSum: 780,
+      colWidthsSum: 11988,
+      gridWidth: 1140,
+      gutterWidth: -986.1818181818181,
+      gutterWidthsSum: -10848,
+    })
+    expect(results[0].errs.length).toBe(1)
+    expect(results[0].errs[0].code).toBe(4)
+
+    expect(results[1]).toMatchObject({
+      type: 'calcColWidth',
+      gutterWidth: 0,
+      leftRightMarginsSum: 780,
+      colWidth: 95,
+      colWidthsSum: 1140,
+      gridWidth: 1140,
+      gutterWidthsSum: 0,
+    })
+    expect(results[1].errs.length).toBe(0)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 12,
+      colWidth: 95,
+      rightMargin: 390,
+      leftMargin: 390,
+      gutterWidth: 0,
+    })
   })
 })

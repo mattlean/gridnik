@@ -6,6 +6,7 @@ const { GRID_CALC_ERROR_TYPE_SILENT } = require('./consts')
  * Calculate right & left margins.
  * Can mutate calcState.
  * @param {Object} calcState State for calculations. Should be validated beforehand.
+ * @param {Object} [currResult={errs: []}] Current result to update.
  * @returns {Object} Result with updated calcState values & new calculations
  */
 const calcRightLeftMargins = (calcState, currResult = { errs: [] }) => {
@@ -36,15 +37,32 @@ module.exports.calcRightLeftMargins = calcRightLeftMargins
  * Calculate column width.
  * Can mutate calcState.
  * @param {Object} calcState State for calculations. Should be validated beforehand.
- * @param {Array} orderOfCorrections Array of corrections in order they should be resolved in
- * @param {Array} results Array of results from chain of calculations
+ * @param {Array} [orderOfCorrections=[]] Array of corrections in order they should be resolved in
+ * @param {Array} [results=[]] Array of results from chain of calculations
+ * @param {Object} [correctedData] Object of key/value pairs to be corrected in calcState for next calculation
  * @returns {Array} Array of results from chain of calculations
  */
-const calcColWidth = (calcState, orderOfCorrections = [], results = []) => {
+const calcColWidth = (
+  calcState,
+  orderOfCorrections = [],
+  results = [],
+  correctedData
+) => {
+  const currResult = {
+    type: 'calcColWidth',
+    errs: [],
+  }
+
+  if (correctedData) {
+    for (let key in correctedData) {
+      calcState[key] = correctedData[key]
+      currResult[key] = calcState[key]
+    }
+  }
   const { canvasWidth, cols, gutterWidth } = calcState
 
   // Make sure that left + right margins are possible numbers
-  const currResult = calcRightLeftMargins(calcState)
+  calcRightLeftMargins(calcState, currResult)
   const leftRightMarginsSum = currResult.leftRightMarginsSum
 
   // Perform main calculations
@@ -61,6 +79,7 @@ const calcColWidth = (calcState, orderOfCorrections = [], results = []) => {
   results.push(currResult)
 
   if (validateCalcResult(currResult)) {
+    calcState.colWidth = colWidth
     orderOfCorrections = []
     return results
   }
@@ -68,24 +87,27 @@ const calcColWidth = (calcState, orderOfCorrections = [], results = []) => {
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
-    calcState.colWidth = 1
-    return calcGutterWidth(calcState, orderOfCorrections, results)
+    return calcGutterWidth(calcState, orderOfCorrections, results, {
+      colWidth: 1,
+    })
   }
 
   if (correction === 'gutterWidth') {
-    calcState.gutterWidth = 0
-    return calcColWidth(calcState, orderOfCorrections, results)
+    return calcColWidth(calcState, orderOfCorrections, results, {
+      gutterWidth: 0,
+    })
   }
 
   if (correction === 'col') {
     calcState.col = 1
-    return calcColWidth(calcState, orderOfCorrections, results)
+    return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
   }
 
   if (correction === 'leftRightMargins') {
-    calcState.leftMargin = 0
-    calcState.bottomMargin = 0
-    return calcColWidth(calcState, orderOfCorrections, results)
+    return calcColWidth(calcState, orderOfCorrections, results, {
+      leftMargin: 0,
+      bottomMargin: 0,
+    })
   }
 
   return results
@@ -97,15 +119,33 @@ module.exports.calcColWidth = calcColWidth
  * Calculate gutter width.
  * Can mutate calcState.
  * @param {Object} calcState State for calculations. Should be validated beforehand.
- * @param {Array} orderOfCorrections Array of corrections in order they should be resolved in
- * @param {Array} results Array of results from chain of calculations
+ * @param {Array} [orderOfCorrections=[]] Array of corrections in order they should be resolved in
+ * @param {Array} [results=[]] Array of results from chain of calculations
+ * @param {Object} [correctedData] Object of key/value pairs to be corrected in calcState for next calculation
  * @returns {Array} Array of results from chain of calculations
  */
-const calcGutterWidth = (calcState, orderOfCorrections = [], results = []) => {
+const calcGutterWidth = (
+  calcState,
+  orderOfCorrections = [],
+  results = [],
+  correctedData
+) => {
+  const currResult = {
+    type: 'calcGutterWidth',
+    errs: [],
+  }
+
+  if (correctedData) {
+    for (let key in correctedData) {
+      calcState[key] = correctedData[key]
+      currResult[key] = calcState[key]
+    }
+  }
+
   const { canvasWidth, cols, colWidth } = calcState
 
   // Make sure that left + margins are possible numbers
-  const currResult = calcRightLeftMargins(calcState)
+  calcRightLeftMargins(calcState, currResult)
   const leftRightMarginsSum = currResult.leftRightMarginsSum
 
   // Perform main calculations
@@ -123,6 +163,7 @@ const calcGutterWidth = (calcState, orderOfCorrections = [], results = []) => {
   results.push(currResult)
 
   if (validateCalcResult(currResult)) {
+    calcState.gutterWidth = gutterWidth
     orderOfCorrections = []
     return results
   }
@@ -130,24 +171,27 @@ const calcGutterWidth = (calcState, orderOfCorrections = [], results = []) => {
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
-    calcState.colWidth = 1
-    return calcGutterWidth(calcState, orderOfCorrections, results)
+    return calcGutterWidth(calcState, orderOfCorrections, results, {
+      colWidth: 1,
+    })
   }
 
   if (correction === 'gutterWidth') {
-    calcState.gutterWidth = 0
-    return calcColWidth(calcState, orderOfCorrections, results)
+    return calcColWidth(calcState, orderOfCorrections, results, {
+      gutterWidth: 0,
+    })
   }
 
   if (correction === 'col') {
     calcState.col = 1
-    return calcColWidth(calcState, orderOfCorrections, results)
+    return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
   }
 
   if (correction === 'leftRightMargins') {
-    calcState.leftMargin = 0
-    calcState.bottomMargin = 0
-    return calcColWidth(calcState, orderOfCorrections, results)
+    return calcColWidth(calcState, orderOfCorrections, results, {
+      leftMargin: 0,
+      bottomMargin: 0,
+    })
   }
 
   return results
