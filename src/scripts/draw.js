@@ -1,13 +1,10 @@
 const commands = require('commands')
-const { Color, Line, Rectangle } = require('scenegraph')
+const { Color, Rectangle } = require('scenegraph')
 const { editDocument } = require('application')
 
 const draw = (calcData) => {
-  console.log('draw called')
-
   editDocument((selection) => {
     const currSelection = selection.items[0]
-    console.log(currSelection.name, currSelection.globalBounds)
     const {
       canvasWidth,
       canvasHeight,
@@ -16,15 +13,8 @@ const draw = (calcData) => {
       gridHeight,
       gutterWidth,
       topMargin,
+      leftMargin,
     } = calcData
-    console.log(
-      'draw success',
-      canvasWidth,
-      canvasHeight,
-      cols,
-      colWidth,
-      gridHeight
-    )
     const color = new Color('#00ffff', 0.5)
     const newItems = []
 
@@ -33,11 +23,10 @@ const draw = (calcData) => {
     canvas.width = canvasWidth
     canvas.height = canvasHeight
     canvas.fill = color
-    canvas.visible = false
     newItems.push(canvas)
     selection.insertionParent.addChild(canvas)
 
-    const pos = { x: 0, y: topMargin }
+    const pos = { x: leftMargin, y: topMargin }
 
     for (let i = 0; i < cols; i += 1) {
       const col = new Rectangle()
@@ -56,7 +45,24 @@ const draw = (calcData) => {
 
     selection.items = newItems
     commands.group()
-    selection.items[0].name = 'Gridnik Grid'
+    const group = selection.items[0]
+    group.name = 'Gridnik Grid'
+    const topLeftGroupPos = { x: group.localBounds.x, y: group.localBounds.y }
+
+    if (currSelection.constructor.name === 'Artboard') {
+      selection.items[0].placeInParentCoordinates(topLeftGroupPos, {
+        x: 0,
+        y: 0,
+      })
+    } else {
+      selection.items[0].placeInParentCoordinates(
+        topLeftGroupPos,
+        currSelection.boundsInParent
+      )
+    }
+
+    canvas.visible = false
+
     // commands.alignHorizontalCenter()
     // commands.alignVerticalCenter()
 
