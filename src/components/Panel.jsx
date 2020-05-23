@@ -171,27 +171,11 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   /**
-   * Set canvas width and height based on bound type.
-   */
-  const setCanvas = () => {
-    if (boundType === 'draw') {
-      // Bound type is "draw"
-      calcState.canvasWidth = validSelection.globalDrawBounds.width
-      calcState.canvasHeight = validSelection.globalDrawBounds.height
-    } else {
-      // Assume bound type is "path"
-      calcState.canvasWidth = validSelection.globalBounds.width
-      calcState.canvasHeight = validSelection.globalBounds.height
-    }
-  }
-
-  /**
    * Handle bound type change.
    * @param {*} evt
    */
   const handleBoundTypeChange = (evt) => {
     setBoundType(evt.target.value)
-    setCanvas()
     attemptGridHeightCalc()
   }
 
@@ -202,7 +186,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const handleCanvasTypeChange = (evt) => {
     setCanvasType(evt.target.value)
     if (evt.target.value === 'auto') {
-      setCanvas()
       attemptGridHeightCalc()
     }
   }
@@ -225,7 +208,15 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   if (canvasType === 'auto' && validSelection && validSelection.guid) {
-    setCanvas()
+    if (boundType === 'draw') {
+      // Bound type is "draw"
+      calcState.canvasWidth = validSelection.globalDrawBounds.width
+      calcState.canvasHeight = validSelection.globalDrawBounds.height
+    } else {
+      // Assume bound type is "path"
+      calcState.canvasWidth = validSelection.globalBounds.width
+      calcState.canvasHeight = validSelection.globalBounds.height
+    }
 
     if (calcState.canvasWidth !== canvasWidth) {
       setCanvasWidth(calcState.canvasWidth)
