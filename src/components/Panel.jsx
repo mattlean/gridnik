@@ -98,13 +98,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
     }
 
     setCanvasWidth(calcState.canvasWidth)
-    setCanvasHeight(calcState.canvasHeight)
     setCols(calcState.cols)
     setGutterWidth(calcState.gutterWidth)
     setColWidth(calcState.colWidth)
-    setTopMargin(calcState.topMargin)
     setRightMargin(calcState.rightMargin)
-    setBottomMargin(calcState.bottomMargin)
     setLeftMargin(calcState.leftMargin)
 
     if (finalResult) {
@@ -112,6 +109,13 @@ const Panel = ({ selectionAmount, validSelection }) => {
       setGridWidth(finalResult.gridWidth)
       setGutterWidthsSum(finalResult.gutterWidthsSum)
       setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
+
+      const calcGridHeightResult = calcGridHeight(calcState)
+      setCanvasHeight(calcState.canvasHeight)
+      setGridHeight(calcGridHeightResult.gridHeight)
+      setTopMargin(calcState.topMargin)
+      setBottomMargin(calcState.bottomMargin)
+      setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
     }
   }
 
