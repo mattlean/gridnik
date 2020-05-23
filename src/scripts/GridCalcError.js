@@ -22,6 +22,9 @@ class GridCalcError extends Error {
         case 4:
           message = `Gutter width is less than ${MIN_GUTTER_WIDTH}.`
           break
+        case 5:
+          message = 'Top and bottom margins are too large.'
+          break
         default:
           message = 'Invalid code.'
       }

@@ -12,16 +12,17 @@ const { GRID_CALC_ERROR_TYPE_SILENT } = require('./consts')
 const calcRightLeftMargins = (calcState, currResult = { errs: [] }) => {
   const { canvasWidth, rightMargin, leftMargin } = calcState
   const rightLeftMarginsSum = rightMargin + leftMargin
+  const maxRightLeftMarginsSum = canvasWidth - 1
 
-  if (rightLeftMarginsSum > canvasWidth - 1) {
+  if (rightLeftMarginsSum > maxRightLeftMarginsSum) {
     currResult.errs.push(new GridCalcError(3, GRID_CALC_ERROR_TYPE_SILENT))
 
-    const rightMarginPercentage = calcState.rightMargin / rightLeftMarginsSum
-    const leftMarginPercentage = calcState.leftMargin / rightLeftMarginsSum
-    const maxleftRightMargin = (canvasWidth - 1) / 2
+    const rightMarginPercent = calcState.rightMargin / rightLeftMarginsSum
+    const leftMarginPercent = calcState.leftMargin / rightLeftMarginsSum
+    const maxLeftRightMargin = maxRightLeftMarginsSum / 2
 
-    calcState.rightMargin = maxleftRightMargin * rightMarginPercentage
-    calcState.leftMargin = maxleftRightMargin * leftMarginPercentage
+    calcState.rightMargin = maxLeftRightMargin * rightMarginPercent
+    calcState.leftMargin = maxLeftRightMargin * leftMarginPercent
     currResult.rightMargin = calcState.rightMargin
     currResult.leftMargin = calcState.leftMargin
   }
@@ -202,3 +203,36 @@ const calcGutterWidth = (
 }
 
 module.exports.calcGutterWidth = calcGutterWidth
+
+/**
+ * Calculate grid height.
+ * Can mutate calcState.
+ * @param {Object} calcState State for calculations. Should be validated beforehand.
+ * @param {Object} [currResult={errs: []}] Current result to update.
+ * @returns {Object} Result with updated calcState values & new calculations
+ */
+const calcGridHeight = (calcState, currResult = { errs: [] }) => {
+  const { canvasHeight, topMargin, bottomMargin } = calcState
+  const topBottomMarginsSum = topMargin + bottomMargin
+  const maxTopBottomMarginsSum = canvasHeight - 1
+
+  if (topBottomMarginsSum > maxTopBottomMarginsSum) {
+    currResult.errs.push(new GridCalcError(5, GRID_CALC_ERROR_TYPE_SILENT))
+
+    const topMarginPercent = calcState.topMargin / topBottomMarginsSum
+    const bottomMarginPercent = calcState.bottomMargin / topBottomMarginsSum
+    const maxTopBottomMargin = maxTopBottomMarginsSum / 2
+
+    calcState.topMargin = maxTopBottomMargin * topMarginPercent
+    calcState.bottomMargin = maxTopBottomMargin * bottomMarginPercent
+    currResult.topMargin = calcState.topMargin
+    currResult.bottomMargin = calcState.bottomMargin
+  }
+
+  currResult.topBottomMarginsSum = calcState.topMargin + calcState.bottomMargin
+  currResult.gridHeight = canvasHeight - currResult.topBottomMarginsSum
+
+  return currResult
+}
+
+module.exports.calcGridHeight = calcGridHeight

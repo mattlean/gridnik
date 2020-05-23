@@ -2,7 +2,11 @@ const PropTypes = require('prop-types')
 const React = require('react')
 const { useEffect, useRef, useState } = React
 const Alert = require('./Alert')
-const { calcColWidth, calcGutterWidth } = require('../scripts/calc')
+const {
+  calcColWidth,
+  calcGridHeight,
+  calcGutterWidth,
+} = require('../scripts/calc')
 const {
   validateColWidthCalc,
   validateGutterWidthCalc,
@@ -29,7 +33,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [gridHeight, setGridHeight] = useState('N/A')
   const [gridWidth, setGridWidth] = useState('N/A')
   const [gutterWidthsSum, setGutterWidthsSum] = useState('N/A')
-  const [rightLeftMarginsSum, setRightLeftMarginsSum] = useState('N/A')
+  const [topBottomMarginsSum, setTopBottomMarginsSum] = useState(0)
+  const [rightLeftMarginsSum, setRightLeftMarginsSum] = useState(0)
 
   const [calcAlertMsg, setCalcAlertMsg] = useState('')
 
@@ -51,7 +56,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setGridHeight('N/A')
     setGridWidth('N/A')
     setGutterWidthsSum('N/A')
-    setRightLeftMarginsSum('N/A')
+    setTopBottomMarginsSum(0)
+    setRightLeftMarginsSum(0)
   }
 
   /**
@@ -150,19 +156,35 @@ const Panel = ({ selectionAmount, validSelection }) => {
     }
   }
 
-  // Reset form when different validSelection is encountered
+  /**
+   * Attempt calculations for top bottom margins
+   */
+  const attemptGridHeightCalc = () => {
+    validateInputs(calcState)
+    console.log('[ Validate inputs for colWidthCalc ]', calcState)
+    const result = calcGridHeight(calcState)
+
+    setGridHeight(result.gridHeight)
+    setTopMargin(calcState.topMargin)
+    setBottomMargin(calcState.bottomMargin)
+    setTopBottomMarginsSum(result.topBottomMarginsSum)
+  }
+
+  // Use ref to store previous validSelection prop
   let prevRef = useRef()
   useEffect(() => {
     prevRef.current = validSelection
   })
+
   if (
     prevRef &&
     validSelection &&
     prevRef.current &&
     prevRef.current.guid !== validSelection.guid
   ) {
+    // New validSelection is encountered, so store it in ref to prevent infinite rerender
     prevRef.current = validSelection
-    resetForm()
+    resetForm() // Reset form when different validSelection is encountered
   }
 
   if (canvasType === 'auto' && validSelection && validSelection.guid) {
@@ -281,7 +303,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasHeight - 1}
               value={topMargin}
-              onBlur={attemptColWidthCalc}
+              onBlur={attemptGridHeightCalc}
               onChange={(evt) => setTopMargin(evt.target.value)}
               uxp-quiet="true"
             />
@@ -299,7 +321,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasHeight - 1}
               value={bottomMargin}
-              onBlur={attemptColWidthCalc}
+              onBlur={attemptGridHeightCalc}
               onChange={(evt) => setBottomMargin(evt.target.value)}
               uxp-quiet="true"
             />
@@ -344,6 +366,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
           <div>
             <span>Right & Left Margin Sum:</span>
             {rightLeftMarginsSum}
+          </div>
+          <div>
+            <span>Top & Bottom Margin Sum:</span>
+            {topBottomMarginsSum}
           </div>
           <hr />
         </div>

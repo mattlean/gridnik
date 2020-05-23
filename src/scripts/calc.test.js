@@ -1,11 +1,12 @@
 const {
-  calcRightLeftMargins,
   calcColWidth,
+  calcGridHeight,
   calcGutterWidth,
+  calcRightLeftMargins,
 } = require('./calc')
 
 describe('calcRightLeftMargins', () => {
-  test('Correct right & left margins that are too large, maintaining ratios of original right & left margins', () => {
+  test('Correct right & left margins that are too large, maintaining ratios of original margins', () => {
     const calcData = {
       canvasWidth: 1920,
       rightMargin: 1919,
@@ -289,5 +290,25 @@ describe('calcGutterWidth', () => {
       leftMargin: 390,
       gutterWidth: 0,
     })
+  })
+})
+
+describe('calcGridHeight', () => {
+  test('Correct top & bottom margins that are too large, maintaining ratios of original margins', () => {
+    const calcData = {
+      canvasHeight: 1080,
+      topMargin: 1079,
+      bottomMargin: 100,
+    }
+    const result = calcGridHeight(calcData)
+
+    expect(result).toMatchObject({
+      topMargin: 493.74088210347753,
+      bottomMargin: 45.759117896522476,
+      gridHeight: 540.5,
+      topBottomMarginsSum: 539.5,
+    })
+    expect(result.errs.length).toBe(1)
+    expect(result.errs[0].code).toBe(5)
   })
 })
