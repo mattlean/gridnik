@@ -99,8 +99,8 @@ const calcColWidth = (
     })
   }
 
-  if (correction === 'col') {
-    calcState.col = 1
+  if (correction === 'cols') {
+    calcState.cols = 1
     return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
   }
 
@@ -185,8 +185,8 @@ const calcGutterWidth = (
     })
   }
 
-  if (correction === 'col') {
-    calcState.col = 1
+  if (correction === 'cols') {
+    calcState.cols = 1
     return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
   }
 

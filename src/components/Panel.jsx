@@ -2,8 +2,12 @@ const PropTypes = require('prop-types')
 const React = require('react')
 const useState = React.useState
 const Alert = require('./Alert')
-const { calcColWidth } = require('../scripts/calc')
-const { validateColWidthCalc, validateInputs } = require('../scripts/validate')
+const { calcColWidth, calcGutterWidth } = require('../scripts/calc')
+const {
+  validateColWidthCalc,
+  validateGutterWidthCalc,
+  validateInputs,
+} = require('../scripts/validate')
 
 /**
  * Adobe XD panel used for plugin UI.
@@ -66,10 +70,39 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
   const attemptColWidthCalc = () => {
     validateInputs(calcState)
-    console.log('[ Validate inputs ]', calcState)
+    console.log('[ Validate inputs for colWidthCalc ]', calcState)
 
     if (validateColWidthCalc(calcState)) {
-      calcColWidth(calcState)
+      calcColWidth(calcState, [
+        'leftRightMargins',
+        'cols',
+        'gutterWidth',
+        'colWidth',
+      ])
+    }
+
+    setCanvasWidth(calcState.canvasWidth)
+    setCanvasHeight(calcState.canvasHeight)
+    setCols(calcState.cols)
+    setGutterWidth(calcState.gutterWidth)
+    setColWidth(calcState.colWidth)
+    setTopMargin(calcState.topMargin)
+    setRightMargin(calcState.rightMargin)
+    setBottomMargin(calcState.bottomMargin)
+    setLeftMargin(calcState.leftMargin)
+  }
+
+  const attemptGutterWidthCalc = () => {
+    validateInputs(calcState)
+    console.log('[ Validate inputs for gutterWidthCalc ]', calcState)
+
+    if (validateGutterWidthCalc(calcState)) {
+      calcGutterWidth(calcState, [
+        'leftRightMargins',
+        'cols',
+        'colWidth',
+        'gutterWidth',
+      ])
     }
 
     setCanvasWidth(calcState.canvasWidth)
@@ -159,7 +192,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             min="1"
             max={canvasWidth}
             value={colWidth}
-            onBlur={attemptColWidthCalc}
+            onBlur={attemptGutterWidthCalc}
             onChange={(evt) => setColWidth(evt.target.value)}
             className="input-lg"
             uxp-quiet="true"

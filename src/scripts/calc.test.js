@@ -94,7 +94,7 @@ describe('calcColWidth', () => {
     }
     const results = calcColWidth(calcData, [
       'leftRightMargins',
-      'col',
+      'cols',
       'gutterWidth',
       'colWidth',
     ])
@@ -143,7 +143,7 @@ describe('calcColWidth', () => {
     }
     const results = calcColWidth(calcData, [
       'leftRightMargins',
-      'col',
+      'cols',
       'gutterWidth',
       'colWidth',
     ])
@@ -253,7 +253,7 @@ describe('calcGutterWidth', () => {
     }
     const results = calcGutterWidth(calcData, [
       'leftRightMargins',
-      'col',
+      'cols',
       'colWidth',
       'gutterWidth',
     ])
