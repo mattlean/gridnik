@@ -79,11 +79,12 @@ const calcColWidth = (
   results.push(currResult)
 
   if (validateCalcResult(currResult)) {
+    // Valid calculation reached
     calcState.colWidth = colWidth
-    orderOfCorrections = []
     return results
   }
 
+  // Recursively initiate another calculation if correction is available
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
@@ -110,6 +111,7 @@ const calcColWidth = (
     })
   }
 
+  // No more corrections remain & no valid calculation was reached
   return results
 }
 
@@ -163,11 +165,12 @@ const calcGutterWidth = (
   results.push(currResult)
 
   if (validateCalcResult(currResult)) {
+    // Valid calculation reached
     calcState.gutterWidth = gutterWidth
-    orderOfCorrections = []
     return results
   }
 
+  // Recursively initiate another calculation if correction is available
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
@@ -194,6 +197,7 @@ const calcGutterWidth = (
     })
   }
 
+  // No more corrections remain & no valid calculation was reached
   return results
 }
 

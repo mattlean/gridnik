@@ -100,6 +100,7 @@ describe('calcColWidth', () => {
     ])
 
     expect(results.length).toBe(2)
+
     expect(results[0]).toMatchObject({
       type: 'calcColWidth',
       leftRightMarginsSum: 780,
@@ -129,6 +130,55 @@ describe('calcColWidth', () => {
       gutterWidth: 102.54545454545455,
       rightMargin: 390,
       leftMargin: 390,
+    })
+  })
+
+  test('Successfully calculate colWidth with orderOfCorrections when cols is too large', () => {
+    const calcData = {
+      canvasWidth: 1920,
+      cols: 999,
+      gutterWidth: 15,
+      rightMargin: 390,
+      leftMargin: 390,
+    }
+    const results = calcColWidth(calcData, [
+      'leftRightMargins',
+      'col',
+      'gutterWidth',
+      'colWidth',
+    ])
+
+    expect(results.length).toBe(2)
+
+    expect(results[0]).toMatchObject({
+      type: 'calcColWidth',
+      leftRightMarginsSum: 780,
+      colWidth: -13.843843843843844,
+      colWidthsSum: -13830,
+      gridWidth: 1140,
+      gutterWidthsSum: 14970,
+    })
+    expect(results[0].errs.length).toBe(1)
+    expect(results[0].errs[0].code).toBe(1)
+
+    expect(results[1]).toMatchObject({
+      type: 'calcGutterWidth',
+      colWidth: 1,
+      leftRightMarginsSum: 780,
+      colWidthsSum: 999,
+      gridWidth: 1140,
+      gutterWidth: 0.14128256513026052,
+      gutterWidthsSum: 141,
+    })
+    expect(results[1].errs.length).toBe(0)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 999,
+      gutterWidth: 0.14128256513026052,
+      rightMargin: 390,
+      leftMargin: 390,
+      colWidth: 1,
     })
   })
 })
