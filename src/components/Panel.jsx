@@ -75,7 +75,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   /**
-   * Attempt calculations for column width
+   * Attempt calculations for column width.
    */
   const attemptColWidthCalc = () => {
     let finalResult
@@ -116,7 +116,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   /**
-   * Attempt calculations for gutter width
+   * Attempt calculations for gutter width.
    */
   const attemptGutterWidthCalc = () => {
     let finalResult
@@ -157,7 +157,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   /**
-   * Attempt calculations for top bottom margins
+   * Attempt calculations for top bottom margins.
    */
   const attemptGridHeightCalc = () => {
     validateInputs(calcState)
@@ -168,6 +168,43 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setTopMargin(calcState.topMargin)
     setBottomMargin(calcState.bottomMargin)
     setTopBottomMarginsSum(result.topBottomMarginsSum)
+  }
+
+  /**
+   * Set canvas width and height based on bound type.
+   */
+  const setCanvas = () => {
+    if (boundType === 'draw') {
+      // Bound type is "draw"
+      calcState.canvasWidth = validSelection.globalDrawBounds.width
+      calcState.canvasHeight = validSelection.globalDrawBounds.height
+    } else {
+      // Assume bound type is "path"
+      calcState.canvasWidth = validSelection.globalBounds.width
+      calcState.canvasHeight = validSelection.globalBounds.height
+    }
+  }
+
+  /**
+   * Handle bound type change.
+   * @param {*} evt
+   */
+  const handleBoundTypeChange = (evt) => {
+    setBoundType(evt.target.value)
+    setCanvas()
+    attemptGridHeightCalc()
+  }
+
+  /**
+   * Handle canvas type change.
+   * @param {*} evt
+   */
+  const handleCanvasTypeChange = (evt) => {
+    setCanvasType(evt.target.value)
+    if (evt.target.value === 'auto') {
+      setCanvas()
+      attemptGridHeightCalc()
+    }
   }
 
   // Use ref to store previous validSelection prop
@@ -188,15 +225,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   if (canvasType === 'auto' && validSelection && validSelection.guid) {
-    if (calcState.boundType === 'draw') {
-      // Bound type is "draw"
-      calcState.canvasWidth = validSelection.globalDrawBounds.width
-      calcState.canvasHeight = validSelection.globalDrawBounds.height
-    } else {
-      // Assume bound type is "path"
-      calcState.canvasWidth = validSelection.globalBounds.width
-      calcState.canvasHeight = validSelection.globalBounds.height
-    }
+    setCanvas()
 
     if (calcState.canvasWidth !== canvasWidth) {
       setCanvasWidth(calcState.canvasWidth)
@@ -219,14 +248,18 @@ const Panel = ({ selectionAmount, validSelection }) => {
       <form method="dialog">
         <label className="text-input-combo">
           <span>Canvas Type</span>
-          <select defaultValue={canvasType}>
+          <select defaultValue={canvasType} onChange={handleCanvasTypeChange}>
             <option value="auto">Auto</option>
             <option value="manual">Manual</option>
           </select>
         </label>
         <label className="text-input-combo">
           <span>Bound Type</span>
-          <select defaultValue={boundType} disabled={canvasType !== 'auto'}>
+          <select
+            defaultValue={boundType}
+            onChange={handleBoundTypeChange}
+            disabled={canvasType !== 'auto'}
+          >
             <option value="path">Path</option>
             <option value="draw">Draw</option>
           </select>
@@ -238,6 +271,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               type="number"
               min="1"
               value={canvasWidth}
+              onBlur={attemptColWidthCalc}
               onChange={(evt) => setCanvasWidth(evt.target.value)}
               className="input-lg"
               placeholder="Width"
@@ -248,6 +282,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               type="number"
               min="1"
               value={canvasHeight}
+              onBlur={attemptGridHeightCalc}
               onChange={(evt) => setCanvasHeight(evt.target.value)}
               className="input-lg"
               placeholder="Height"
