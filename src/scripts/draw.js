@@ -6,7 +6,17 @@ const draw = (calcData) => {
   console.log('draw called')
 
   editDocument((selection) => {
-    const { canvasWidth, canvasHeight, cols, colWidth, gridHeight } = calcData
+    const currSelection = selection.items[0]
+    console.log(currSelection.name, currSelection.globalBounds)
+    const {
+      canvasWidth,
+      canvasHeight,
+      cols,
+      colWidth,
+      gridHeight,
+      gutterWidth,
+      topMargin,
+    } = calcData
     console.log(
       'draw success',
       canvasWidth,
@@ -27,6 +37,8 @@ const draw = (calcData) => {
     newItems.push(canvas)
     selection.insertionParent.addChild(canvas)
 
+    const pos = { x: 0, y: topMargin }
+
     for (let i = 0; i < cols; i += 1) {
       const col = new Rectangle()
       col.width = colWidth
@@ -35,6 +47,11 @@ const draw = (calcData) => {
       col.name = `Column ${i + 1}`
       newItems.push(col)
       selection.insertionParent.addChild(col)
+
+      if (pos.x > 0 || pos.y > 0) {
+        col.moveInParentCoordinates(pos.x, pos.y)
+      }
+      pos.x += colWidth + gutterWidth
     }
 
     selection.items = newItems
