@@ -75,6 +75,21 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   /**
+   * Set form to calcState values.
+   */
+  const setForm = (calcState) => {
+    setCanvasWidth(calcState.canvasWidth)
+    setCanvasHeight(calcState.canvasHEight)
+    setCols(calcState.cols)
+    setGutterWidth(calcState.gutterWidth)
+    setColWidth(calcState.colWidth)
+    setTopMargin(calcState.topMargin)
+    setRightMargin(calcState.rightMargin)
+    setBottomMargin(calcState.bottomMargin)
+    setLeftMargin(calcState.leftMargin)
+  }
+
+  /**
    * Attempt calculations for column width.
    */
   const attemptColWidthCalc = () => {
@@ -97,13 +112,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
       resetStats()
     }
 
-    setCanvasWidth(calcState.canvasWidth)
-    setCols(calcState.cols)
-    setGutterWidth(calcState.gutterWidth)
-    setColWidth(calcState.colWidth)
-    setRightMargin(calcState.rightMargin)
-    setLeftMargin(calcState.leftMargin)
-
     if (finalResult) {
       setColWidthsSum(finalResult.colWidthsSum)
       setGridWidth(finalResult.gridWidth)
@@ -111,12 +119,11 @@ const Panel = ({ selectionAmount, validSelection }) => {
       setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
 
       const calcGridHeightResult = calcGridHeight(calcState)
-      setCanvasHeight(calcState.canvasHeight)
       setGridHeight(calcGridHeightResult.gridHeight)
-      setTopMargin(calcState.topMargin)
-      setBottomMargin(calcState.bottomMargin)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
     }
+
+    setForm(calcState)
   }
 
   /**
@@ -142,22 +149,18 @@ const Panel = ({ selectionAmount, validSelection }) => {
       resetStats()
     }
 
-    setCanvasWidth(calcState.canvasWidth)
-    setCanvasHeight(calcState.canvasHeight)
-    setCols(calcState.cols)
-    setGutterWidth(calcState.gutterWidth)
-    setColWidth(calcState.colWidth)
-    setTopMargin(calcState.topMargin)
-    setRightMargin(calcState.rightMargin)
-    setBottomMargin(calcState.bottomMargin)
-    setLeftMargin(calcState.leftMargin)
-
     if (finalResult) {
       setColWidthsSum(finalResult.colWidthsSum)
       setGridWidth(finalResult.gridWidth)
       setGutterWidthsSum(finalResult.gutterWidthsSum)
       setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
+
+      const calcGridHeightResult = calcGridHeight(calcState)
+      setGridHeight(calcGridHeightResult.gridHeight)
+      setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
     }
+
+    setForm(calcState)
   }
 
   /**
@@ -165,13 +168,16 @@ const Panel = ({ selectionAmount, validSelection }) => {
    */
   const attemptGridHeightCalc = () => {
     validateInputs(calcState)
-    console.log('[ Validate inputs for colWidthCalc ]', calcState)
-    const result = calcGridHeight(calcState)
 
-    setGridHeight(result.gridHeight)
-    setTopMargin(calcState.topMargin)
-    setBottomMargin(calcState.bottomMargin)
-    setTopBottomMarginsSum(result.topBottomMarginsSum)
+    if (validateColWidthCalc(calcState) || validateGutterWidthCalc(calcState)) {
+      console.log('[ Validate inputs for colWidthCalc ]', calcState)
+      const result = calcGridHeight(calcState)
+
+      setGridHeight(result.gridHeight)
+      setTopBottomMarginsSum(result.topBottomMarginsSum)
+    }
+
+    setForm(calcState)
   }
 
   /**
