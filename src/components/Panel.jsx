@@ -29,6 +29,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [gridHeight, setGridHeight] = useState('N/A')
   const [gridWidth, setGridWidth] = useState('N/A')
   const [gutterWidthsSum, setGutterWidthsSum] = useState('N/A')
+  const [rightLeftMarginsSum, setRightLeftMarginsSum] = useState('N/A')
 
   const [calcAlertMsg, setCalcAlertMsg] = useState('')
 
@@ -68,17 +69,52 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
   console.log('[ Init calcState ]', calcState)
 
+  /**
+   * Reset stats on panel UI.
+   */
+  const resetStats = () => {
+    setColWidthsSum('N/A')
+    setGridHeight('N/A')
+    setGridWidth('N/A')
+    setGutterWidthsSum('N/A')
+    setRightLeftMarginsSum('N/A')
+  }
+
+  /**
+   * Reset form & stats on panel UI.
+   */
+  const resetForm = () => {
+    setCols('')
+    setGutterWidth(0)
+    setColWidth('')
+    setTopMargin(0)
+    setRightMargin(0)
+    setBottomMargin(0)
+    setLeftMargin(0)
+    resetStats()
+  }
+
+  /**
+   * Attempt calculations for column width
+   */
   const attemptColWidthCalc = () => {
+    let finalResult
     validateInputs(calcState)
     console.log('[ Validate inputs for colWidthCalc ]', calcState)
 
     if (validateColWidthCalc(calcState)) {
-      calcColWidth(calcState, [
-        'leftRightMargins',
+      const results = calcColWidth(calcState, [
+        'rightLeftMargins',
         'cols',
         'gutterWidth',
         'colWidth',
       ])
+
+      if (Array.isArray(results) && results.length > 0) {
+        finalResult = results[results.length - 1]
+      }
+    } else {
+      resetStats()
     }
 
     setCanvasWidth(calcState.canvasWidth)
@@ -90,19 +126,36 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setRightMargin(calcState.rightMargin)
     setBottomMargin(calcState.bottomMargin)
     setLeftMargin(calcState.leftMargin)
+
+    if (finalResult) {
+      setColWidthsSum(finalResult.colWidthsSum)
+      setGridWidth(finalResult.gridWidth)
+      setGutterWidthsSum(finalResult.gutterWidthsSum)
+      setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
+    }
   }
 
+  /**
+   * Attempt calculations for gutter width
+   */
   const attemptGutterWidthCalc = () => {
+    let finalResult
     validateInputs(calcState)
     console.log('[ Validate inputs for gutterWidthCalc ]', calcState)
 
     if (validateGutterWidthCalc(calcState)) {
-      calcGutterWidth(calcState, [
-        'leftRightMargins',
+      const results = calcGutterWidth(calcState, [
+        'rightLeftMargins',
         'cols',
         'colWidth',
         'gutterWidth',
       ])
+
+      if (Array.isArray(results) && results.length > 0) {
+        finalResult = results[results.length - 1]
+      }
+    } else {
+      resetStats()
     }
 
     setCanvasWidth(calcState.canvasWidth)
@@ -114,6 +167,13 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setRightMargin(calcState.rightMargin)
     setBottomMargin(calcState.bottomMargin)
     setLeftMargin(calcState.leftMargin)
+
+    if (finalResult) {
+      setColWidthsSum(finalResult.colWidthsSum)
+      setGridWidth(finalResult.gridWidth)
+      setGutterWidthsSum(finalResult.gutterWidthsSum)
+      setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
+    }
   }
 
   let content
@@ -266,10 +326,16 @@ const Panel = ({ selectionAmount, validSelection }) => {
             <span>Grid Height:</span>
             {gridHeight}
           </div>
+          <div>
+            <span>Right & Left Margin Sum:</span>
+            {rightLeftMarginsSum}
+          </div>
           <hr />
         </div>
         <footer>
-          <button uxp-variant="secondary">Reset</button>
+          <button onClick={() => resetForm()} uxp-variant="secondary">
+            Reset
+          </button>
           <button id="create" uxp-variant="cta">
             Create
           </button>

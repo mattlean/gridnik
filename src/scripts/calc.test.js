@@ -16,7 +16,7 @@ describe('calcRightLeftMargins', () => {
     expect(results).toMatchObject({
       rightMargin: 797.4363360762235,
       leftMargin: 162.06366392377652,
-      leftRightMarginsSum: 959.5,
+      rightLeftMarginsSum: 959.5,
     })
     expect(results.errs.length).toBe(1)
     expect(results.errs[0].code).toBe(3)
@@ -36,7 +36,7 @@ describe('calcColWidth', () => {
 
     expect(results[0]).toMatchObject({
       type: 'calcColWidth',
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidth: 81.25,
       colWidthsSum: 975,
       gridWidth: 1140,
@@ -66,7 +66,7 @@ describe('calcColWidth', () => {
 
     expect(results[0]).toMatchObject({
       type: 'calcColWidth',
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidth: -820.75,
       colWidthsSum: -9849,
       gridWidth: 1140,
@@ -93,7 +93,7 @@ describe('calcColWidth', () => {
       leftMargin: 390,
     }
     const results = calcColWidth(calcData, [
-      'leftRightMargins',
+      'rightLeftMargins',
       'cols',
       'gutterWidth',
       'colWidth',
@@ -103,7 +103,7 @@ describe('calcColWidth', () => {
 
     expect(results[0]).toMatchObject({
       type: 'calcColWidth',
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidth: -820.75,
       colWidthsSum: -9849,
       gridWidth: 1140,
@@ -115,7 +115,7 @@ describe('calcColWidth', () => {
     expect(results[1]).toMatchObject({
       type: 'calcGutterWidth',
       colWidth: 1,
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidthsSum: 12,
       gridWidth: 1140,
       gutterWidth: 102.54545454545455,
@@ -142,7 +142,7 @@ describe('calcColWidth', () => {
       leftMargin: 390,
     }
     const results = calcColWidth(calcData, [
-      'leftRightMargins',
+      'rightLeftMargins',
       'cols',
       'gutterWidth',
       'colWidth',
@@ -152,7 +152,7 @@ describe('calcColWidth', () => {
 
     expect(results[0]).toMatchObject({
       type: 'calcColWidth',
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidth: -13.843843843843844,
       colWidthsSum: -13830,
       gridWidth: 1140,
@@ -164,7 +164,7 @@ describe('calcColWidth', () => {
     expect(results[1]).toMatchObject({
       type: 'calcGutterWidth',
       colWidth: 1,
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidthsSum: 999,
       gridWidth: 1140,
       gutterWidth: 0.14128256513026052,
@@ -196,7 +196,7 @@ describe('calcGutterWidth', () => {
 
     expect(results[0]).toMatchObject({
       type: 'calcGutterWidth',
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidthsSum: 975,
       gridWidth: 1140,
       gutterWidth: 15,
@@ -225,7 +225,7 @@ describe('calcGutterWidth', () => {
 
     expect(results[0]).toMatchObject({
       type: 'calcGutterWidth',
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidthsSum: 11988,
       gridWidth: 1140,
       gutterWidth: -986.1818181818181,
@@ -252,7 +252,7 @@ describe('calcGutterWidth', () => {
       leftMargin: 390,
     }
     const results = calcGutterWidth(calcData, [
-      'leftRightMargins',
+      'rightLeftMargins',
       'cols',
       'colWidth',
       'gutterWidth',
@@ -261,7 +261,7 @@ describe('calcGutterWidth', () => {
     expect(results.length).toBe(2)
     expect(results[0]).toMatchObject({
       type: 'calcGutterWidth',
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidthsSum: 11988,
       gridWidth: 1140,
       gutterWidth: -986.1818181818181,
@@ -273,7 +273,7 @@ describe('calcGutterWidth', () => {
     expect(results[1]).toMatchObject({
       type: 'calcColWidth',
       gutterWidth: 0,
-      leftRightMarginsSum: 780,
+      rightLeftMarginsSum: 780,
       colWidth: 95,
       colWidthsSum: 1140,
       gridWidth: 1140,

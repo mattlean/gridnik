@@ -11,13 +11,13 @@ const { GRID_CALC_ERROR_TYPE_SILENT } = require('./consts')
  */
 const calcRightLeftMargins = (calcState, currResult = { errs: [] }) => {
   const { canvasWidth, rightMargin, leftMargin } = calcState
-  const leftRightMarginsSum = rightMargin + leftMargin
+  const rightLeftMarginsSum = rightMargin + leftMargin
 
-  if (leftRightMarginsSum > canvasWidth - 1) {
+  if (rightLeftMarginsSum > canvasWidth - 1) {
     currResult.errs.push(new GridCalcError(3, GRID_CALC_ERROR_TYPE_SILENT))
 
-    const rightMarginPercentage = calcState.rightMargin / leftRightMarginsSum
-    const leftMarginPercentage = calcState.leftMargin / leftRightMarginsSum
+    const rightMarginPercentage = calcState.rightMargin / rightLeftMarginsSum
+    const leftMarginPercentage = calcState.leftMargin / rightLeftMarginsSum
     const maxleftRightMargin = (canvasWidth - 1) / 2
 
     calcState.rightMargin = maxleftRightMargin * rightMarginPercentage
@@ -26,7 +26,7 @@ const calcRightLeftMargins = (calcState, currResult = { errs: [] }) => {
     currResult.leftMargin = calcState.leftMargin
   }
 
-  currResult.leftRightMarginsSum = calcState.rightMargin + calcState.leftMargin
+  currResult.rightLeftMarginsSum = calcState.rightMargin + calcState.leftMargin
 
   return currResult
 }
@@ -63,11 +63,11 @@ const calcColWidth = (
 
   // Make sure that left + right margins are possible numbers
   calcRightLeftMargins(calcState, currResult)
-  const leftRightMarginsSum = currResult.leftRightMarginsSum
+  const rightLeftMarginsSum = currResult.rightLeftMarginsSum
 
   // Perform main calculations
   const gutterWidthsSum = gutterWidth * (cols - 1)
-  const colWidth = (canvasWidth - leftRightMarginsSum - gutterWidthsSum) / cols
+  const colWidth = (canvasWidth - rightLeftMarginsSum - gutterWidthsSum) / cols
   const colWidthsSum = colWidth * cols
   const gridWidth = colWidthsSum + gutterWidthsSum
 
@@ -104,7 +104,7 @@ const calcColWidth = (
     return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
   }
 
-  if (correction === 'leftRightMargins') {
+  if (correction === 'rightLeftMargins') {
     return calcColWidth(calcState, orderOfCorrections, results, {
       leftMargin: 0,
       bottomMargin: 0,
@@ -148,11 +148,11 @@ const calcGutterWidth = (
 
   // Make sure that left + margins are possible numbers
   calcRightLeftMargins(calcState, currResult)
-  const leftRightMarginsSum = currResult.leftRightMarginsSum
+  const rightLeftMarginsSum = currResult.rightLeftMarginsSum
 
   // Perform main calculations
   const gutterWidth =
-    (canvasWidth - leftRightMarginsSum - colWidth * cols) / (cols - 1)
+    (canvasWidth - rightLeftMarginsSum - colWidth * cols) / (cols - 1)
   const gutterWidthsSum = gutterWidth * (cols - 1)
   const colWidthsSum = colWidth * cols
   const gridWidth = colWidthsSum + gutterWidthsSum
@@ -190,7 +190,7 @@ const calcGutterWidth = (
     return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
   }
 
-  if (correction === 'leftRightMargins') {
+  if (correction === 'rightLeftMargins') {
     return calcColWidth(calcState, orderOfCorrections, results, {
       leftMargin: 0,
       bottomMargin: 0,
