@@ -6,7 +6,7 @@ const { GRID_CALC_ERROR_TYPE_SILENT } = require('./consts')
  * Calculate right & left margins.
  * Can mutate calcState.
  * @param {Object} calcState State for calculations. Should be validated beforehand.
- * @param {Object} [currResult={errs: []}] Current result to update.
+ * @param {Object} [currResult={errs: []}] Current result to update
  * @returns {Object} Result with updated calcState values & new calculations
  */
 const calcRightLeftMargins = (calcState, currResult = { errs: [] }) => {

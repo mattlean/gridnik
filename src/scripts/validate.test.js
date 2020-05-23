@@ -1,4 +1,41 @@
-const { validateInputs } = require('./validate')
+const { validateCalcResult, validateInputs } = require('./validate')
+
+describe('validateCalcResult', () => {
+  test('Passes valid result', () => {
+    const result = {
+      errs: [],
+      type: 'calcColWidth',
+      rightLeftMarginsSum: 780,
+      colWidth: 81.25,
+      colWidthsSum: 975,
+      gridWidth: 1140,
+      gutterWidthsSum: 165,
+    }
+    expect(validateCalcResult(result)).toBe(true)
+    expect(result.errs.length).toBe(0)
+  })
+
+  test('Fails when result colWidth < 1', () => {
+    const result = { errs: [], colWidth: 0 }
+    expect(validateCalcResult(result)).toBe(false)
+    expect(result.errs.length).toBe(1)
+    expect(result.errs[0].code).toBe(1)
+  })
+
+  test('Fails when gridWidth < 1', () => {
+    const result = { errs: [], gridWidth: 0 }
+    expect(validateCalcResult(result)).toBe(false)
+    expect(result.errs.length).toBe(1)
+    expect(result.errs[0].code).toBe(2)
+  })
+
+  test('Fails when gutterWidth < 0', () => {
+    const result = { errs: [], gutterWidth: -1 }
+    expect(validateCalcResult(result)).toBe(false)
+    expect(result.errs.length).toBe(1)
+    expect(result.errs[0].code).toBe(4)
+  })
+})
 
 describe('validateInputs', () => {
   test('Resets empty gutter width and margins to 0', () => {

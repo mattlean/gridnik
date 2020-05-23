@@ -12,12 +12,12 @@ describe('calcRightLeftMargins', () => {
       rightMargin: 500,
       leftMargin: 500,
     }
-    const results = calcRightLeftMargins(calcData)
+    const result = calcRightLeftMargins(calcData)
 
-    expect(results).toMatchObject({
+    expect(result).toMatchObject({
       rightLeftMarginsSum: 1000,
     })
-    expect(results.errs.length).toBe(0)
+    expect(result.errs.length).toBe(0)
   })
 
   test('Correct right & left margins that are too large, maintaining ratios of original margins', () => {
@@ -26,15 +26,15 @@ describe('calcRightLeftMargins', () => {
       rightMargin: 1919,
       leftMargin: 390,
     }
-    const results = calcRightLeftMargins(calcData)
+    const result = calcRightLeftMargins(calcData)
 
-    expect(results).toMatchObject({
+    expect(result).toMatchObject({
       rightMargin: 797.4363360762235,
       leftMargin: 162.06366392377652,
       rightLeftMarginsSum: 959.5,
     })
-    expect(results.errs.length).toBe(1)
-    expect(results.errs[0].code).toBe(3)
+    expect(result.errs.length).toBe(1)
+    expect(result.errs[0].code).toBe(3)
   })
 })
 
@@ -314,12 +314,12 @@ describe('calcGridHeight', () => {
       topMargin: 500,
       bottomMargin: 500,
     }
-    const results = calcGridHeight(calcData)
+    const result = calcGridHeight(calcData)
 
-    expect(results).toMatchObject({
+    expect(result).toMatchObject({
       topBottomMarginsSum: 1000,
     })
-    expect(results.errs.length).toBe(0)
+    expect(result.errs.length).toBe(0)
   })
 
   test('Correct top & bottom margins that are too large, maintaining ratios of original margins', () => {
