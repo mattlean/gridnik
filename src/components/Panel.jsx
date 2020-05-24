@@ -18,6 +18,7 @@ const {
  * Adobe XD panel used for plugin UI.
  */
 const Panel = ({ selectionAmount, validSelection }) => {
+  const [floorVals, setFloorVals] = useState(true)
   const [canvasType, setCanvasType] = useState('auto')
   const [boundType, setBoundType] = useState('path')
   const [canvasWidth, setCanvasWidth] = useState('')
@@ -44,6 +45,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
     canvasWidth,
     cols,
     colWidth,
+    floorVals,
     gridHeight,
     gutterWidth,
     topMargin,
@@ -51,6 +53,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
     bottomMargin,
     leftMargin,
   }
+
+  console.log(calcState)
 
   /**
    * Reset stats on panel UI.
@@ -69,6 +73,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
    * Reset form & stats on panel UI.
    */
   const resetForm = () => {
+    setFloorVals(true)
     setCols('')
     setGutterWidth(0)
     setColWidth('')
@@ -86,8 +91,9 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setCanvasWidth(calcState.canvasWidth)
     setCanvasHeight(calcState.canvasHeight)
     setCols(calcState.cols)
-    setGutterWidth(calcState.gutterWidth)
     setColWidth(calcState.colWidth)
+    setFloorVals(calcState.floorVals)
+    setGutterWidth(calcState.gutterWidth)
     setTopMargin(calcState.topMargin)
     setRightMargin(calcState.rightMargin)
     setBottomMargin(calcState.bottomMargin)
@@ -284,6 +290,17 @@ const Panel = ({ selectionAmount, validSelection }) => {
     content = (
       <form method="dialog">
         <label className="text-input-combo">
+          <span>Floor Values</span>
+          <input
+            type="checkbox"
+            checked={floorVals}
+            onChange={(evt) => {
+              setFloorVals(evt.target.checked)
+            }}
+            uxp-quiet="true"
+          />
+        </label>
+        <label className="text-input-combo">
           <span>Canvas Type</span>
           <select defaultValue={canvasType} onChange={handleCanvasTypeChange}>
             <option value="auto">Auto</option>
@@ -301,6 +318,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             <option value="draw">Draw</option>
           </select>
         </label>
+        <hr />
         <label className="text-input-combo">
           <span>Canvas Size</span>
           <div className="multi-inputs">

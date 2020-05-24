@@ -33,11 +33,6 @@ const render = (selection = {}, enableForce) => {
   }
 
   if (triggerRender || enableForce) {
-    if (triggerRender) {
-      console.log('[ Render triggered ]')
-    } else {
-      console.log('[ Render forced ]')
-    }
     ReactDOM.render(
       <Panel
         selectionAmount={prevMainState.selectionAmount}
@@ -62,7 +57,6 @@ const render = (selection = {}, enableForce) => {
 const show = (evt) => {
   if (!panelEle) {
     panelEle = document.createElement('div')
-    console.log('[ Show called ]')
     render({}, true)
     evt.node.appendChild(panelEle)
   }
@@ -77,7 +71,6 @@ const show = (evt) => {
 // eslint-disable-next-line no-unused-vars
 const update = (selection, docRoot) => {
   if (selection) {
-    console.log('[ Update called ]')
     render(selection)
   }
 }

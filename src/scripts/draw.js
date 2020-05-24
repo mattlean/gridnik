@@ -2,7 +2,11 @@ const commands = require('commands')
 const { Color, Rectangle } = require('scenegraph')
 const { editDocument } = require('application')
 
-const draw = (calcData) => {
+/**
+ * Draw grid.
+ * @param {Object} calcState  State for calculations. Should be validated beforehand.
+ */
+const draw = (calcState) => {
   editDocument((selection) => {
     const currSelection = selection.items[0]
     const {
@@ -14,7 +18,7 @@ const draw = (calcData) => {
       gutterWidth,
       topMargin,
       leftMargin,
-    } = calcData
+    } = calcState
     const color = new Color('#00ffff', 0.5)
     const newItems = []
 

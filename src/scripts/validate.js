@@ -1,5 +1,5 @@
 const GridCalcError = require('./GridCalcError')
-const { convertCalcStateToNum } = require('./util')
+const { convertCalcStateToNum, floorVal } = require('./util')
 const {
   MIN_CANVAS_WIDTH,
   MIN_CANVAS_HEIGHT,
@@ -45,7 +45,9 @@ module.exports.validateCalcResult = validateCalcResult
  * @param {Object} calcState State for calculations
  */
 const validateInputs = (calcState) => {
-  convertCalcStateToNum(calcState, 'float')
+  const { floorVals } = calcState
+  convertCalcStateToNum(calcState, floorVals)
+
   const {
     canvasWidth,
     canvasHeight,
