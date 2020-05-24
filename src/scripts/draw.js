@@ -1,5 +1,5 @@
 const commands = require('commands')
-const { Color, Rectangle } = require('scenegraph')
+const { Color, Line, Rectangle } = require('scenegraph')
 const { editDocument } = require('application')
 
 /**
@@ -19,14 +19,13 @@ const draw = (calcState) => {
       topMargin,
       leftMargin,
     } = calcState
-    const color = new Color('#00ffff', 0.5)
     const newItems = []
 
     const canvas = new Rectangle()
     canvas.name = 'Canvas'
     canvas.width = canvasWidth
     canvas.height = canvasHeight
-    canvas.fill = color
+    canvas.fill = new Color('#00ff00', 0.25)
     newItems.push(canvas)
     selection.insertionParent.addChild(canvas)
 
@@ -36,10 +35,28 @@ const draw = (calcState) => {
       const col = new Rectangle()
       col.width = colWidth
       col.height = gridHeight
-      col.fill = color
+      col.fill = new Color('#00ffff', 0.5)
       col.name = `Column ${i + 1}`
       newItems.push(col)
       selection.insertionParent.addChild(col)
+
+      const gridlineA = new Line()
+      gridlineA.setStartEnd(pos.x, 0, pos.x, canvasHeight)
+      gridlineA.strokeEnabled = true
+      gridlineA.strokeWidth = 1
+      gridlineA.stroke = new Color('#ff4fff')
+      gridlineA.name = 'Gridline'
+      newItems.push(gridlineA)
+      selection.insertionParent.addChild(gridlineA)
+
+      const gridlineB = new Line()
+      gridlineB.setStartEnd(pos.x + colWidth, 0, pos.x + colWidth, canvasHeight)
+      gridlineB.strokeEnabled = true
+      gridlineB.strokeWidth = 1
+      gridlineB.stroke = new Color('#ff4fff')
+      gridlineB.name = 'Gridline'
+      newItems.push(gridlineB)
+      selection.insertionParent.addChild(gridlineB)
 
       if (pos.x > 0 || pos.y > 0) {
         col.moveInParentCoordinates(pos.x, pos.y)
@@ -66,21 +83,6 @@ const draw = (calcState) => {
     }
 
     canvas.visible = false
-
-    // commands.alignHorizontalCenter()
-    // commands.alignVerticalCenter()
-
-    // const newLine = new Line()
-    // newLine.setStartEnd(0, 0, 500, 500)
-    // newLine.strokeEnabled = true
-    // newLine.stroke = new Color('#ff00ff')
-    // newLine.strokeWidth = 3
-    // // console.log(selection.items[0])
-    // console.log(selection.editContext)
-    // console.log(selection.editContext.children)
-    // selection.insertionParent.addChild(newLine)
-    // // selection.editContext.addChild(newLine)
-    // selection.items = [newLine]
   })
 }
 
