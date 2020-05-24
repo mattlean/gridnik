@@ -1,5 +1,5 @@
 const GridCalcError = require('./GridCalcError')
-const { convertCalcStateToNum, floorVal } = require('./util')
+const { convertCalcStateToNum } = require('./util')
 const {
   MIN_CANVAS_WIDTH,
   MIN_CANVAS_HEIGHT,

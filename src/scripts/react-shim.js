@@ -15,7 +15,7 @@ if (window.cancelAnimationFrame == null) {
 }
 if (window.requestAnimationFrame == null) {
   window.requestAnimationFrame = function () {
-    console.log('requestAnimationFrame is not supported yet')
+    console.log('requestAnimationFrame is not supported yet') // eslint-disable-line no-console
   }
 }
 if (window.HTMLIFrameElement == null) {

@@ -54,8 +54,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
     leftMargin,
   }
 
-  console.log(calcState)
-
   /**
    * Reset stats on panel UI.
    */
