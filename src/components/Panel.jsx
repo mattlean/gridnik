@@ -38,6 +38,9 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [topBottomMarginsSum, setTopBottomMarginsSum] = useState(0)
   const [rightLeftMarginsSum, setRightLeftMarginsSum] = useState(0)
 
+  const [drawFields, setDrawFields] = useState(true)
+  const [drawGridlines, setDrawGridlines] = useState(true)
+
   const [isCalcReady, setIsCalcReady] = useState(false)
 
   const calcState = {
@@ -79,6 +82,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setRightMargin(0)
     setBottomMargin(0)
     setLeftMargin(0)
+    setDrawFields(true)
+    setDrawGridlines(true)
     resetStats()
   }
 
@@ -460,13 +465,35 @@ const Panel = ({ selectionAmount, validSelection }) => {
           </div>
           <hr />
         </div>
+        <label className="text-input-combo">
+          <span>Draw Fields</span>
+          <input
+            type="checkbox"
+            checked={drawFields}
+            onChange={(evt) => {
+              setDrawFields(evt.target.checked)
+            }}
+            uxp-quiet="true"
+          />
+        </label>
+        <label className="text-input-combo">
+          <span>Draw Gridlines</span>
+          <input
+            type="checkbox"
+            checked={drawGridlines}
+            onChange={(evt) => {
+              setDrawGridlines(evt.target.checked)
+            }}
+            uxp-quiet="true"
+          />
+        </label>
         <footer>
           <button onClick={() => resetForm()} uxp-variant="secondary">
             Reset
           </button>
           <button
             id="create"
-            onClick={() => draw(calcState)}
+            onClick={() => draw(calcState, { drawFields, drawGridlines })}
             disabled={!isCalcReady}
             uxp-variant="cta"
           >
