@@ -41,6 +41,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [isCalcReady, setIsCalcReady] = useState(false)
 
   const calcState = {
+    canvasHeight,
+    canvasWidth,
     cols,
     colWidth,
     gridHeight,
@@ -83,7 +85,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
    */
   const setForm = (calcState) => {
     setCanvasWidth(calcState.canvasWidth)
-    setCanvasHeight(calcState.canvasHEight)
+    setCanvasHeight(calcState.canvasHeight)
     setCols(calcState.cols)
     setGutterWidth(calcState.gutterWidth)
     setColWidth(calcState.colWidth)
