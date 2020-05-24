@@ -38,6 +38,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [rightLeftMarginsSum, setRightLeftMarginsSum] = useState(0)
 
   const [calcAlertMsg, setCalcAlertMsg] = useState('')
+  const [isCalcReady, setIsCalcReady] = useState(false)
 
   const calcState = {
     cols,
@@ -60,6 +61,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setGutterWidthsSum('N/A')
     setTopBottomMarginsSum(0)
     setRightLeftMarginsSum(0)
+    setIsCalcReady(false)
   }
 
   /**
@@ -96,10 +98,15 @@ const Panel = ({ selectionAmount, validSelection }) => {
    */
   const attemptColWidthCalc = () => {
     let finalResult
+    // Clean inputs to possible values
+    // May not be enough inputs for calculations though
     validateInputs(calcState)
-    console.log('[ Validate inputs for colWidthCalc ]', calcState)
 
-    if (validateColWidthCalc(calcState)) {
+    // Check to see if calcColWidth is possible
+    const canCalcColWidth = validateColWidthCalc(calcState)
+
+    if (canCalcColWidth) {
+      // calcColWidth is possible
       const results = calcColWidth(calcState, [
         'rightLeftMargins',
         'cols',
@@ -107,24 +114,36 @@ const Panel = ({ selectionAmount, validSelection }) => {
         'colWidth',
       ])
 
+      // Get final result from calcColWidth
       if (Array.isArray(results) && results.length > 0) {
         finalResult = results[results.length - 1]
       }
-    } else {
-      resetStats()
     }
 
-    if (finalResult) {
+    if (
+      finalResult &&
+      Array.isArray(finalResult.errs) &&
+      finalResult.errs.length === 0
+    ) {
+      // Final result was successful
       setColWidthsSum(finalResult.colWidthsSum)
       setGridWidth(finalResult.gridWidth)
       setGutterWidthsSum(finalResult.gutterWidthsSum)
       setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
 
+      // Calculate grid height
       const calcGridHeightResult = calcGridHeight(calcState)
       setGridHeight(calcState.gridHeight)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
+      setIsCalcReady(true)
     }
 
+    if (!canCalcColWidth || !finalResult) {
+      // Not possible to run calcColWidth or final result failed
+      resetStats()
+    }
+
+    // Update form UI to reflect input value changes
     setForm(calcState)
   }
 
@@ -133,10 +152,15 @@ const Panel = ({ selectionAmount, validSelection }) => {
    */
   const attemptGutterWidthCalc = () => {
     let finalResult
+    // Clean inputs to possible values
+    // May not be enough inputs for calculations though
     validateInputs(calcState)
-    console.log('[ Validate inputs for gutterWidthCalc ]', calcState)
 
-    if (validateGutterWidthCalc(calcState)) {
+    // Check to see if calcGutterWidth is possible
+    const canCalcGutterWidth = validateGutterWidthCalc(calcState)
+
+    if (canCalcGutterWidth) {
+      // calcGutterWidth is possible
       const results = calcGutterWidth(calcState, [
         'rightLeftMargins',
         'cols',
@@ -144,24 +168,36 @@ const Panel = ({ selectionAmount, validSelection }) => {
         'gutterWidth',
       ])
 
+      // Get final result from calcGutterWidth
       if (Array.isArray(results) && results.length > 0) {
         finalResult = results[results.length - 1]
       }
-    } else {
-      resetStats()
     }
 
-    if (finalResult) {
+    if (
+      finalResult &&
+      Array.isArray(finalResult.errs) &&
+      finalResult.errs.length === 0
+    ) {
+      // Final result was successful
       setColWidthsSum(finalResult.colWidthsSum)
       setGridWidth(finalResult.gridWidth)
       setGutterWidthsSum(finalResult.gutterWidthsSum)
       setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
 
+      // Calculate grid height
       const calcGridHeightResult = calcGridHeight(calcState)
       setGridHeight(calcState.gridHeight)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
+      setIsCalcReady(true)
     }
 
+    if (!canCalcGutterWidth || !finalResult) {
+      // Not possible to run calcColWidth or final result failed
+      resetStats()
+    }
+
+    // Update form UI to reflect input value changes
     setForm(calcState)
   }
 
@@ -172,7 +208,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
     validateInputs(calcState)
 
     if (validateColWidthCalc(calcState) || validateGutterWidthCalc(calcState)) {
-      console.log('[ Validate inputs for colWidthCalc ]', calcState)
       const result = calcGridHeight(calcState)
 
       setGridHeight(result.gridHeight)
@@ -417,10 +452,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
           </button>
           <button
             id="create"
-            onClick={() => {
-              // TODO: validate calcData to see if draw is possible first
-              draw(calcState)
-            }}
+            onClick={() => draw(calcState)}
+            disabled={!isCalcReady}
             uxp-variant="cta"
           >
             Create
