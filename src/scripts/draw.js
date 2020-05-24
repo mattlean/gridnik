@@ -1,6 +1,6 @@
-const commands = require('commands')
 const { Color, Line, Rectangle } = require('scenegraph')
 const { editDocument } = require('application')
+const { group } = require('commands')
 
 /**
  * Draw grid.
@@ -21,6 +21,8 @@ const draw = (calcState, drawOptions) => {
     } = calcState
     const { drawFields, drawGridlines } = drawOptions
     const newItems = []
+    const colFills = []
+    const gridlines = []
 
     const canvas = new Rectangle()
     canvas.name = 'Canvas'
@@ -40,7 +42,7 @@ const draw = (calcState, drawOptions) => {
           col.height = gridHeight
           col.fill = new Color('#00ffff', 0.5)
           col.name = `Column ${i + 1}`
-          newItems.push(col)
+          colFills.push(col)
           selection.insertionParent.addChild(col)
 
           if (pos.x > 0 || pos.y > 0) {
@@ -55,7 +57,7 @@ const draw = (calcState, drawOptions) => {
           gridlineA.strokeWidth = 1
           gridlineA.stroke = new Color('#ff4fff')
           gridlineA.name = 'Gridline'
-          newItems.push(gridlineA)
+          gridlines.push(gridlineA)
           selection.insertionParent.addChild(gridlineA)
 
           const gridlineB = new Line()
@@ -69,26 +71,41 @@ const draw = (calcState, drawOptions) => {
           gridlineB.strokeWidth = 1
           gridlineB.stroke = new Color('#ff4fff')
           gridlineB.name = 'Gridline'
-          newItems.push(gridlineB)
+          gridlines.push(gridlineB)
           selection.insertionParent.addChild(gridlineB)
         }
 
         pos.x += colWidth + gutterWidth
       }
 
-      selection.items = newItems
-      commands.group()
-      const group = selection.items[0]
-      group.name = 'Gridnik Grid'
-      const topLeftGroupPos = { x: group.localBounds.x, y: group.localBounds.y }
+      selection.items = colFills
+      group()
+      const colGroup = selection.items[0]
+      colGroup.name = 'Columns'
+      newItems.push(colGroup)
 
+      selection.items = gridlines
+      group()
+      const gridlineGroup = selection.items[0]
+      gridlineGroup.name = 'Gridlines'
+      newItems.push(gridlineGroup)
+
+      selection.items = newItems
+      group()
+      const gridGroup = selection.items[0]
+      gridGroup.name = 'Gridnik Grid'
+
+      const topLeftGroupPos = {
+        x: gridGroup.localBounds.x,
+        y: gridGroup.localBounds.y,
+      }
       if (currSelection.constructor.name === 'Artboard') {
-        selection.items[0].placeInParentCoordinates(topLeftGroupPos, {
+        gridGroup.placeInParentCoordinates(topLeftGroupPos, {
           x: 0,
           y: 0,
         })
       } else {
-        selection.items[0].placeInParentCoordinates(
+        gridGroup.placeInParentCoordinates(
           topLeftGroupPos,
           currSelection.boundsInParent
         )
