@@ -37,7 +37,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [topBottomMarginsSum, setTopBottomMarginsSum] = useState(0)
   const [rightLeftMarginsSum, setRightLeftMarginsSum] = useState(0)
 
-  const [calcAlertMsg, setCalcAlertMsg] = useState('')
   const [isCalcReady, setIsCalcReady] = useState(false)
 
   const calcState = {
@@ -280,8 +279,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
     calcState.canvasHeight = canvasHeight
   }
 
-  console.log('[ Init calcState ]', calcState)
-
   let content
   if (selectionAmount === 1) {
     content = (
@@ -411,7 +408,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
             />
           </div>
         </label>
-        {calcAlertMsg && <Alert txt={calcAlertMsg} type="err" />}
         <div id="info-section">
           <hr />
           <div>
