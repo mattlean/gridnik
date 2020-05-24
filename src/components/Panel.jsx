@@ -543,7 +543,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
                 draw(calcState, { drawFields, drawGridlines })
               }
             }}
-            disabled={!isCalcReady}
+            disabled={!isCalcReady || (!drawFields && !drawGridlines)}
             uxp-variant="cta"
           >
             Create

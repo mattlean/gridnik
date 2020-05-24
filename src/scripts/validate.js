@@ -198,7 +198,7 @@ const validateGutterWidthCalc = (calcState) => {
 module.exports.validateGutterWidthCalc = validateGutterWidthCalc
 
 /**
- * Check if stats exist. If they do, assume there is a current valid calculation.
+ * Check if all calculation stats exist. If they do, assume there is a current valid calculation.
  * @param {*} calcStats Stats from calculations
  * @returns {boolean} True if stats exist, false otherwise
  */
