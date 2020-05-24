@@ -4,7 +4,8 @@ const { group } = require('commands')
 
 /**
  * Draw grid.
- * @param {Object} calcState  State for calculations. Should be validated beforehand.
+ * @param {Object} calcState State for calculations. Should be validated beforehand.
+ * @param {Object} drawOptions Options to control what should be drawn
  */
 const draw = (calcState, drawOptions) => {
   editDocument((selection) => {
@@ -24,6 +25,7 @@ const draw = (calcState, drawOptions) => {
     const colFills = []
     const gridlines = []
 
+    // Draw canvas. Used for alignment.
     const canvas = new Rectangle()
     canvas.name = 'Canvas'
     canvas.width = canvasWidth
@@ -37,6 +39,7 @@ const draw = (calcState, drawOptions) => {
     if (drawFields || drawGridlines) {
       for (let i = 0; i < cols; i += 1) {
         if (drawFields) {
+          // Draw column
           const col = new Rectangle()
           col.width = colWidth
           col.height = gridHeight
@@ -51,6 +54,7 @@ const draw = (calcState, drawOptions) => {
         }
 
         if (drawGridlines) {
+          // Draw gridlines
           const gridlineA = new Line()
           gridlineA.setStartEnd(pos.x, 0, pos.x, canvasHeight)
           gridlineA.strokeEnabled = true
@@ -78,18 +82,21 @@ const draw = (calcState, drawOptions) => {
         pos.x += colWidth + gutterWidth
       }
 
+      // Group columns
       selection.items = colFills
       group()
       const colGroup = selection.items[0]
       colGroup.name = 'Columns'
       newItems.push(colGroup)
 
+      // Group gridlines
       selection.items = gridlines
       group()
       const gridlineGroup = selection.items[0]
       gridlineGroup.name = 'Gridlines'
       newItems.push(gridlineGroup)
 
+      // Group canvas, columns group, and gridlines group
       selection.items = newItems
       group()
       const gridGroup = selection.items[0]
@@ -100,17 +107,20 @@ const draw = (calcState, drawOptions) => {
         y: gridGroup.localBounds.y,
       }
       if (currSelection.constructor.name === 'Artboard') {
+        // Draw at (0,0) because the current selection is an artboard
         gridGroup.placeInParentCoordinates(topLeftGroupPos, {
           x: 0,
           y: 0,
         })
       } else {
+        // Draw over the current selection since the current seleciton isn't an artboard
         gridGroup.placeInParentCoordinates(
           topLeftGroupPos,
           currSelection.boundsInParent
         )
       }
 
+      // Canvas no longer needs to be visible
       canvas.visible = false
     }
   })
