@@ -261,7 +261,6 @@ const calcGridHeight = (calcState, currResult = { errs: [] }) => {
 
   currResult.topBottomMarginsSum = calcState.topMargin + calcState.bottomMargin
   currResult.gridHeight = canvasHeight - currResult.topBottomMarginsSum
-  calcState.gridHeight = currResult.gridHeight
 
   return currResult
 }

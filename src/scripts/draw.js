@@ -7,7 +7,7 @@ const { group } = require('commands')
  * @param {Object} calcState State for calculations. Should be validated beforehand.
  * @param {Object} drawOptions Options to control what should be drawn
  */
-const draw = (calcState, drawOptions) => {
+const draw = (calcState, statsState, drawOptions) => {
   editDocument((selection) => {
     const currSelection = selection.items[0]
     const {
@@ -15,11 +15,11 @@ const draw = (calcState, drawOptions) => {
       canvasHeight,
       cols,
       colWidth,
-      gridHeight,
       gutterWidth,
       topMargin,
       leftMargin,
     } = calcState
+    const { gridHeight } = statsState
     const { drawFields, drawGridlines } = drawOptions
     const newItems = []
     const colFills = []

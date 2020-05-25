@@ -50,7 +50,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
     cols,
     colWidth,
     floorVals,
-    gridHeight,
     gutterWidth,
     topMargin,
     rightMargin,
@@ -144,7 +143,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
       // Calculate grid height
       const calcGridHeightResult = calcGridHeight(calcState)
-      setGridHeight(calcState.gridHeight)
+      setGridHeight(calcGridHeightResult.gridHeight)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
       setIsCalcReady(true)
     }
@@ -198,7 +197,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
       // Calculate grid height
       const calcGridHeightResult = calcGridHeight(calcState)
-      setGridHeight(calcState.gridHeight)
+      setGridHeight(calcGridHeightResult.gridHeight)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
       setIsCalcReady(true)
     }
@@ -540,7 +539,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             id="create"
             onClick={() => {
               if (isCalcReady) {
-                draw(calcState, { drawFields, drawGridlines })
+                draw(calcState, { gridHeight }, { drawFields, drawGridlines })
               }
             }}
             disabled={!isCalcReady || (!drawFields && !drawGridlines)}
