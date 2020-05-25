@@ -24,6 +24,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [boundType, setBoundType] = useState('path')
   const [canvasWidth, setCanvasWidth] = useState('')
   const [canvasHeight, setCanvasHeight] = useState('')
+
+  const [createCols, setCreateCols] = useState(true)
   const [cols, setCols] = useState('')
   const [gutterWidth, setGutterWidth] = useState(0)
   const [colWidth, setColWidth] = useState('')
@@ -338,7 +340,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
             <option value="draw">Draw</option>
           </select>
         </label>
-        <hr />
         <label className="text-input-combo">
           <span>Canvas Size</span>
           <div className="multi-inputs">
@@ -372,7 +373,19 @@ const Panel = ({ selectionAmount, validSelection }) => {
             />
           </div>
         </label>
+        <hr />
         <label className="text-input-combo">
+          <span>Create Columns</span>
+          <input
+            type="checkbox"
+            checked={createCols}
+            onChange={(evt) => {
+              setCreateCols(evt.target.checked)
+            }}
+            uxp-quiet="true"
+          />
+        </label>
+        <label className={createCols ? 'text-input-combo' : 'hide'}>
           <span>Columns</span>
           <input
             type="number"
@@ -388,7 +401,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             uxp-quiet="true"
           />
         </label>
-        <label className="text-input-combo">
+        <label className={createCols ? 'text-input-combo' : 'hide'}>
           <span>Gutter Width</span>
           <input
             type="number"
@@ -404,7 +417,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             uxp-quiet="true"
           />
         </label>
-        <label className="text-input-combo">
+        <label className={createCols ? 'text-input-combo' : 'hide'}>
           <span>Column Width</span>
           <input
             type="number"
@@ -420,7 +433,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             uxp-quiet="true"
           />
         </label>
-        <label className="text-input-combo">
+        <label className={createCols ? 'text-input-combo' : 'hide'}>
           <span>Margins</span>
           <div className="multi-inputs">
             <input
