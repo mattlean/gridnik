@@ -1,6 +1,8 @@
-# Gridnik (Alpha)
+# Gridnik
 
 ## About
+
+**THIS PLUGIN IS CURRENTLY IN ALPHA!**
 
 Gridnik is a plugin for an [Adobe XD](https://www.adobe.com/products/xd.html) that extends the program's ability to create grids.
 
@@ -10,4 +12,5 @@ The plugin's name is based on Dutch graphic designer [Wim Crouwel](https://en.wi
 
 - Create an unlimited amount of layout grids with varying dimensions, columns, gutters, and margins
 - Build grids and overlay them upon any object: artboards, rectangles, polygons, text, etc.
-- Use auto-grid calculations to make sure your grids hold your desired structure while still being valid
+- Use auto-calculations to make sure your grids hold your desired structure while still being valid
+- Construct grids in measurements of decimals or whole numbers
