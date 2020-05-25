@@ -35,6 +35,28 @@ const convertCalcStateToNum = (calcState, floorVals = false) => {
 
 module.exports.convertCalcStateToNum = convertCalcStateToNum
 
+const denormalizeColData = (normalizedColData) => {
+  const colData = {}
+
+  for (let key in normalizedColData) {
+    if (key === 'gutterWidth') {
+      colData['colGutterWidth'] = normalizedColData['gutterWidth']
+    } else if (key === 'pillars') {
+      colData['cols'] = normalizedColData['pillars']
+    } else if (key === 'pillarWidth') {
+      colData['colWidth'] = normalizedColData['pillarWidth']
+    } else if (key === 'pillarWidthsSum') {
+      colData['colWidthsSum'] = normalizedColData['pillarWidthsSum']
+    } else {
+      colData[key] = normalizedColData[key]
+    }
+  }
+
+  return colData
+}
+
+module.exports.denormalizeColData = denormalizeColData
+
 /**
  * Conditionally floor value.
  * @param {boolean} floorVals Flag that deteremines if value is floored
@@ -68,3 +90,21 @@ const isNumericString = (val) => {
 }
 
 module.exports.isNumericString = isNumericString
+
+const normalizeColData = (colData) => {
+  const normalizedColData = {}
+
+  for (let key in colData) {
+    if (key === 'cols') {
+      normalizedColData['pillars'] = colData['cols']
+    } else if (key === 'colWidth') {
+      normalizedColData['pillarWidth'] = colData['colWidth']
+    } else {
+      normalizedColData[key] = colData[key]
+    }
+  }
+
+  return normalizedColData
+}
+
+module.exports.normalizeColData = normalizeColData

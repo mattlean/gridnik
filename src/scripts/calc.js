@@ -1,5 +1,5 @@
 const GridCalcError = require('./GridCalcError')
-const { floorVal } = require('./util')
+const { denormalizeColData, floorVal } = require('./util')
 const { validateCalcResult } = require('./validate')
 const { GRID_CALC_ERROR_TYPE_SILENT } = require('./consts')
 
@@ -10,8 +10,13 @@ const { GRID_CALC_ERROR_TYPE_SILENT } = require('./consts')
  * @param {Object} [currResult={errs: []}] Current result to update
  * @returns {Object} Result with updated calcState values & new calculations
  */
-const calcRightLeftMargins = (calcState, currResult = { errs: [] }) => {
-  const { canvasWidth, floorVals, rightMargin, leftMargin } = calcState
+const calcRightLeftMargins = (
+  canvasState,
+  calcState,
+  currResult = { errs: [] }
+) => {
+  const { canvasWidth } = canvasState
+  const { floorVals, rightMargin, leftMargin } = calcState
   const rightLeftMarginsSum = rightMargin + leftMargin
   const maxRightLeftMarginsSum = canvasWidth - 1
 
@@ -50,20 +55,24 @@ module.exports.calcRightLeftMargins = calcRightLeftMargins
 /**
  * Calculate column width.
  * Can mutate calcState.
+ * @param {Object} canvasState
  * @param {Object} calcState State for calculations. Should be validated beforehand.
  * @param {Array} [orderOfCorrections=[]] Array of corrections in order they should be resolved in
  * @param {Array} [results=[]] Array of results from chain of calculations
  * @param {Object} [correctedData] Object of key/value pairs to be corrected in calcState for next calculation
  * @returns {Array} Array of results from chain of calculations
  */
-const calcColWidth = (
+const calcPillarWidth = (
+  canvasState,
   calcState,
+  type,
   orderOfCorrections = [],
   results = [],
   correctedData
 ) => {
-  const currResult = {
-    type: 'calcColWidth',
+  if (!type) type = 'calcPillarWidth'
+  let currResult = {
+    type,
     errs: [],
   }
 
@@ -73,66 +82,100 @@ const calcColWidth = (
       currResult[key] = calcState[key]
     }
   }
-  const { canvasWidth, cols, floorVals, gutterWidth } = calcState
+
+  const { canvasWidth } = canvasState
+  const { pillars, floorVals, gutterWidth } = calcState
 
   // Make sure that left + right margins are possible numbers
-  calcRightLeftMargins(calcState, currResult)
+  calcRightLeftMargins(canvasState, calcState, currResult)
   const rightLeftMarginsSum = currResult.rightLeftMarginsSum
 
   // Perform main calculations
-  const gutterWidthsSum = floorVal(floorVals, gutterWidth * (cols - 1))
-  const colWidth = floorVal(
+  const gutterWidthsSum = floorVal(floorVals, gutterWidth * (pillars - 1))
+  const pillarWidth = floorVal(
     floorVals,
-    (canvasWidth - rightLeftMarginsSum - gutterWidthsSum) / cols
+    (canvasWidth - rightLeftMarginsSum - gutterWidthsSum) / pillars
   )
-  const colWidthsSum = floorVal(floorVals, colWidth * cols)
-  const gridWidth = colWidthsSum + gutterWidthsSum
+  const pillarWidthsSum = floorVal(floorVals, pillarWidth * pillars)
+  const gridWidth = pillarWidthsSum + gutterWidthsSum
 
-  currResult.colWidth = colWidth
-  currResult.colWidthsSum = colWidthsSum
+  currResult.pillarWidth = pillarWidth
+  currResult.pillarWidthsSum = pillarWidthsSum
   currResult.gridWidth = gridWidth
   currResult.gutterWidthsSum = gutterWidthsSum
+
+  if (currResult.type === 'calcColWidth') {
+    console.log('a', currResult)
+    currResult = denormalizeColData(currResult)
+    console.log('b', currResult)
+  }
 
   results.push(currResult)
 
   if (validateCalcResult(currResult)) {
     // Valid calculation reached
-    calcState.colWidth = colWidth
+    calcState.pillarWidth = pillarWidth
     return results
   }
 
   // Recursively initiate another calculation if correction is available
   const correction = orderOfCorrections.pop()
 
-  if (correction === 'colWidth') {
-    return calcGutterWidth(calcState, orderOfCorrections, results, {
-      colWidth: 1,
-    })
+  if (correction === 'pillarWidth') {
+    return calcGutterWidth(
+      canvasState,
+      calcState,
+      orderOfCorrections,
+      results,
+      {
+        pillarWidth: 1,
+      }
+    )
   }
 
   if (correction === 'gutterWidth') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
-      gutterWidth: 0,
-    })
+    return calcPillarWidth(
+      canvasState,
+      calcState,
+      orderOfCorrections,
+      results,
+      {
+        gutterWidth: 0,
+      }
+    )
   }
 
-  if (correction === 'cols') {
-    calcState.cols = 1
-    return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
+  if (correction === 'pillars') {
+    calcState.pillars = 1
+    return calcPillarWidth(
+      canvasState,
+      calcState,
+      orderOfCorrections,
+      results,
+      {
+        col: 1,
+      }
+    )
   }
 
   if (correction === 'rightLeftMargins') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
-      leftMargin: 0,
-      bottomMargin: 0,
-    })
+    return calcPillarWidth(
+      canvasState,
+      calcState,
+      orderOfCorrections,
+      results,
+      {
+        leftMargin: 0,
+        bottomMargin: 0,
+      }
+    )
   }
 
   // No more corrections remain & no valid calculation was reached
   return results
 }
 
-module.exports.calcColWidth = calcColWidth
+module.exports.calcPillarWidth = calcPillarWidth
 
 /**
  * Calculate gutter width.
@@ -161,7 +204,7 @@ const calcGutterWidth = (
     }
   }
 
-  const { canvasWidth, cols, colWidth, floorVals } = calcState
+  const { canvasWidth, pillars, pillarWidth, floorVals } = calcState
 
   // Make sure that left + margins are possible numbers
   calcRightLeftMargins(calcState, currResult)
@@ -170,13 +213,13 @@ const calcGutterWidth = (
   // Perform main calculations
   const gutterWidth = floorVal(
     floorVals,
-    (canvasWidth - rightLeftMarginsSum - colWidth * cols) / (cols - 1)
+    (canvasWidth - rightLeftMarginsSum - pillarWidth * pillars) / (pillars - 1)
   )
-  const gutterWidthsSum = floorVal(floorVals, gutterWidth * (cols - 1))
-  const colWidthsSum = floorVal(floorVals, colWidth * cols)
-  const gridWidth = colWidthsSum + gutterWidthsSum
+  const gutterWidthsSum = floorVal(floorVals, gutterWidth * (pillars - 1))
+  const pillarWidthsSum = floorVal(floorVals, pillarWidth * pillars)
+  const gridWidth = pillarWidthsSum + gutterWidthsSum
 
-  currResult.colWidthsSum = colWidthsSum
+  currResult.pillarWidthsSum = pillarWidthsSum
   currResult.gridWidth = gridWidth
   currResult.gutterWidth = gutterWidth
   currResult.gutterWidthsSum = gutterWidthsSum
@@ -192,25 +235,25 @@ const calcGutterWidth = (
   // Recursively initiate another calculation if correction is available
   const correction = orderOfCorrections.pop()
 
-  if (correction === 'colWidth') {
+  if (correction === 'pillarWidth') {
     return calcGutterWidth(calcState, orderOfCorrections, results, {
-      colWidth: 1,
+      pillarWidth: 1,
     })
   }
 
   if (correction === 'gutterWidth') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
+    return calcPillarWidth(calcState, orderOfCorrections, results, {
       gutterWidth: 0,
     })
   }
 
-  if (correction === 'cols') {
-    calcState.cols = 1
-    return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
+  if (correction === 'pillars') {
+    calcState.pillars = 1
+    return calcPillarWidth(calcState, orderOfCorrections, results, { col: 1 })
   }
 
   if (correction === 'rightLeftMargins') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
+    return calcPillarWidth(calcState, orderOfCorrections, results, {
       leftMargin: 0,
       bottomMargin: 0,
     })
