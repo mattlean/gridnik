@@ -13,4 +13,4 @@ The plugin's name is based on Dutch graphic designer [Wim Crouwel](https://en.wi
 - Create an unlimited amount of layout grids with varying dimensions, columns, gutters, and margins
 - Build grids and overlay them upon any object: artboards, rectangles, polygons, text, etc.
 - Use auto-calculations to make sure your grids hold your desired structure while still being valid
-- Construct grids in measurements of decimals or whole numbers
+- Support for grid construction using decimals
