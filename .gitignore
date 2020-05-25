@@ -1,5 +1,5 @@
 dist
 node_modules
-
+.eslintcache
 main.js
 yarn-error.log

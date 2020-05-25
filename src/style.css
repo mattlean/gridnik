@@ -1,3 +1,7 @@
+hr {
+  margin: 2em 0;
+}
+
 .alert {
   margin-left: 0;
   margin-bottom: 1em;
@@ -43,6 +47,10 @@ input.input-lg {
   margin-right: 0;
 }
 
+.text-input-combo input[type='checkbox'] {
+  width: 13px;
+}
+
 .title {
   font-size: 0.9em;
   margin-left: 0;
@@ -55,7 +63,6 @@ input.input-lg {
 }
 
 #info-section {
-  margin-top: 1em;
   margin-bottom: 1em;
 }
 
@@ -63,19 +70,6 @@ input.input-lg {
   margin-bottom: 0.5em;
   display: flex;
   justify-content: space-between;
-}
-
-#info-section > hr {
-  margin-left: 0;
-  margin-right: 0;
-}
-
-#info-section > hr:first-child {
-  margin-bottom: 2em;
-}
-
-#info-section > hr:last-child {
-  margin-top: 2em;
 }
 
 .multi-inputs {

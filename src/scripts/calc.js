@@ -1,4 +1,5 @@
 const GridCalcError = require('./GridCalcError')
+const { floorVal } = require('./util')
 const { validateCalcResult } = require('./validate')
 const { GRID_CALC_ERROR_TYPE_SILENT } = require('./consts')
 
@@ -10,19 +11,31 @@ const { GRID_CALC_ERROR_TYPE_SILENT } = require('./consts')
  * @returns {Object} Result with updated calcState values & new calculations
  */
 const calcRightLeftMargins = (calcState, currResult = { errs: [] }) => {
-  const { canvasWidth, rightMargin, leftMargin } = calcState
+  const { canvasWidth, floorVals, rightMargin, leftMargin } = calcState
   const rightLeftMarginsSum = rightMargin + leftMargin
   const maxRightLeftMarginsSum = canvasWidth - 1
 
   if (rightLeftMarginsSum > maxRightLeftMarginsSum) {
     currResult.errs.push(new GridCalcError(3, GRID_CALC_ERROR_TYPE_SILENT))
 
-    const rightMarginPercent = calcState.rightMargin / rightLeftMarginsSum
-    const leftMarginPercent = calcState.leftMargin / rightLeftMarginsSum
-    const maxLeftRightMargin = maxRightLeftMarginsSum / 2
+    const rightMarginPercent = floorVal(
+      floorVals,
+      calcState.rightMargin / rightLeftMarginsSum
+    )
+    const leftMarginPercent = floorVal(
+      floorVals,
+      calcState.leftMargin / rightLeftMarginsSum
+    )
+    const maxLeftRightMargin = floorVal(floorVals, maxRightLeftMarginsSum / 2)
 
-    calcState.rightMargin = maxLeftRightMargin * rightMarginPercent
-    calcState.leftMargin = maxLeftRightMargin * leftMarginPercent
+    calcState.rightMargin = floorVal(
+      floorVals,
+      maxLeftRightMargin * rightMarginPercent
+    )
+    calcState.leftMargin = floorVal(
+      floorVals,
+      maxLeftRightMargin * leftMarginPercent
+    )
     currResult.rightMargin = calcState.rightMargin
     currResult.leftMargin = calcState.leftMargin
   }
@@ -60,16 +73,19 @@ const calcColWidth = (
       currResult[key] = calcState[key]
     }
   }
-  const { canvasWidth, cols, gutterWidth } = calcState
+  const { canvasWidth, cols, floorVals, gutterWidth } = calcState
 
   // Make sure that left + right margins are possible numbers
   calcRightLeftMargins(calcState, currResult)
   const rightLeftMarginsSum = currResult.rightLeftMarginsSum
 
   // Perform main calculations
-  const gutterWidthsSum = gutterWidth * (cols - 1)
-  const colWidth = (canvasWidth - rightLeftMarginsSum - gutterWidthsSum) / cols
-  const colWidthsSum = colWidth * cols
+  const gutterWidthsSum = floorVal(floorVals, gutterWidth * (cols - 1))
+  const colWidth = floorVal(
+    floorVals,
+    (canvasWidth - rightLeftMarginsSum - gutterWidthsSum) / cols
+  )
+  const colWidthsSum = floorVal(floorVals, colWidth * cols)
   const gridWidth = colWidthsSum + gutterWidthsSum
 
   currResult.colWidth = colWidth
@@ -145,17 +161,19 @@ const calcGutterWidth = (
     }
   }
 
-  const { canvasWidth, cols, colWidth } = calcState
+  const { canvasWidth, cols, colWidth, floorVals } = calcState
 
   // Make sure that left + margins are possible numbers
   calcRightLeftMargins(calcState, currResult)
   const rightLeftMarginsSum = currResult.rightLeftMarginsSum
 
   // Perform main calculations
-  const gutterWidth =
+  const gutterWidth = floorVal(
+    floorVals,
     (canvasWidth - rightLeftMarginsSum - colWidth * cols) / (cols - 1)
-  const gutterWidthsSum = gutterWidth * (cols - 1)
-  const colWidthsSum = colWidth * cols
+  )
+  const gutterWidthsSum = floorVal(floorVals, gutterWidth * (cols - 1))
+  const colWidthsSum = floorVal(floorVals, colWidth * cols)
   const gridWidth = colWidthsSum + gutterWidthsSum
 
   currResult.colWidthsSum = colWidthsSum
@@ -212,19 +230,31 @@ module.exports.calcGutterWidth = calcGutterWidth
  * @returns {Object} Result with updated calcState values & new calculations
  */
 const calcGridHeight = (calcState, currResult = { errs: [] }) => {
-  const { canvasHeight, topMargin, bottomMargin } = calcState
+  const { canvasHeight, floorVals, topMargin, bottomMargin } = calcState
   const topBottomMarginsSum = topMargin + bottomMargin
   const maxTopBottomMarginsSum = canvasHeight - 1
 
   if (topBottomMarginsSum > maxTopBottomMarginsSum) {
     currResult.errs.push(new GridCalcError(5, GRID_CALC_ERROR_TYPE_SILENT))
 
-    const topMarginPercent = calcState.topMargin / topBottomMarginsSum
-    const bottomMarginPercent = calcState.bottomMargin / topBottomMarginsSum
-    const maxTopBottomMargin = maxTopBottomMarginsSum / 2
+    const topMarginPercent = floorVal(
+      floorVals,
+      calcState.topMargin / topBottomMarginsSum
+    )
+    const bottomMarginPercent = floorVal(
+      floorVals,
+      calcState.bottomMargin / topBottomMarginsSum
+    )
+    const maxTopBottomMargin = floorVal(floorVals, maxTopBottomMarginsSum / 2)
 
-    calcState.topMargin = maxTopBottomMargin * topMarginPercent
-    calcState.bottomMargin = maxTopBottomMargin * bottomMarginPercent
+    calcState.topMargin = floorVal(
+      floorVals,
+      maxTopBottomMargin * topMarginPercent
+    )
+    calcState.bottomMargin = floorVal(
+      floorVals,
+      maxTopBottomMargin * bottomMarginPercent
+    )
     currResult.topMargin = calcState.topMargin
     currResult.bottomMargin = calcState.bottomMargin
   }
