@@ -89,9 +89,9 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   /**
-   * Reset stats on panel UI.
+   * Reset column stats on panel UI.
    */
-  const resetStats = () => {
+  const resetColStats = () => {
     setColWidthsSum('N/A')
     setGridHeight('N/A')
     setGridWidth('N/A')
@@ -102,9 +102,9 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   /**
-   * Reset form & stats on panel UI.
+   * Reset column form & stats on panel UI.
    */
-  const resetForm = () => {
+  const resetColForm = () => {
     setFloorVals(true)
     setCols('')
     setGutterWidth(0)
@@ -115,7 +115,65 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setLeftMargin(0)
     setDrawFields(true)
     setDrawGridlines(true)
-    resetStats()
+    resetColStats()
+  }
+
+  /**
+   * Reset row stats on panel UI.
+   */
+  const resetRowStats = () => {
+    setRowHeightsSum('N/A')
+    setRowGridHeight('N/A')
+    setRowGridWidth('N/A')
+    setRowGutterHeightsSum('N/A')
+    setRowTopBottomMarginsSum(0)
+    setRightLeftMarginsSum(0)
+    setIsCalcReady(false)
+  }
+
+  /**
+   * Reset row form & stats on panel UI.
+   */
+  const resetRowForm = () => {
+    setFloorVals(true)
+    setRows('')
+    setRowGutterHeight(0)
+    setRowHeight('')
+    setRowTopMargin(0)
+    setRowRightMargin(0)
+    setRowBottomMargin(0)
+    setRowLeftMargin(0)
+    setDrawFields(true)
+    setDrawGridlines(true)
+    resetRowStats()
+  }
+
+  /**
+   * Reset form & stats on panel UI.
+   */
+  const resetForm = () => {
+    setFloorVals(true)
+    setDrawFields(true)
+    setDrawGridlines(true)
+
+    setCols('')
+    setGutterWidth(0)
+    setColWidth('')
+    setTopMargin(0)
+    setRightMargin(0)
+    setBottomMargin(0)
+    setLeftMargin(0)
+
+    setRows('')
+    setRowGutterHeight(0)
+    setRowHeight('')
+    setRowTopMargin(0)
+    setRowRightMargin(0)
+    setRowBottomMargin(0)
+    setRowLeftMargin(0)
+
+    resetColStats()
+    resetRowStats()
   }
 
   /**
@@ -252,7 +310,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
       setIsCalcReady(true)
     } else {
-      resetStats()
+      resetColStats()
     }
 
     // Update form UI to reflect input value changes
@@ -279,7 +337,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
       setIsCalcReady(true)
     } else {
-      resetStats()
+      resetColStats()
     }
 
     // Update form UI to reflect input value changes
@@ -340,7 +398,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       setRowTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
       setIsCalcReady(true)
     } else {
-      resetStats()
+      resetRowStats()
     }
 
     // Update form UI to reflect input value changes
@@ -367,7 +425,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       setRowTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
       setIsCalcReady(true)
     } else {
-      resetStats()
+      resetRowStats()
     }
 
     // Update form UI to reflect input value changes
