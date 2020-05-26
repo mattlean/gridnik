@@ -2,12 +2,12 @@ const PropTypes = require('prop-types')
 const React = require('react')
 const { useEffect, useRef, useState } = React
 const Alert = require('./Alert')
+const draw = require('../scripts/draw')
 const {
   calcColWidth,
   calcGridHeight,
   calcGutterWidth,
 } = require('../scripts/calc')
-const { drawCols } = require('../scripts/draw')
 const {
   validateColWidthCalc,
   validateGutterWidthCalc,
@@ -60,7 +60,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [drawFields, setDrawFields] = useState(true)
   const [drawGridlines, setDrawGridlines] = useState(true)
 
-  const [isCalcReady, setIsCalcReady] = useState(false)
+  const [isColCalcReady, setIsColCalcReady] = useState(false)
+  const [isRowCalcReady, setIsRowCalcReady] = useState(false)
 
   const colCalcState = {
     floorVals,
@@ -98,7 +99,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setGutterWidthsSum('N/A')
     setTopBottomMarginsSum(0)
     setRightLeftMarginsSum(0)
-    setIsCalcReady(false)
+    setIsColCalcReady(false)
   }
 
   /**
@@ -128,7 +129,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setRowGutterHeightsSum('N/A')
     setRowTopBottomMarginsSum(0)
     setRightLeftMarginsSum(0)
-    setIsCalcReady(false)
+    setIsRowCalcReady(false)
   }
 
   /**
@@ -308,7 +309,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       const calcGridHeightResult = calcGridHeight(calcState)
       setGridHeight(calcGridHeightResult.gridHeight)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
-      setIsCalcReady(true)
+      setIsColCalcReady(true)
     } else {
       resetColStats()
     }
@@ -335,7 +336,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       const calcGridHeightResult = calcGridHeight(calcState)
       setGridHeight(calcGridHeightResult.gridHeight)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
-      setIsCalcReady(true)
+      setIsColCalcReady(true)
     } else {
       resetColStats()
     }
@@ -370,8 +371,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
           topBottomMarginsSum: result.topBottomMarginsSum,
         })
       ) {
-        // Previous calculation was valid, so set isCalcReady to true
-        setIsCalcReady(true)
+        // Previous calculation was valid, so set isColCalcReady to true
+        setIsColCalcReady(true)
       }
     }
 
@@ -396,7 +397,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       const calcGridHeightResult = calcGridHeight(calcState)
       setRowGridHeight(calcGridHeightResult.gridHeight)
       setRowTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
-      setIsCalcReady(true)
+      setIsColCalcReady(true)
     } else {
       resetRowStats()
     }
@@ -423,7 +424,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       const calcGridHeightResult = calcGridHeight(calcState)
       setRowGridHeight(calcGridHeightResult.gridHeight)
       setRowTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
-      setIsCalcReady(true)
+      setIsColCalcReady(true)
     } else {
       resetRowStats()
     }
@@ -458,8 +459,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
           topBottomMarginsSum: result.topBottomMarginsSum,
         })
       ) {
-        // Previous calculation was valid, so set isCalcReady to true
-        setIsCalcReady(true)
+        // Previous calculation was valid, so set isRowCalcReady to true
+        setIsRowCalcReady(true)
       }
     }
 
@@ -575,7 +576,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={canvasWidth}
               onBlur={() => attemptColWidthCalc(colCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsColCalcReady(false)
                 setCanvasWidth(evt.target.value)
               }}
               className="input-lg"
@@ -589,7 +590,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={canvasHeight}
               onBlur={() => attemptGridHeightCalc(colCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsColCalcReady(false)
                 setCanvasHeight(evt.target.value)
               }}
               className="input-lg"
@@ -607,6 +608,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
             checked={createCols}
             onChange={(evt) => {
               setCreateCols(evt.target.checked)
+
+              if (evt.target.checked === false) {
+                resetColForm()
+              }
             }}
             uxp-quiet="true"
           />
@@ -620,7 +625,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             value={cols}
             onBlur={() => attemptColWidthCalc(colCalcState)}
             onChange={(evt) => {
-              setIsCalcReady(false)
+              setIsColCalcReady(false)
               setCols(evt.target.value)
             }}
             className="input-lg"
@@ -628,7 +633,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
           />
         </label>
         <label className={createCols ? 'text-input-combo' : 'hide'}>
-          <span>Gutter Width</span>
+          <span>Column Gutter Width</span>
           <input
             type="number"
             min="0"
@@ -636,7 +641,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             value={gutterWidth}
             onBlur={() => attemptColWidthCalc(colCalcState)}
             onChange={(evt) => {
-              setIsCalcReady(false)
+              setIsColCalcReady(false)
               setGutterWidth(evt.target.value)
             }}
             className="input-lg"
@@ -652,7 +657,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             value={colWidth}
             onBlur={() => attemptColGutterWidthCalc(colCalcState)}
             onChange={(evt) => {
-              setIsCalcReady(false)
+              setIsColCalcReady(false)
               setColWidth(evt.target.value)
             }}
             className="input-lg"
@@ -669,7 +674,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={topMargin}
               onBlur={() => attemptColGutterWidthCalc(colCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsColCalcReady(false)
                 setTopMargin(evt.target.value)
               }}
               uxp-quiet="true"
@@ -681,7 +686,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={rightMargin}
               onBlur={() => attemptColWidthCalc(colCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsColCalcReady(false)
                 setRightMargin(evt.target.value)
               }}
               uxp-quiet="true"
@@ -693,7 +698,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={bottomMargin}
               onBlur={() => attemptColGutterWidthCalc(colCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsColCalcReady(false)
                 setBottomMargin(evt.target.value)
               }}
               uxp-quiet="true"
@@ -705,7 +710,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={leftMargin}
               onBlur={() => attemptColWidthCalc(colCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsColCalcReady(false)
                 setLeftMargin(evt.target.value)
               }}
               uxp-quiet="true"
@@ -720,6 +725,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
             checked={createRows}
             onChange={(evt) => {
               setCreateRows(evt.target.checked)
+
+              if (evt.target.checked === false) {
+                resetRowForm()
+              }
             }}
             uxp-quiet="true"
           />
@@ -733,7 +742,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             value={rows}
             onBlur={() => attemptRowHeightCalc(rowCalcState)}
             onChange={(evt) => {
-              setIsCalcReady(false)
+              setIsRowCalcReady(false)
               setRows(evt.target.value)
             }}
             className="input-lg"
@@ -749,7 +758,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             value={rowGutterHeight}
             onBlur={() => attemptRowHeightCalc(rowCalcState)}
             onChange={(evt) => {
-              setIsCalcReady(false)
+              setIsRowCalcReady(false)
               setRowGutterHeight(evt.target.value)
             }}
             className="input-lg"
@@ -765,7 +774,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             value={rowHeight}
             onBlur={() => attemptRowGutterHeightCalc(rowCalcState)}
             onChange={(evt) => {
-              setIsCalcReady(false)
+              setIsRowCalcReady(false)
               setRowHeight(evt.target.value)
             }}
             className="input-lg"
@@ -782,7 +791,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={rowTopMargin}
               onBlur={() => attemptRowGridHeightCalc(rowCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsRowCalcReady(false)
                 setRowTopMargin(evt.target.value)
               }}
               uxp-quiet="true"
@@ -794,7 +803,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={rowRightMargin}
               onBlur={() => attemptRowHeightCalc(rowCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsRowCalcReady(false)
                 setRowRightMargin(evt.target.value)
               }}
               uxp-quiet="true"
@@ -806,7 +815,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={rowBottomMargin}
               onBlur={() => attemptRowGridHeightCalc(rowCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsRowCalcReady(false)
                 setRowBottomMargin(evt.target.value)
               }}
               uxp-quiet="true"
@@ -818,7 +827,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               value={rowLeftMargin}
               onBlur={() => attemptRowHeightCalc(rowCalcState)}
               onChange={(evt) => {
-                setIsCalcReady(false)
+                setIsRowCalcReady(false)
                 setRowLeftMargin(evt.target.value)
               }}
               uxp-quiet="true"
@@ -914,20 +923,43 @@ const Panel = ({ selectionAmount, validSelection }) => {
           <button
             id="create"
             onClick={() => {
-              if (isCalcReady) {
-                if (createCols) {
-                  drawCols(
+              if (createCols && createRows) {
+                if (isColCalcReady && isRowCalcReady) {
+                  draw(
                     colCalcState,
                     { gridHeight },
+                    rowCalcState,
+                    { gridWidth },
+                    { drawFields, drawGridlines }
+                  )
+                }
+              } else if (createCols) {
+                if (isColCalcReady) {
+                  draw(colCalcState, { gridHeight }, null, null, {
+                    drawFields,
+                    drawGridlines,
+                  })
+                }
+              } else if (createRows) {
+                if (isRowCalcReady) {
+                  draw(
+                    null,
+                    null,
+                    rowCalcState,
+                    { gridWidth },
                     { drawFields, drawGridlines }
                   )
                 }
               }
             }}
             disabled={
-              !isCalcReady ||
-              (!drawFields && !drawGridlines) ||
-              (!createCols && !createRows)
+              (createCols && !isColCalcReady) ||
+              (createRows && !isRowCalcReady) ||
+              (createCols &&
+                createRows &&
+                (!isColCalcReady || !isRowCalcReady)) ||
+              (!createCols && !createRows) ||
+              (!drawFields && !drawGridlines)
             }
             uxp-variant="cta"
           >
