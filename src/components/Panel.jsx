@@ -2,12 +2,12 @@ const PropTypes = require('prop-types')
 const React = require('react')
 const { useEffect, useRef, useState } = React
 const Alert = require('./Alert')
-const draw = require('../scripts/draw')
 const {
   calcColWidth,
   calcGridHeight,
   calcGutterWidth,
 } = require('../scripts/calc')
+const { drawCols } = require('../scripts/draw')
 const {
   validateColWidthCalc,
   validateGutterWidthCalc,
@@ -34,6 +34,15 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [bottomMargin, setBottomMargin] = useState(0)
   const [leftMargin, setLeftMargin] = useState(0)
 
+  const [createRows, setCreateRows] = useState(true)
+  const [rows, setRows] = useState('')
+  const [rowGutterHeight, setRowGutterHeight] = useState(0)
+  const [rowHeight, setRowHeight] = useState('')
+  const [rowTopMargin, setRowTopMargin] = useState(0)
+  const [rowRightMargin, setRowRightMargin] = useState(0)
+  const [rowBottomMargin, setRowBottomMargin] = useState(0)
+  const [rowLeftMargin, setRowLeftMargin] = useState(0)
+
   const [colWidthsSum, setColWidthsSum] = useState('N/A')
   const [gridHeight, setGridHeight] = useState('N/A')
   const [gridWidth, setGridWidth] = useState('N/A')
@@ -46,17 +55,30 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
   const [isCalcReady, setIsCalcReady] = useState(false)
 
-  const calcState = {
+  const colCalcState = {
+    floorVals,
     canvasHeight,
     canvasWidth,
     cols,
     colWidth,
-    floorVals,
     gutterWidth,
     topMargin,
     rightMargin,
     bottomMargin,
     leftMargin,
+  }
+
+  const rowCalcState = {
+    floorVals,
+    canvasHeight,
+    canvasWidth,
+    cols: rows,
+    colWidth: rowHeight,
+    gutterWidth: rowGutterHeight,
+    topMargin: rowTopMargin,
+    rightMargin: rowRightMargin,
+    bottomMargin: rowBottomMargin,
+    leftMargin: rowLeftMargin,
   }
 
   /**
@@ -106,9 +128,11 @@ const Panel = ({ selectionAmount, validSelection }) => {
   }
 
   /**
-   * Attempt calculations for column width.
+   * Validates calcState for calcColWidth. If validation is successful, calcColWidth is called.
+   * @param {Object} calcState State for calculations
+   * @returns {Object|null} If a final successful calculation occurred, it will be returned, otherwise it will return null
    */
-  const attemptColWidthCalc = () => {
+  const validateAndCalcColWidth = (calcState) => {
     let finalResult
     // Clean inputs to possible values
     // May not be enough inputs for calculations though
@@ -130,39 +154,25 @@ const Panel = ({ selectionAmount, validSelection }) => {
       if (Array.isArray(results) && results.length > 0) {
         finalResult = results[results.length - 1]
       }
+
+      if (
+        finalResult &&
+        Array.isArray(finalResult.errs) &&
+        finalResult.errs.length === 0
+      ) {
+        return finalResult
+      }
+
+      return null
     }
-
-    if (
-      finalResult &&
-      Array.isArray(finalResult.errs) &&
-      finalResult.errs.length === 0
-    ) {
-      // Final result was successful
-      setColWidthsSum(finalResult.colWidthsSum)
-      setGridWidth(finalResult.gridWidth)
-      setGutterWidthsSum(finalResult.gutterWidthsSum)
-      setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
-
-      // Calculate grid height
-      const calcGridHeightResult = calcGridHeight(calcState)
-      setGridHeight(calcGridHeightResult.gridHeight)
-      setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
-      setIsCalcReady(true)
-    }
-
-    if (!canCalcColWidth || !finalResult) {
-      // Not possible to run calcColWidth or final result failed
-      resetStats()
-    }
-
-    // Update form UI to reflect input value changes
-    setForm(calcState)
   }
 
   /**
-   * Attempt calculations for gutter width.
+   * Validates calcState for calcGutterWidth. If validation is successful, calcGutterWidth is called.
+   * @param {Object} calcState State for calculations
+   * @returns {Object|null} If a final successful calculation occurred, it will be returned, otherwise it will return null
    */
-  const attemptGutterWidthCalc = () => {
+  const validateAndCalcGutterWidth = (calcState) => {
     let finalResult
     // Clean inputs to possible values
     // May not be enough inputs for calculations though
@@ -191,21 +201,57 @@ const Panel = ({ selectionAmount, validSelection }) => {
       Array.isArray(finalResult.errs) &&
       finalResult.errs.length === 0
     ) {
+      return finalResult
+    }
+
+    return null
+  }
+
+  /**
+   * Attempt calculations for column width.
+   */
+  const attemptColWidthCalc = (calcState) => {
+    const result = validateAndCalcColWidth(calcState)
+
+    if (result) {
       // Final result was successful
-      setColWidthsSum(finalResult.colWidthsSum)
-      setGridWidth(finalResult.gridWidth)
-      setGutterWidthsSum(finalResult.gutterWidthsSum)
-      setRightLeftMarginsSum(finalResult.rightLeftMarginsSum)
+      setColWidthsSum(result.colWidthsSum)
+      setGridWidth(result.gridWidth)
+      setGutterWidthsSum(result.gutterWidthsSum)
+      setRightLeftMarginsSum(result.rightLeftMarginsSum)
 
       // Calculate grid height
       const calcGridHeightResult = calcGridHeight(calcState)
       setGridHeight(calcGridHeightResult.gridHeight)
       setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
       setIsCalcReady(true)
+    } else {
+      resetStats()
     }
 
-    if (!canCalcGutterWidth || !finalResult) {
-      // Not possible to run calcColWidth or final result failed
+    // Update form UI to reflect input value changes
+    setForm(calcState)
+  }
+
+  /**
+   * Attempt calculations for gutter width.
+   */
+  const attemptGutterWidthCalc = (calcState) => {
+    const result = validateAndCalcGutterWidth(calcState)
+
+    if (result) {
+      // Final result was successful
+      setColWidthsSum(result.colWidthsSum)
+      setGridWidth(result.gridWidth)
+      setGutterWidthsSum(result.gutterWidthsSum)
+      setRightLeftMarginsSum(result.rresultightLeftMarginsSum)
+
+      // Calculate grid height
+      const calcGridHeightResult = calcGridHeight(calcState)
+      setGridHeight(calcGridHeightResult.gridHeight)
+      setTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
+      setIsCalcReady(true)
+    } else {
       resetStats()
     }
 
@@ -216,7 +262,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
   /**
    * Attempt calculations for top bottom margins.
    */
-  const attemptGridHeightCalc = () => {
+  const attemptGridHeightCalc = (calcState) => {
     // Clean inputs to possible values
     // May not be enough inputs for calculations though
     validateInputs(calcState)
@@ -286,25 +332,31 @@ const Panel = ({ selectionAmount, validSelection }) => {
   if (canvasType === 'auto' && validSelection && validSelection.guid) {
     if (boundType === 'draw') {
       // Bound type is "draw"
-      calcState.canvasWidth = validSelection.globalDrawBounds.width
-      calcState.canvasHeight = validSelection.globalDrawBounds.height
+      colCalcState.canvasWidth = validSelection.globalDrawBounds.width
+      colCalcState.canvasHeight = validSelection.globalDrawBounds.height
+      rowCalcState.canvasWidth = validSelection.globalDrawBounds.width
+      rowCalcState.canvasHeight = validSelection.globalDrawBounds.height
     } else {
       // Assume bound type is "path"
-      calcState.canvasWidth = validSelection.globalBounds.width
-      calcState.canvasHeight = validSelection.globalBounds.height
+      colCalcState.canvasWidth = validSelection.globalBounds.width
+      colCalcState.canvasHeight = validSelection.globalBounds.height
+      rowCalcState.canvasWidth = validSelection.globalBounds.width
+      rowCalcState.canvasHeight = validSelection.globalBounds.height
     }
 
-    if (calcState.canvasWidth !== canvasWidth) {
-      setCanvasWidth(calcState.canvasWidth)
+    if (colCalcState.canvasWidth !== canvasWidth) {
+      setCanvasWidth(colCalcState.canvasWidth)
     }
 
-    if (calcState.canvasHeight !== canvasHeight) {
-      setCanvasHeight(calcState.canvasHeight)
+    if (colCalcState.canvasHeight !== canvasHeight) {
+      setCanvasHeight(colCalcState.canvasHeight)
     }
   } else {
     // Use manual canvas values
-    calcState.canvasWidth = canvasWidth
-    calcState.canvasHeight = canvasHeight
+    colCalcState.canvasWidth = canvasWidth
+    colCalcState.canvasHeight = canvasHeight
+    rowCalcState.canvasWidth = canvasWidth
+    rowCalcState.canvasHeight = canvasHeight
   }
 
   let content
@@ -347,7 +399,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               type="number"
               min="1"
               value={canvasWidth}
-              onBlur={attemptColWidthCalc}
+              onBlur={() => attemptColWidthCalc(colCalcState)}
               onChange={(evt) => {
                 setIsCalcReady(false)
                 setCanvasWidth(evt.target.value)
@@ -361,7 +413,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               type="number"
               min="1"
               value={canvasHeight}
-              onBlur={attemptGridHeightCalc}
+              onBlur={() => attemptGridHeightCalc(colCalcState)}
               onChange={(evt) => {
                 setIsCalcReady(false)
                 setCanvasHeight(evt.target.value)
@@ -392,7 +444,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             min="1"
             max={canvasWidth}
             value={cols}
-            onBlur={attemptColWidthCalc}
+            onBlur={() => attemptColWidthCalc(colCalcState)}
             onChange={(evt) => {
               setIsCalcReady(false)
               setCols(evt.target.value)
@@ -408,7 +460,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             min="0"
             max={canvasWidth - 1}
             value={gutterWidth}
-            onBlur={attemptColWidthCalc}
+            onBlur={() => attemptColWidthCalc(colCalcState)}
             onChange={(evt) => {
               setIsCalcReady(false)
               setGutterWidth(evt.target.value)
@@ -424,7 +476,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             min="1"
             max={canvasWidth}
             value={colWidth}
-            onBlur={attemptGutterWidthCalc}
+            onBlur={() => attemptGutterWidthCalc(colCalcState)}
             onChange={(evt) => {
               setIsCalcReady(false)
               setColWidth(evt.target.value)
@@ -441,7 +493,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasHeight - 1}
               value={topMargin}
-              onBlur={attemptGridHeightCalc}
+              onBlur={() => attemptGutterWidthCalc(colCalcState)}
               onChange={(evt) => {
                 setIsCalcReady(false)
                 setTopMargin(evt.target.value)
@@ -453,7 +505,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasWidth - 1}
               value={rightMargin}
-              onBlur={attemptColWidthCalc}
+              onBlur={() => attemptColWidthCalc(colCalcState)}
               onChange={(evt) => {
                 setIsCalcReady(false)
                 setRightMargin(evt.target.value)
@@ -465,7 +517,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasHeight - 1}
               value={bottomMargin}
-              onBlur={attemptGridHeightCalc}
+              onBlur={() => attemptGutterWidthCalc(colCalcState)}
               onChange={(evt) => {
                 setIsCalcReady(false)
                 setBottomMargin(evt.target.value)
@@ -477,10 +529,116 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasWidth - 1}
               value={leftMargin}
-              onBlur={attemptColWidthCalc}
+              onBlur={() => attemptColWidthCalc(colCalcState)}
               onChange={(evt) => {
                 setIsCalcReady(false)
                 setLeftMargin(evt.target.value)
+              }}
+              uxp-quiet="true"
+            />
+          </div>
+        </label>
+        <hr />
+        <label className="text-input-combo">
+          <span>Create Rows</span>
+          <input
+            type="checkbox"
+            checked={createRows}
+            onChange={(evt) => {
+              setCreateRows(evt.target.checked)
+            }}
+            uxp-quiet="true"
+          />
+        </label>
+        <label className={createRows ? 'text-input-combo' : 'hide'}>
+          <span>Rows</span>
+          <input
+            type="number"
+            min="1"
+            max={canvasHeight}
+            value={rows}
+            onChange={(evt) => {
+              setIsCalcReady(false)
+              setRows(evt.target.value)
+            }}
+            className="input-lg"
+            uxp-quiet="true"
+          />
+        </label>
+        <label className={createRows ? 'text-input-combo' : 'hide'}>
+          <span>Gutter Height</span>
+          <input
+            type="number"
+            min="0"
+            max={canvasHeight - 1}
+            value={rowGutterHeight}
+            onChange={(evt) => {
+              setIsCalcReady(false)
+              setRowGutterHeight(evt.target.value)
+            }}
+            className="input-lg"
+            uxp-quiet="true"
+          />
+        </label>
+        <label className={createRows ? 'text-input-combo' : 'hide'}>
+          <span>Row Height</span>
+          <input
+            type="number"
+            min="1"
+            max={canvasWidth}
+            value={rowHeight}
+            onChange={(evt) => {
+              setIsCalcReady(false)
+              setRowHeight(evt.target.value)
+            }}
+            className="input-lg"
+            uxp-quiet="true"
+          />
+        </label>
+        <label className={createRows ? 'text-input-combo' : 'hide'}>
+          <span>Margins</span>
+          <div className="multi-inputs">
+            <input
+              type="number"
+              min="0"
+              max={canvasHeight - 1}
+              value={rowTopMargin}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setRowTopMargin(evt.target.value)
+              }}
+              uxp-quiet="true"
+            />
+            <input
+              type="number"
+              min="0"
+              max={canvasWidth - 1}
+              value={rowRightMargin}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setRowRightMargin(evt.target.value)
+              }}
+              uxp-quiet="true"
+            />
+            <input
+              type="number"
+              min="0"
+              max={canvasHeight - 1}
+              value={rowBottomMargin}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setRowBottomMargin(evt.target.value)
+              }}
+              uxp-quiet="true"
+            />
+            <input
+              type="number"
+              min="0"
+              max={canvasWidth - 1}
+              value={rowLeftMargin}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setRowLeftMargin(evt.target.value)
               }}
               uxp-quiet="true"
             />
@@ -552,10 +710,20 @@ const Panel = ({ selectionAmount, validSelection }) => {
             id="create"
             onClick={() => {
               if (isCalcReady) {
-                draw(calcState, { gridHeight }, { drawFields, drawGridlines })
+                if (createCols) {
+                  drawCols(
+                    colCalcState,
+                    { gridHeight },
+                    { drawFields, drawGridlines }
+                  )
+                }
               }
             }}
-            disabled={!isCalcReady || (!drawFields && !drawGridlines)}
+            disabled={
+              !isCalcReady ||
+              (!drawFields && !drawGridlines) ||
+              (!createCols && !createRows)
+            }
             uxp-variant="cta"
           >
             Create

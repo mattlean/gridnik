@@ -7,7 +7,7 @@ const { group } = require('commands')
  * @param {Object} calcState State for calculations. Should be validated beforehand.
  * @param {Object} drawOptions Options to control what should be drawn
  */
-const draw = (calcState, statsState, drawOptions) => {
+const drawCols = (calcState, statsState, drawOptions) => {
   editDocument((selection) => {
     const currSelection = selection.items[0]
     const {
@@ -126,4 +126,4 @@ const draw = (calcState, statsState, drawOptions) => {
   })
 }
 
-module.exports = draw
+module.exports.drawCols = drawCols
