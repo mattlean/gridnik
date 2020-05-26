@@ -128,7 +128,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setRowGridWidth('N/A')
     setRowGutterHeightsSum('N/A')
     setRowTopBottomMarginsSum(0)
-    setRightLeftMarginsSum(0)
+    setRowRightLeftMarginsSum(0)
     setIsRowCalcReady(false)
   }
 
@@ -397,7 +397,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       const calcGridHeightResult = calcGridHeight(calcState)
       setRowGridHeight(calcGridHeightResult.gridHeight)
       setRowTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
-      setIsColCalcReady(true)
+      setIsRowCalcReady(true)
     } else {
       resetRowStats()
     }
@@ -424,7 +424,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
       const calcGridHeightResult = calcGridHeight(calcState)
       setRowGridHeight(calcGridHeightResult.gridHeight)
       setRowTopBottomMarginsSum(calcGridHeightResult.topBottomMarginsSum)
-      setIsColCalcReady(true)
+      setIsRowCalcReady(true)
     } else {
       resetRowStats()
     }
@@ -451,12 +451,12 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
       if (
         validateStats({
-          colWidthsSum,
-          gutterWidthsSum,
-          gridWidth,
-          gridHeight: result.gridHeight,
-          rightLeftMarginsSum,
-          topBottomMarginsSum: result.topBottomMarginsSum,
+          rowHeightsSum,
+          rowGutterHeightsSum,
+          rowGridWidth,
+          rowGridHeight: result.gridHeight,
+          rowRightLeftMarginsSum,
+          rowTopBottomMarginsSum: result.topBottomMarginsSum,
         })
       ) {
         // Previous calculation was valid, so set isRowCalcReady to true
@@ -509,14 +509,14 @@ const Panel = ({ selectionAmount, validSelection }) => {
       // Bound type is "draw"
       colCalcState.canvasWidth = validSelection.globalDrawBounds.width
       colCalcState.canvasHeight = validSelection.globalDrawBounds.height
-      rowCalcState.canvasWidth = validSelection.globalDrawBounds.width
-      rowCalcState.canvasHeight = validSelection.globalDrawBounds.height
+      rowCalcState.canvasWidth = validSelection.globalDrawBounds.height
+      rowCalcState.canvasHeight = validSelection.globalDrawBounds.width
     } else {
       // Assume bound type is "path"
       colCalcState.canvasWidth = validSelection.globalBounds.width
       colCalcState.canvasHeight = validSelection.globalBounds.height
-      rowCalcState.canvasWidth = validSelection.globalBounds.width
-      rowCalcState.canvasHeight = validSelection.globalBounds.height
+      rowCalcState.canvasWidth = validSelection.globalBounds.height
+      rowCalcState.canvasHeight = validSelection.globalBounds.width
     }
 
     if (colCalcState.canvasWidth !== canvasWidth) {
@@ -530,8 +530,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
     // Use manual canvas values
     colCalcState.canvasWidth = canvasWidth
     colCalcState.canvasHeight = canvasHeight
-    rowCalcState.canvasWidth = canvasWidth
-    rowCalcState.canvasHeight = canvasHeight
+    rowCalcState.canvasWidth = canvasHeight
+    rowCalcState.canvasHeight = canvasWidth
   }
 
   let content
@@ -770,7 +770,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
           <input
             type="number"
             min="1"
-            max={canvasWidth}
+            max={canvasHeight}
             value={rowHeight}
             onBlur={() => attemptRowGutterHeightCalc(rowCalcState)}
             onChange={(evt) => {
@@ -787,7 +787,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             <input
               type="number"
               min="0"
-              max={canvasHeight - 1}
+              max={canvasWidth - 1}
               value={rowTopMargin}
               onBlur={() => attemptRowGridHeightCalc(rowCalcState)}
               onChange={(evt) => {
@@ -799,7 +799,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             <input
               type="number"
               min="0"
-              max={canvasWidth - 1}
+              max={canvasHeight - 1}
               value={rowRightMargin}
               onBlur={() => attemptRowHeightCalc(rowCalcState)}
               onChange={(evt) => {
@@ -811,7 +811,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             <input
               type="number"
               min="0"
-              max={canvasHeight - 1}
+              max={canvasWidth - 1}
               value={rowBottomMargin}
               onBlur={() => attemptRowGridHeightCalc(rowCalcState)}
               onChange={(evt) => {
@@ -823,7 +823,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
             <input
               type="number"
               min="0"
-              max={canvasWidth - 1}
+              max={canvasHeight - 1}
               value={rowLeftMargin}
               onBlur={() => attemptRowHeightCalc(rowCalcState)}
               onChange={(evt) => {
@@ -929,7 +929,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
                     colCalcState,
                     { gridHeight },
                     rowCalcState,
-                    { gridWidth },
+                    { rowGridHeight },
                     { drawFields, drawGridlines }
                   )
                 }
@@ -946,7 +946,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
                     null,
                     null,
                     rowCalcState,
-                    { gridWidth },
+                    { rowGridHeight },
                     { drawFields, drawGridlines }
                   )
                 }
