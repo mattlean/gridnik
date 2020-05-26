@@ -212,14 +212,14 @@ const draw = (
         // gridlineGroup.name = 'Gridlines'
         // newItems.push(gridlineGroup)
 
-        // Group canvas, columns group, and gridlines group
+        // Group canvas, rows group, and gridlines group
         selection.items = [rowGroup, canvas]
         group()
         const gridGroup = selection.items[0]
         if (!colCalcState || !colStatsState) {
-          gridGroup.name = 'Row Grid'
+          gridGroup.name = 'Gridnik Grid'
         } else {
-          gridGroup.name = 'Column Grid'
+          gridGroup.name = 'Row Grid'
           newItems.push(gridGroup)
         }
 
