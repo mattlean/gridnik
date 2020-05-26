@@ -451,12 +451,12 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
       if (
         validateStats({
-          rowHeightsSum,
-          rowGutterHeightsSum,
-          rowGridWidth,
-          rowGridHeight: result.gridHeight,
-          rowRightLeftMarginsSum,
-          rowTopBottomMarginsSum: result.topBottomMarginsSum,
+          colWidthsSum: rowHeightsSum,
+          gutterWidthsSum: rowGutterHeightsSum,
+          gridWidth: rowGridWidth,
+          gridHeight: result.gridHeight,
+          rightLeftMarginsSum: rowRightLeftMarginsSum,
+          topBottomMarginsSum: result.topBottomMarginsSum,
         })
       ) {
         // Previous calculation was valid, so set isRowCalcReady to true
