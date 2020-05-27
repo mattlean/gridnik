@@ -14,3 +14,4 @@ The plugin's name is based on Dutch graphic designer [Wim Crouwel](https://en.wi
 - Build grids and overlay them upon any object: artboards, rectangles, polygons, text, etc.
 - Use auto-calculations to make sure your grids hold your desired structure while still being valid
 - Support for grid construction using decimals
+- Produce grids as rectangle fills or gridlines or both
