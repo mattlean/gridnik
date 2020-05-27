@@ -138,19 +138,20 @@ const draw = (
           cols: rows,
           colWidth: rowHeight,
           gutterWidth: gutterHeight,
-          topMargin,
-          leftMargin,
+          topMargin: leftMargin,
+          rightMargin: topMargin,
         } = rowCalcState
-        const { rowGridHeight: gridWidth } = rowStatsState
+        const { rowGridHeight } = rowStatsState
         const rowFills = []
         const gridlines = []
         const pos = { x: leftMargin, y: topMargin }
+        console.log(rowCalcState)
 
         // Draw canvas. Used for alignment.
         const canvas = new Rectangle()
         canvas.name = 'Canvas'
-        canvas.width = rowCalcState.canvasHeight
-        canvas.height = rowCalcState.canvasWidth
+        canvas.width = rowCalcState.canvasWidth
+        canvas.height = rowCalcState.canvasHeight
         canvas.fill = new Color('#00ff00', 0.25)
         selection.insertionParent.addChild(canvas)
 
@@ -158,7 +159,7 @@ const draw = (
           if (drawFields) {
             // Draw row
             const row = new Rectangle()
-            row.width = gridWidth
+            row.width = rowGridHeight
             row.height = rowHeight
             row.fill = new Color('#00ffff', 0.5)
             row.name = `Row ${i + 1}`

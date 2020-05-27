@@ -78,8 +78,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
   const rowCalcState = {
     floorVals,
-    canvasHeight,
-    canvasWidth,
+    canvasHeight: canvasWidth,
+    canvasWidth: canvasHeight,
     cols: rows,
     colWidth: rowHeight,
     gutterWidth: rowGutterHeight,
@@ -787,18 +787,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
             <input
               type="number"
               min="0"
-              max={canvasWidth - 1}
-              value={rowTopMargin}
-              onBlur={() => attemptRowGridHeightCalc(rowCalcState)}
-              onChange={(evt) => {
-                setIsRowCalcReady(false)
-                setRowTopMargin(evt.target.value)
-              }}
-              uxp-quiet="true"
-            />
-            <input
-              type="number"
-              min="0"
               max={canvasHeight - 1}
               value={rowRightMargin}
               onBlur={() => attemptRowHeightCalc(rowCalcState)}
@@ -829,6 +817,18 @@ const Panel = ({ selectionAmount, validSelection }) => {
               onChange={(evt) => {
                 setIsRowCalcReady(false)
                 setRowLeftMargin(evt.target.value)
+              }}
+              uxp-quiet="true"
+            />
+            <input
+              type="number"
+              min="0"
+              max={canvasWidth - 1}
+              value={rowTopMargin}
+              onBlur={() => attemptRowGridHeightCalc(rowCalcState)}
+              onChange={(evt) => {
+                setIsRowCalcReady(false)
+                setRowTopMargin(evt.target.value)
               }}
               uxp-quiet="true"
             />
