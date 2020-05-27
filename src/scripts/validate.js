@@ -196,3 +196,33 @@ const validateGutterWidthCalc = (calcState) => {
 }
 
 module.exports.validateGutterWidthCalc = validateGutterWidthCalc
+
+/**
+ * Check if all calculation stats exist. If they do, assume there is a current valid calculation.
+ * @param {*} calcStats Stats from calculations
+ * @returns {boolean} True if stats exist, false otherwise
+ */
+const validateStats = (calcStats) => {
+  const {
+    colWidthsSum,
+    gutterWidthsSum,
+    gridWidth,
+    gridHeight,
+    rightLeftMarginsSum,
+    topBottomMarginsSum,
+  } = calcStats
+
+  if (
+    typeof colWidthsSum === 'number' &&
+    typeof gutterWidthsSum === 'number' &&
+    typeof gridWidth === 'number' &&
+    typeof gridHeight === 'number' &&
+    typeof rightLeftMarginsSum === 'number' &&
+    typeof topBottomMarginsSum === 'number'
+  ) {
+    return true
+  }
+  return false
+}
+
+module.exports.validateStats = validateStats

@@ -12,6 +12,7 @@ const {
   validateColWidthCalc,
   validateGutterWidthCalc,
   validateInputs,
+  validateStats,
 } = require('../scripts/validate')
 
 /**
@@ -37,6 +38,9 @@ const Panel = ({ selectionAmount, validSelection }) => {
   const [gutterWidthsSum, setGutterWidthsSum] = useState('N/A')
   const [topBottomMarginsSum, setTopBottomMarginsSum] = useState(0)
   const [rightLeftMarginsSum, setRightLeftMarginsSum] = useState(0)
+
+  const [drawFields, setDrawFields] = useState(true)
+  const [drawGridlines, setDrawGridlines] = useState(true)
 
   const [isCalcReady, setIsCalcReady] = useState(false)
 
@@ -79,6 +83,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setRightMargin(0)
     setBottomMargin(0)
     setLeftMargin(0)
+    setDrawFields(true)
+    setDrawGridlines(true)
     resetStats()
   }
 
@@ -210,13 +216,30 @@ const Panel = ({ selectionAmount, validSelection }) => {
    * Attempt calculations for top bottom margins.
    */
   const attemptGridHeightCalc = () => {
+    // Clean inputs to possible values
+    // May not be enough inputs for calculations though
     validateInputs(calcState)
 
     if (validateColWidthCalc(calcState) || validateGutterWidthCalc(calcState)) {
+      // If calcColWidth or calcGutterWidth is possible, run calcGridHeight
       const result = calcGridHeight(calcState)
 
       setGridHeight(result.gridHeight)
       setTopBottomMarginsSum(result.topBottomMarginsSum)
+
+      if (
+        validateStats({
+          colWidthsSum,
+          gutterWidthsSum,
+          gridWidth,
+          gridHeight: result.gridHeight,
+          rightLeftMarginsSum,
+          topBottomMarginsSum: result.topBottomMarginsSum,
+        })
+      ) {
+        // Previous calculation was valid, so set isCalcReady to true
+        setIsCalcReady(true)
+      }
     }
 
     setForm(calcState)
@@ -325,7 +348,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="1"
               value={canvasWidth}
               onBlur={attemptColWidthCalc}
-              onChange={(evt) => setCanvasWidth(evt.target.value)}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setCanvasWidth(evt.target.value)
+              }}
               className="input-lg"
               placeholder="Width"
               disabled={canvasType === 'auto'}
@@ -336,7 +362,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="1"
               value={canvasHeight}
               onBlur={attemptGridHeightCalc}
-              onChange={(evt) => setCanvasHeight(evt.target.value)}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setCanvasHeight(evt.target.value)
+              }}
               className="input-lg"
               placeholder="Height"
               disabled={canvasType === 'auto'}
@@ -352,7 +381,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
             max={canvasWidth}
             value={cols}
             onBlur={attemptColWidthCalc}
-            onChange={(evt) => setCols(evt.target.value)}
+            onChange={(evt) => {
+              setIsCalcReady(false)
+              setCols(evt.target.value)
+            }}
             className="input-lg"
             uxp-quiet="true"
           />
@@ -365,7 +397,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
             max={canvasWidth - 1}
             value={gutterWidth}
             onBlur={attemptColWidthCalc}
-            onChange={(evt) => setGutterWidth(evt.target.value)}
+            onChange={(evt) => {
+              setIsCalcReady(false)
+              setGutterWidth(evt.target.value)
+            }}
             className="input-lg"
             uxp-quiet="true"
           />
@@ -378,7 +413,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
             max={canvasWidth}
             value={colWidth}
             onBlur={attemptGutterWidthCalc}
-            onChange={(evt) => setColWidth(evt.target.value)}
+            onChange={(evt) => {
+              setIsCalcReady(false)
+              setColWidth(evt.target.value)
+            }}
             className="input-lg"
             uxp-quiet="true"
           />
@@ -392,7 +430,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
               max={canvasHeight - 1}
               value={topMargin}
               onBlur={attemptGridHeightCalc}
-              onChange={(evt) => setTopMargin(evt.target.value)}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setTopMargin(evt.target.value)
+              }}
               uxp-quiet="true"
             />
             <input
@@ -401,7 +442,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
               max={canvasWidth - 1}
               value={rightMargin}
               onBlur={attemptColWidthCalc}
-              onChange={(evt) => setRightMargin(evt.target.value)}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setRightMargin(evt.target.value)
+              }}
               uxp-quiet="true"
             />
             <input
@@ -410,7 +454,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
               max={canvasHeight - 1}
               value={bottomMargin}
               onBlur={attemptGridHeightCalc}
-              onChange={(evt) => setBottomMargin(evt.target.value)}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setBottomMargin(evt.target.value)
+              }}
               uxp-quiet="true"
             />
             <input
@@ -419,7 +466,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
               max={canvasWidth - 1}
               value={leftMargin}
               onBlur={attemptColWidthCalc}
-              onChange={(evt) => setLeftMargin(evt.target.value)}
+              onChange={(evt) => {
+                setIsCalcReady(false)
+                setLeftMargin(evt.target.value)
+              }}
               uxp-quiet="true"
             />
           </div>
@@ -460,14 +510,40 @@ const Panel = ({ selectionAmount, validSelection }) => {
           </div>
           <hr />
         </div>
+        <label className="text-input-combo">
+          <span>Draw Fields</span>
+          <input
+            type="checkbox"
+            checked={drawFields}
+            onChange={(evt) => {
+              setDrawFields(evt.target.checked)
+            }}
+            uxp-quiet="true"
+          />
+        </label>
+        <label className="text-input-combo">
+          <span>Draw Gridlines</span>
+          <input
+            type="checkbox"
+            checked={drawGridlines}
+            onChange={(evt) => {
+              setDrawGridlines(evt.target.checked)
+            }}
+            uxp-quiet="true"
+          />
+        </label>
         <footer>
           <button onClick={() => resetForm()} uxp-variant="secondary">
             Reset
           </button>
           <button
             id="create"
-            onClick={() => draw(calcState)}
-            disabled={!isCalcReady}
+            onClick={() => {
+              if (isCalcReady) {
+                draw(calcState, { drawFields, drawGridlines })
+              }
+            }}
+            disabled={!isCalcReady || (!drawFields && !drawGridlines)}
             uxp-variant="cta"
           >
             Create
