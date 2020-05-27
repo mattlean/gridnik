@@ -145,13 +145,12 @@ const draw = (
         const rowFills = []
         const gridlines = []
         const pos = { x: leftMargin, y: topMargin }
-        console.log(rowCalcState)
 
         // Draw canvas. Used for alignment.
         const canvas = new Rectangle()
         canvas.name = 'Canvas'
-        canvas.width = rowCalcState.canvasWidth
-        canvas.height = rowCalcState.canvasHeight
+        canvas.width = rowCalcState.canvasHeight
+        canvas.height = rowCalcState.canvasWidth
         canvas.fill = new Color('#00ff00', 0.25)
         selection.insertionParent.addChild(canvas)
 
@@ -171,31 +170,31 @@ const draw = (
             }
           }
 
-          // if (drawGridlines) {
-          //   // Draw gridlines
-          //   const gridlineA = new Line()
-          //   gridlineA.setStartEnd(pos.x, 0, pos.x, canvasHeight)
-          //   gridlineA.strokeEnabled = true
-          //   gridlineA.strokeWidth = 1
-          //   gridlineA.stroke = new Color('#ff4fff')
-          //   gridlineA.name = 'Gridline'
-          //   gridlines.push(gridlineA)
-          //   selection.insertionParent.addChild(gridlineA)
+          if (drawGridlines) {
+            // Draw gridlines
+            const gridlineA = new Line()
+            gridlineA.setStartEnd(0, pos.y, canvas.width, pos.y)
+            gridlineA.strokeEnabled = true
+            gridlineA.strokeWidth = 1
+            gridlineA.stroke = new Color('#ff4fff')
+            gridlineA.name = 'Gridline'
+            gridlines.push(gridlineA)
+            selection.insertionParent.addChild(gridlineA)
 
-          //   const gridlineB = new Line()
-          //   gridlineB.setStartEnd(
-          //     pos.x + colWidth,
-          //     0,
-          //     pos.x + colWidth,
-          //     canvasHeight
-          //   )
-          //   gridlineB.strokeEnabled = true
-          //   gridlineB.strokeWidth = 1
-          //   gridlineB.stroke = new Color('#ff4fff')
-          //   gridlineB.name = 'Gridline'
-          //   gridlines.push(gridlineB)
-          //   selection.insertionParent.addChild(gridlineB)
-          // }
+            const gridlineB = new Line()
+            gridlineB.setStartEnd(
+              0,
+              pos.y + rowHeight,
+              canvas.width,
+              pos.y + rowHeight
+            )
+            gridlineB.strokeEnabled = true
+            gridlineB.strokeWidth = 1
+            gridlineB.stroke = new Color('#ff4fff')
+            gridlineB.name = 'Gridline'
+            gridlines.push(gridlineB)
+            selection.insertionParent.addChild(gridlineB)
+          }
 
           pos.y += rowHeight + gutterHeight
         }
@@ -207,14 +206,13 @@ const draw = (
         rowGroup.name = 'Rows'
 
         // Group gridlines
-        // selection.items = gridlines
-        // group()
-        // const gridlineGroup = selection.items[0]
-        // gridlineGroup.name = 'Gridlines'
-        // newItems.push(gridlineGroup)
+        selection.items = gridlines
+        group()
+        const gridlineGroup = selection.items[0]
+        gridlineGroup.name = 'Gridlines'
 
         // Group canvas, rows group, and gridlines group
-        selection.items = [rowGroup, canvas]
+        selection.items = [rowGroup, gridlineGroup, canvas]
         group()
         const gridGroup = selection.items[0]
         if (!colCalcState || !colStatsState) {
