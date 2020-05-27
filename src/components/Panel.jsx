@@ -878,19 +878,19 @@ const Panel = ({ selectionAmount, validSelection }) => {
           </div>
           <div>
             <span>Row Grid Width:</span>
-            {rowGridWidth}
-          </div>
-          <div>
-            <span>Row Grid Height:</span>
             {rowGridHeight}
           </div>
           <div>
+            <span>Row Grid Height:</span>
+            {rowGridWidth}
+          </div>
+          <div>
             <span>Row Right & Left Margin Sum:</span>
-            {rowRightLeftMarginsSum}
+            {rowTopBottomMarginsSum}
           </div>
           <div>
             <span>Row Top & Bottom Margin Sum:</span>
-            {rowTopBottomMarginsSum}
+            {rowRightLeftMarginsSum}
           </div>
           <hr />
         </div>
