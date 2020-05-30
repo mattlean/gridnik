@@ -200,8 +200,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
    */
   const setRowForm = (calcState) => {
     setFloorVals(calcState.floorVals)
-    setCanvasWidth(calcState.canvasWidth)
-    setCanvasHeight(calcState.canvasHeight)
+    setCanvasWidth(calcState.canvasHeight)
+    setCanvasHeight(calcState.canvasWidth)
     setRows(calcState.cols)
     setRowHeight(calcState.colWidth)
     setRowGutterHeight(calcState.gutterWidth)
@@ -933,23 +933,19 @@ const Panel = ({ selectionAmount, validSelection }) => {
                     { drawFields, drawGridlines }
                   )
                 }
-              } else if (createCols) {
-                if (isColCalcReady) {
-                  draw(colCalcState, { gridHeight }, null, null, {
-                    drawFields,
-                    drawGridlines,
-                  })
-                }
-              } else if (createRows) {
-                if (isRowCalcReady) {
-                  draw(
-                    null,
-                    null,
-                    rowCalcState,
-                    { rowGridHeight },
-                    { drawFields, drawGridlines }
-                  )
-                }
+              } else if (createCols && isColCalcReady) {
+                draw(colCalcState, { gridHeight }, null, null, {
+                  drawFields,
+                  drawGridlines,
+                })
+              } else if (createRows && isRowCalcReady) {
+                draw(
+                  null,
+                  null,
+                  rowCalcState,
+                  { rowGridHeight },
+                  { drawFields, drawGridlines }
+                )
               }
             }}
             disabled={
