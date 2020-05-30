@@ -672,7 +672,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasHeight - 1}
               value={topMargin}
-              onBlur={() => attemptColGutterWidthCalc(colCalcState)}
+              onBlur={() => attemptGridHeightCalc(colCalcState)}
               onChange={(evt) => {
                 setIsColCalcReady(false)
                 setTopMargin(evt.target.value)
@@ -696,7 +696,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasHeight - 1}
               value={bottomMargin}
-              onBlur={() => attemptColGutterWidthCalc(colCalcState)}
+              onBlur={() => attemptGridHeightCalc(colCalcState)}
               onChange={(evt) => {
                 setIsColCalcReady(false)
                 setBottomMargin(evt.target.value)
