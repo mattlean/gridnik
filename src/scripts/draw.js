@@ -87,27 +87,48 @@ const draw = (
           pos.x += colWidth + gutterWidth
         }
 
-        // Group columns
-        selection.items = colFills
-        group()
-        const colGroup = selection.items[0]
-        colGroup.name = 'Columns'
+        let colGroup
+        let gridlineGroup
 
-        // Group gridlines
-        selection.items = gridlines
-        group()
-        const gridlineGroup = selection.items[0]
-        gridlineGroup.name = 'Gridlines'
+        if (drawFields) {
+          // Group columns
+          selection.items = colFills
+          group()
+          colGroup = selection.items[0]
+          colGroup.name = 'Column Fields'
+        }
 
-        // Group canvas, columns group, and gridlines group
-        selection.items = [colGroup, gridlineGroup, canvas]
-        group()
-        const gridGroup = selection.items[0]
-        if (!rowCalcState || !rowStatsState) {
+        if (drawGridlines) {
+          // Group gridlines
+          selection.items = gridlines
+          group()
+          gridlineGroup = selection.items[0]
+          gridlineGroup.name = 'Column Gridlines'
+        }
+
+        let gridGroup
+        if (drawFields && drawGridlines) {
+          // Group canvas, columns group, and gridlines group
+          selection.items = [colGroup, gridlineGroup, canvas]
+          group()
+          gridGroup = selection.items[0]
+
+          if (!rowCalcState || !rowStatsState) {
+            gridGroup.name = 'Gridnik Grid'
+          } else {
+            gridGroup.name = 'Column Grid'
+            newItems.push(gridGroup)
+          }
+        } else if (drawFields) {
+          selection.items = [colGroup, canvas]
+          group()
+          gridGroup = selection.items[0]
           gridGroup.name = 'Gridnik Grid'
-        } else {
-          gridGroup.name = 'Column Grid'
-          newItems.push(gridGroup)
+        } else if (drawGridlines) {
+          selection.items = [gridlineGroup, canvas]
+          group()
+          gridGroup = selection.items[0]
+          gridGroup.name = 'Gridnik Grid'
         }
 
         const topLeftGroupPos = {
