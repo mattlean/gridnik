@@ -114,8 +114,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setRightMargin(0)
     setBottomMargin(0)
     setLeftMargin(0)
-    setDrawFields(true)
-    setDrawGridlines(true)
     resetColStats()
   }
 
@@ -144,8 +142,6 @@ const Panel = ({ selectionAmount, validSelection }) => {
     setRowRightMargin(0)
     setRowBottomMargin(0)
     setRowLeftMargin(0)
-    setDrawFields(true)
-    setDrawGridlines(true)
     resetRowStats()
   }
 
