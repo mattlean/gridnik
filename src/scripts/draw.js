@@ -88,8 +88,6 @@ const draw = (
         }
 
         let colGroup
-        let gridlineGroup
-
         if (drawFields) {
           // Group columns
           selection.items = colFills
@@ -98,6 +96,7 @@ const draw = (
           colGroup.name = 'Column Fields'
         }
 
+        let gridlineGroup
         if (drawGridlines) {
           // Group gridlines
           selection.items = gridlines
@@ -220,27 +219,47 @@ const draw = (
           pos.y += rowHeight + gutterHeight
         }
 
-        // Group columns
-        selection.items = rowFills
-        group()
-        const rowGroup = selection.items[0]
-        rowGroup.name = 'Rows'
+        let rowGroup
+        if (drawFields) {
+          // Group columns
+          selection.items = rowFills
+          group()
+          rowGroup = selection.items[0]
+          rowGroup.name = 'Row Fields'
+        }
 
-        // Group gridlines
-        selection.items = gridlines
-        group()
-        const gridlineGroup = selection.items[0]
-        gridlineGroup.name = 'Gridlines'
+        let gridlineGroup
+        if (drawGridlines) {
+          // Group gridlines
+          selection.items = gridlines
+          group()
+          gridlineGroup = selection.items[0]
+          gridlineGroup.name = 'Row Gridlines'
+        }
 
-        // Group canvas, rows group, and gridlines group
-        selection.items = [rowGroup, gridlineGroup, canvas]
-        group()
-        const gridGroup = selection.items[0]
-        if (!colCalcState || !colStatsState) {
+        let gridGroup
+        if (drawFields && drawGridlines) {
+          // Group canvas, rows group, and gridlines group
+          selection.items = [rowGroup, gridlineGroup, canvas]
+          group()
+          gridGroup = selection.items[0]
+
+          if (!colCalcState || !colStatsState) {
+            gridGroup.name = 'Gridnik Grid'
+          } else {
+            gridGroup.name = 'Row Grid'
+            newItems.push(gridGroup)
+          }
+        } else if (drawFields) {
+          selection.items = [rowGroup, canvas]
+          group()
+          gridGroup = selection.items[0]
           gridGroup.name = 'Gridnik Grid'
-        } else {
-          gridGroup.name = 'Row Grid'
-          newItems.push(gridGroup)
+        } else if (drawGridlines) {
+          selection.items = [gridlineGroup, canvas]
+          group()
+          gridGroup = selection.items[0]
+          gridGroup.name = 'Gridnik Grid'
         }
 
         const topLeftGroupPos = {
