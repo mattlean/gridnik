@@ -196,6 +196,72 @@ describe('calcColWidth', () => {
       colWidth: 1,
     })
   })
+
+  test('Recalculate right margin when right and left margins and grid width do not fit perfectly on canvas', () => {
+    const calcData = {
+      floorVals: true,
+      canvasWidth: 1920,
+      cols: 6,
+      colWidth: 171,
+      gutterWidth: 27,
+      rightMargin: 377,
+      leftMargin: 377,
+    }
+    const results = calcColWidth(calcData)
+
+    expect(results[0]).toMatchObject({
+      type: 'calcColWidth',
+      rightLeftMarginsSum: 759,
+      colWidth: 171,
+      colWidthsSum: 1026,
+      gridWidth: 1161,
+      gutterWidthsSum: 135,
+      rightMargin: 382,
+    })
+    expect(results[0].errs.length).toBe(0)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 6,
+      colWidth: 171,
+      gutterWidth: 27,
+      rightMargin: 382,
+      leftMargin: 377,
+    })
+  })
+
+  test('Recalculate left margin when right and left margins and grid width do not fit perfectly on canvas', () => {
+    const calcData = {
+      floorVals: true,
+      canvasWidth: 1920,
+      cols: 6,
+      colWidth: 171,
+      gutterWidth: 27,
+      rightMargin: 377,
+      leftMargin: 377,
+    }
+    const results = calcColWidth(calcData, true)
+
+    expect(results[0]).toMatchObject({
+      type: 'calcColWidth',
+      rightLeftMarginsSum: 759,
+      colWidth: 171,
+      colWidthsSum: 1026,
+      gridWidth: 1161,
+      gutterWidthsSum: 135,
+      leftMargin: 382,
+    })
+    expect(results[0].errs.length).toBe(0)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 6,
+      colWidth: 171,
+      gutterWidth: 27,
+      rightMargin: 377,
+      leftMargin: 382,
+    })
+  })
 })
 
 describe('calcGutterWidth', () => {

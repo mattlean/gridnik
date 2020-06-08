@@ -103,13 +103,17 @@ const calcColWidth = (
 
     // Adjust margins with new grid width
     if (updateLeftMargin) {
-      calcState.leftMargin =
+      currResult.leftMargin =
         calcState.canvasWidth - currResult.gridWidth - calcState.rightMargin
+      calcState.leftMargin = currResult.leftMargin
+
       currResult.rightLeftMarginsSum =
         calcState.leftMargin + calcState.rightMargin
     } else {
-      calcState.rightMargin =
+      currResult.rightMargin =
         calcState.canvasWidth - currResult.gridWidth - calcState.leftMargin
+      calcState.rightMargin = currResult.rightMargin
+
       currResult.rightLeftMarginsSum =
         calcState.leftMargin + calcState.rightMargin
     }
