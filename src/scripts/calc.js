@@ -58,6 +58,7 @@ module.exports.calcRightLeftMargins = calcRightLeftMargins
  */
 const calcColWidth = (
   calcState,
+  setLeft = false,
   orderOfCorrections = [],
   results = [],
   correctedData
@@ -98,6 +99,16 @@ const calcColWidth = (
   if (validateCalcResult(currResult)) {
     // Valid calculation reached
     calcState.colWidth = colWidth
+
+    // Adjust margins
+    if (setLeft) {
+      calcState.leftMargin =
+        calcState.canvasWidth - currResult.gridWidth - calcState.rightMargin
+    } else {
+      calcState.rightMargin =
+        calcState.canvasWidth - currResult.gridWidth - calcState.leftMargin
+    }
+
     return results
   }
 
@@ -105,24 +116,26 @@ const calcColWidth = (
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
-    return calcGutterWidth(calcState, orderOfCorrections, results, {
+    return calcGutterWidth(calcState, setLeft, orderOfCorrections, results, {
       colWidth: 1,
     })
   }
 
   if (correction === 'gutterWidth') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
+    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
       gutterWidth: 0,
     })
   }
 
   if (correction === 'cols') {
     calcState.cols = 1
-    return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
+    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
+      col: 1,
+    })
   }
 
   if (correction === 'rightLeftMargins') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
+    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
       leftMargin: 0,
       bottomMargin: 0,
     })
@@ -145,6 +158,7 @@ module.exports.calcColWidth = calcColWidth
  */
 const calcGutterWidth = (
   calcState,
+  setLeft = false,
   orderOfCorrections = [],
   results = [],
   correctedData
@@ -193,24 +207,26 @@ const calcGutterWidth = (
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
-    return calcGutterWidth(calcState, orderOfCorrections, results, {
+    return calcGutterWidth(calcState, setLeft, orderOfCorrections, results, {
       colWidth: 1,
     })
   }
 
   if (correction === 'gutterWidth') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
+    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
       gutterWidth: 0,
     })
   }
 
   if (correction === 'cols') {
     calcState.cols = 1
-    return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
+    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
+      col: 1,
+    })
   }
 
   if (correction === 'rightLeftMargins') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
+    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
       leftMargin: 0,
       bottomMargin: 0,
     })

@@ -212,7 +212,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
    * @param {Object} calcState State for calculations
    * @returns {Object|null} If a final successful calculation occurred, it will be returned, otherwise it will return null
    */
-  const validateAndCalcColWidth = (calcState) => {
+  const validateAndCalcColWidth = (calcState, setLeft = false) => {
     let finalResult
     // Clean inputs to possible values
     // May not be enough inputs for calculations though
@@ -223,7 +223,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
     if (canCalcColWidth) {
       // calcColWidth is possible
-      const results = calcColWidth(calcState, [
+      const results = calcColWidth(calcState, setLeft, [
         'rightLeftMargins',
         'cols',
         'gutterWidth',
@@ -263,7 +263,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
     if (canCalcGutterWidth) {
       // calcGutterWidth is possible
-      const results = calcGutterWidth(calcState, [
+      const results = calcGutterWidth(calcState, false, [
         'rightLeftMargins',
         'cols',
         'colWidth',
@@ -291,8 +291,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
    * Attempt calculations for column width.
    * @param {Object} calcState State for calculations
    */
-  const attemptColWidthCalc = (calcState) => {
-    const result = validateAndCalcColWidth(calcState)
+  const attemptColWidthCalc = (calcState, setLeft = false) => {
+    const result = validateAndCalcColWidth(calcState, setLeft)
 
     if (result) {
       // Final result was successful
@@ -706,7 +706,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasWidth - 1}
               value={rightMargin}
-              onBlur={() => attemptColWidthCalc(colCalcState)}
+              onBlur={() => attemptColWidthCalc(colCalcState, true)}
               onChange={(evt) => {
                 setIsColCalcReady(false)
                 setRightMargin(evt.target.value)

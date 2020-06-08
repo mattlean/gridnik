@@ -107,7 +107,7 @@ describe('calcColWidth', () => {
       rightMargin: 390,
       leftMargin: 390,
     }
-    const results = calcColWidth(calcData, [
+    const results = calcColWidth(calcData, false, [
       'rightLeftMargins',
       'cols',
       'gutterWidth',
@@ -156,7 +156,7 @@ describe('calcColWidth', () => {
       rightMargin: 390,
       leftMargin: 390,
     }
-    const results = calcColWidth(calcData, [
+    const results = calcColWidth(calcData, false, [
       'rightLeftMargins',
       'cols',
       'gutterWidth',
@@ -266,7 +266,7 @@ describe('calcGutterWidth', () => {
       rightMargin: 390,
       leftMargin: 390,
     }
-    const results = calcGutterWidth(calcData, [
+    const results = calcGutterWidth(calcData, false, [
       'rightLeftMargins',
       'cols',
       'colWidth',
