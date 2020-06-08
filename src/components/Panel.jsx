@@ -210,9 +210,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
   /**
    * Validates calcState for calcColWidth. If validation is successful, calcColWidth is called.
    * @param {Object} calcState State for calculations
+   * @param {boolean} [updateLeftMargin=false] Flag to control update for left margin. By default it is set to false, so the right margin will be updated.
    * @returns {Object|null} If a final successful calculation occurred, it will be returned, otherwise it will return null
    */
-  const validateAndCalcColWidth = (calcState, setLeft = false) => {
+  const validateAndCalcColWidth = (calcState, updateLeftMargin = false) => {
     let finalResult
     // Clean inputs to possible values
     // May not be enough inputs for calculations though
@@ -223,7 +224,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
 
     if (canCalcColWidth) {
       // calcColWidth is possible
-      const results = calcColWidth(calcState, setLeft, [
+      const results = calcColWidth(calcState, updateLeftMargin, [
         'rightLeftMargins',
         'cols',
         'gutterWidth',
@@ -290,9 +291,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
   /**
    * Attempt calculations for column width.
    * @param {Object} calcState State for calculations
+   * @param {boolean} [updateLeftMargin=false] Flag to control update for left margin. By default it is set to false, so the right margin will be updated.
    */
-  const attemptColWidthCalc = (calcState, setLeft = false) => {
-    const result = validateAndCalcColWidth(calcState, setLeft)
+  const attemptColWidthCalc = (calcState, updateLeftMargin = false) => {
+    const result = validateAndCalcColWidth(calcState, updateLeftMargin)
 
     if (result) {
       // Final result was successful
@@ -378,9 +380,10 @@ const Panel = ({ selectionAmount, validSelection }) => {
   /**
    * Attempt calculations for row height.
    * @param {Object} calcState State for calculations
+   * @param {boolean} [updateLeftMargin=true] Flag to control update for left margin. By default it is set to true, so the left margin will be updated.
    */
-  const attemptRowHeightCalc = (calcState, setLeft = true) => {
-    const result = validateAndCalcColWidth(calcState, setLeft)
+  const attemptRowHeightCalc = (calcState, updateLeftMargin = true) => {
+    const result = validateAndCalcColWidth(calcState, updateLeftMargin)
 
     if (result) {
       // Final result was successful

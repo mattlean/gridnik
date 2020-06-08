@@ -51,6 +51,7 @@ module.exports.calcRightLeftMargins = calcRightLeftMargins
  * Calculate column width.
  * Can mutate calcState.
  * @param {Object} calcState State for calculations. Should be validated beforehand.
+ * @param {boolean} [updateLeftMargin=false] Flag to control update for left margin. By default it is set to false, so the right margin will be updated.
  * @param {Array} [orderOfCorrections=[]] Array of corrections in order they should be resolved in
  * @param {Array} [results=[]] Array of results from chain of calculations
  * @param {Object} [correctedData] Object of key/value pairs to be corrected in calcState for next calculation
@@ -58,7 +59,7 @@ module.exports.calcRightLeftMargins = calcRightLeftMargins
  */
 const calcColWidth = (
   calcState,
-  setLeft = false,
+  updateLeftMargin = false,
   orderOfCorrections = [],
   results = [],
   correctedData
@@ -100,8 +101,8 @@ const calcColWidth = (
     // Valid calculation reached
     calcState.colWidth = colWidth
 
-    // Adjust margins
-    if (setLeft) {
+    // Adjust margins with new grid width
+    if (updateLeftMargin) {
       calcState.leftMargin =
         calcState.canvasWidth - currResult.gridWidth - calcState.rightMargin
     } else {
@@ -116,29 +117,53 @@ const calcColWidth = (
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
-    return calcGutterWidth(calcState, setLeft, orderOfCorrections, results, {
-      colWidth: 1,
-    })
+    return calcGutterWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        colWidth: 1,
+      }
+    )
   }
 
   if (correction === 'gutterWidth') {
-    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
-      gutterWidth: 0,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        gutterWidth: 0,
+      }
+    )
   }
 
   if (correction === 'cols') {
     calcState.cols = 1
-    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
-      col: 1,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        col: 1,
+      }
+    )
   }
 
   if (correction === 'rightLeftMargins') {
-    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
-      leftMargin: 0,
-      bottomMargin: 0,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        leftMargin: 0,
+        bottomMargin: 0,
+      }
+    )
   }
 
   // No more corrections remain & no valid calculation was reached
@@ -158,7 +183,7 @@ module.exports.calcColWidth = calcColWidth
  */
 const calcGutterWidth = (
   calcState,
-  setLeft = false,
+  updateLeftMargin = false,
   orderOfCorrections = [],
   results = [],
   correctedData
@@ -207,29 +232,53 @@ const calcGutterWidth = (
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
-    return calcGutterWidth(calcState, setLeft, orderOfCorrections, results, {
-      colWidth: 1,
-    })
+    return calcGutterWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        colWidth: 1,
+      }
+    )
   }
 
   if (correction === 'gutterWidth') {
-    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
-      gutterWidth: 0,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        gutterWidth: 0,
+      }
+    )
   }
 
   if (correction === 'cols') {
     calcState.cols = 1
-    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
-      col: 1,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        col: 1,
+      }
+    )
   }
 
   if (correction === 'rightLeftMargins') {
-    return calcColWidth(calcState, setLeft, orderOfCorrections, results, {
-      leftMargin: 0,
-      bottomMargin: 0,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        leftMargin: 0,
+        bottomMargin: 0,
+      }
+    )
   }
 
   // No more corrections remain & no valid calculation was reached
