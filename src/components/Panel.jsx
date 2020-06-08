@@ -541,6 +541,16 @@ const Panel = ({ selectionAmount, validSelection }) => {
             checked={floorVals}
             onChange={(evt) => {
               setFloorVals(evt.target.checked)
+              colCalcState.floorVals = evt.target.checked
+              rowCalcState.floorVals = evt.target.checked
+
+              if (createCols) {
+                attemptColWidthCalc(colCalcState)
+              }
+
+              if (createRows) {
+                attemptRowHeightCalc(rowCalcState)
+              }
             }}
             uxp-quiet="true"
           />
@@ -570,7 +580,15 @@ const Panel = ({ selectionAmount, validSelection }) => {
               type="number"
               min="1"
               value={canvasWidth}
-              onBlur={() => attemptColWidthCalc(colCalcState)}
+              onBlur={() => {
+                if (createCols) {
+                  attemptColWidthCalc(colCalcState)
+                }
+
+                if (createRows) {
+                  attemptRowGridHeightCalc(rowCalcState)
+                }
+              }}
               onChange={(evt) => {
                 setIsColCalcReady(false)
                 setCanvasWidth(evt.target.value)
@@ -584,7 +602,15 @@ const Panel = ({ selectionAmount, validSelection }) => {
               type="number"
               min="1"
               value={canvasHeight}
-              onBlur={() => attemptGridHeightCalc(colCalcState)}
+              onBlur={() => {
+                if (createCols) {
+                  attemptGridHeightCalc(colCalcState)
+                }
+
+                if (createRows) {
+                  attemptRowHeightCalc(rowCalcState)
+                }
+              }}
               onChange={(evt) => {
                 setIsColCalcReady(false)
                 setCanvasHeight(evt.target.value)
