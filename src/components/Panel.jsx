@@ -379,8 +379,8 @@ const Panel = ({ selectionAmount, validSelection }) => {
    * Attempt calculations for row height.
    * @param {Object} calcState State for calculations
    */
-  const attemptRowHeightCalc = (calcState) => {
-    const result = validateAndCalcColWidth(calcState)
+  const attemptRowHeightCalc = (calcState, setLeft = true) => {
+    const result = validateAndCalcColWidth(calcState, setLeft)
 
     if (result) {
       // Final result was successful
@@ -835,7 +835,7 @@ const Panel = ({ selectionAmount, validSelection }) => {
               min="0"
               max={canvasHeight - 1}
               value={rowLeftMargin}
-              onBlur={() => attemptRowHeightCalc(rowCalcState)}
+              onBlur={() => attemptRowHeightCalc(rowCalcState, false)}
               onChange={(evt) => {
                 setIsRowCalcReady(false)
                 setRowLeftMargin(evt.target.value)
