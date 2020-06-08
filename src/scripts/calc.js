@@ -105,9 +105,13 @@ const calcColWidth = (
     if (updateLeftMargin) {
       calcState.leftMargin =
         calcState.canvasWidth - currResult.gridWidth - calcState.rightMargin
+      currResult.rightLeftMarginsSum =
+        calcState.leftMargin + calcState.rightMargin
     } else {
       calcState.rightMargin =
         calcState.canvasWidth - currResult.gridWidth - calcState.leftMargin
+      currResult.rightLeftMarginsSum =
+        calcState.leftMargin + calcState.rightMargin
     }
 
     return results
