@@ -372,6 +372,8 @@ describe('calcGutterWidth', () => {
       gutterWidth: 0,
     })
   })
+
+  // TODO: test margin recalculations when right and left margins and grid width do not fit perfectly on canvas
 })
 
 describe('calcGridHeight', () => {

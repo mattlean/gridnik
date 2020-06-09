@@ -184,6 +184,7 @@ module.exports.calcColWidth = calcColWidth
  * Calculate gutter width.
  * Can mutate calcState.
  * @param {Object} calcState State for calculations. Should be validated beforehand.
+ * @param {boolean} [updateLeftMargin=false] Flag to control update for left margin. By default it is set to false, so the right margin will be updated.
  * @param {Array} [orderOfCorrections=[]] Array of corrections in order they should be resolved in
  * @param {Array} [results=[]] Array of results from chain of calculations
  * @param {Object} [correctedData] Object of key/value pairs to be corrected in calcState for next calculation
@@ -233,6 +234,24 @@ const calcGutterWidth = (
   if (validateCalcResult(currResult)) {
     // Valid calculation reached
     calcState.gutterWidth = gutterWidth
+
+    // Adjust margins with new grid width
+    if (updateLeftMargin) {
+      currResult.leftMargin =
+        calcState.canvasWidth - currResult.gridWidth - calcState.rightMargin
+      calcState.leftMargin = currResult.leftMargin
+
+      currResult.rightLeftMarginsSum =
+        calcState.leftMargin + calcState.rightMargin
+    } else {
+      currResult.rightMargin =
+        calcState.canvasWidth - currResult.gridWidth - calcState.leftMargin
+      calcState.rightMargin = currResult.rightMargin
+
+      currResult.rightLeftMarginsSum =
+        calcState.leftMargin + calcState.rightMargin
+    }
+
     return results
   }
 
