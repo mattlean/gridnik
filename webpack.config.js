@@ -16,7 +16,7 @@ const config = {
         exclude: /node_modules/,
         loader: 'babel-loader',
         options: {
-          plugins: ['transform-react-jsx'],
+          plugins: ['@babel/plugin-transform-react-jsx'],
         },
       },
       {

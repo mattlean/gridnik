@@ -51,6 +51,7 @@ module.exports.calcRightLeftMargins = calcRightLeftMargins
  * Calculate column width.
  * Can mutate calcState.
  * @param {Object} calcState State for calculations. Should be validated beforehand.
+ * @param {boolean} [updateLeftMargin=false] Flag to control update for left margin. By default it is set to false, so the right margin will be updated.
  * @param {Array} [orderOfCorrections=[]] Array of corrections in order they should be resolved in
  * @param {Array} [results=[]] Array of results from chain of calculations
  * @param {Object} [correctedData] Object of key/value pairs to be corrected in calcState for next calculation
@@ -58,6 +59,7 @@ module.exports.calcRightLeftMargins = calcRightLeftMargins
  */
 const calcColWidth = (
   calcState,
+  updateLeftMargin = false,
   orderOfCorrections = [],
   results = [],
   correctedData
@@ -98,6 +100,24 @@ const calcColWidth = (
   if (validateCalcResult(currResult)) {
     // Valid calculation reached
     calcState.colWidth = colWidth
+
+    // Adjust margins with new grid width
+    if (updateLeftMargin) {
+      currResult.leftMargin =
+        calcState.canvasWidth - currResult.gridWidth - calcState.rightMargin
+      calcState.leftMargin = currResult.leftMargin
+
+      currResult.rightLeftMarginsSum =
+        calcState.leftMargin + calcState.rightMargin
+    } else {
+      currResult.rightMargin =
+        calcState.canvasWidth - currResult.gridWidth - calcState.leftMargin
+      calcState.rightMargin = currResult.rightMargin
+
+      currResult.rightLeftMarginsSum =
+        calcState.leftMargin + calcState.rightMargin
+    }
+
     return results
   }
 
@@ -105,27 +125,53 @@ const calcColWidth = (
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
-    return calcGutterWidth(calcState, orderOfCorrections, results, {
-      colWidth: 1,
-    })
+    return calcGutterWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        colWidth: 1,
+      }
+    )
   }
 
   if (correction === 'gutterWidth') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
-      gutterWidth: 0,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        gutterWidth: 0,
+      }
+    )
   }
 
   if (correction === 'cols') {
     calcState.cols = 1
-    return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        col: 1,
+      }
+    )
   }
 
   if (correction === 'rightLeftMargins') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
-      leftMargin: 0,
-      bottomMargin: 0,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        leftMargin: 0,
+        bottomMargin: 0,
+      }
+    )
   }
 
   // No more corrections remain & no valid calculation was reached
@@ -138,6 +184,7 @@ module.exports.calcColWidth = calcColWidth
  * Calculate gutter width.
  * Can mutate calcState.
  * @param {Object} calcState State for calculations. Should be validated beforehand.
+ * @param {boolean} [updateLeftMargin=false] Flag to control update for left margin. By default it is set to false, so the right margin will be updated.
  * @param {Array} [orderOfCorrections=[]] Array of corrections in order they should be resolved in
  * @param {Array} [results=[]] Array of results from chain of calculations
  * @param {Object} [correctedData] Object of key/value pairs to be corrected in calcState for next calculation
@@ -145,6 +192,7 @@ module.exports.calcColWidth = calcColWidth
  */
 const calcGutterWidth = (
   calcState,
+  updateLeftMargin = false,
   orderOfCorrections = [],
   results = [],
   correctedData
@@ -168,10 +216,13 @@ const calcGutterWidth = (
   const rightLeftMarginsSum = currResult.rightLeftMarginsSum
 
   // Perform main calculations
-  const gutterWidth = floorVal(
-    floorVals,
-    (canvasWidth - rightLeftMarginsSum - colWidth * cols) / (cols - 1)
-  )
+  const gutterWidth =
+    cols === 1
+      ? 0
+      : floorVal(
+          floorVals,
+          (canvasWidth - rightLeftMarginsSum - colWidth * cols) / (cols - 1)
+        )
   const gutterWidthsSum = floorVal(floorVals, gutterWidth * (cols - 1))
   const colWidthsSum = floorVal(floorVals, colWidth * cols)
   const gridWidth = colWidthsSum + gutterWidthsSum
@@ -186,6 +237,24 @@ const calcGutterWidth = (
   if (validateCalcResult(currResult)) {
     // Valid calculation reached
     calcState.gutterWidth = gutterWidth
+
+    // Adjust margins with new grid width
+    if (updateLeftMargin) {
+      currResult.leftMargin =
+        calcState.canvasWidth - currResult.gridWidth - calcState.rightMargin
+      calcState.leftMargin = currResult.leftMargin
+
+      currResult.rightLeftMarginsSum =
+        calcState.leftMargin + calcState.rightMargin
+    } else {
+      currResult.rightMargin =
+        calcState.canvasWidth - currResult.gridWidth - calcState.leftMargin
+      calcState.rightMargin = currResult.rightMargin
+
+      currResult.rightLeftMarginsSum =
+        calcState.leftMargin + calcState.rightMargin
+    }
+
     return results
   }
 
@@ -193,27 +262,53 @@ const calcGutterWidth = (
   const correction = orderOfCorrections.pop()
 
   if (correction === 'colWidth') {
-    return calcGutterWidth(calcState, orderOfCorrections, results, {
-      colWidth: 1,
-    })
+    return calcGutterWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        colWidth: 1,
+      }
+    )
   }
 
   if (correction === 'gutterWidth') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
-      gutterWidth: 0,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        gutterWidth: 0,
+      }
+    )
   }
 
   if (correction === 'cols') {
     calcState.cols = 1
-    return calcColWidth(calcState, orderOfCorrections, results, { col: 1 })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        col: 1,
+      }
+    )
   }
 
   if (correction === 'rightLeftMargins') {
-    return calcColWidth(calcState, orderOfCorrections, results, {
-      leftMargin: 0,
-      bottomMargin: 0,
-    })
+    return calcColWidth(
+      calcState,
+      updateLeftMargin,
+      orderOfCorrections,
+      results,
+      {
+        leftMargin: 0,
+        bottomMargin: 0,
+      }
+    )
   }
 
   // No more corrections remain & no valid calculation was reached
@@ -261,7 +356,6 @@ const calcGridHeight = (calcState, currResult = { errs: [] }) => {
 
   currResult.topBottomMarginsSum = calcState.topMargin + calcState.bottomMargin
   currResult.gridHeight = canvasHeight - currResult.topBottomMarginsSum
-  calcState.gridHeight = currResult.gridHeight
 
   return currResult
 }

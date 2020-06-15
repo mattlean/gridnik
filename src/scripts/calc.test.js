@@ -39,33 +39,33 @@ describe('calcRightLeftMargins', () => {
 })
 
 describe('calcColWidth', () => {
-  test('Successfully calculate with parameters similar to Bootstrap 1920x1080 grid', () => {
+  test('Successfully calculate with parameters for Bootstrap 1920x1080 grid', () => {
     const calcData = {
       canvasWidth: 1920,
       cols: 12,
-      gutterWidth: 15,
-      rightMargin: 390,
-      leftMargin: 390,
+      gutterWidth: 30,
+      rightMargin: 405,
+      leftMargin: 405,
     }
     const results = calcColWidth(calcData)
 
     expect(results[0]).toMatchObject({
       type: 'calcColWidth',
-      rightLeftMarginsSum: 780,
-      colWidth: 81.25,
-      colWidthsSum: 975,
-      gridWidth: 1140,
-      gutterWidthsSum: 165,
+      rightLeftMarginsSum: 810,
+      colWidth: 65,
+      colWidthsSum: 780,
+      gridWidth: 1110,
+      gutterWidthsSum: 330,
     })
     expect(results[0].errs.length).toBe(0)
 
     expect(calcData).toMatchObject({
       canvasWidth: 1920,
       cols: 12,
-      colWidth: 81.25,
-      gutterWidth: 15,
-      rightMargin: 390,
-      leftMargin: 390,
+      colWidth: 65,
+      gutterWidth: 30,
+      rightMargin: 405,
+      leftMargin: 405,
     })
   })
 
@@ -107,7 +107,7 @@ describe('calcColWidth', () => {
       rightMargin: 390,
       leftMargin: 390,
     }
-    const results = calcColWidth(calcData, [
+    const results = calcColWidth(calcData, false, [
       'rightLeftMargins',
       'cols',
       'gutterWidth',
@@ -156,7 +156,7 @@ describe('calcColWidth', () => {
       rightMargin: 390,
       leftMargin: 390,
     }
-    const results = calcColWidth(calcData, [
+    const results = calcColWidth(calcData, false, [
       'rightLeftMargins',
       'cols',
       'gutterWidth',
@@ -196,35 +196,102 @@ describe('calcColWidth', () => {
       colWidth: 1,
     })
   })
+
+  test('Recalculate right margin when right and left margins and grid width do not fit perfectly on canvas', () => {
+    const calcData = {
+      floorVals: true,
+      canvasWidth: 1920,
+      cols: 6,
+      colWidth: 171,
+      gutterWidth: 27,
+      rightMargin: 377,
+      leftMargin: 377,
+    }
+    const results = calcColWidth(calcData)
+
+    expect(results[0]).toMatchObject({
+      type: 'calcColWidth',
+      rightLeftMarginsSum: 759,
+      colWidth: 171,
+      colWidthsSum: 1026,
+      gridWidth: 1161,
+      gutterWidthsSum: 135,
+      rightMargin: 382,
+    })
+    expect(results[0].errs.length).toBe(0)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 6,
+      colWidth: 171,
+      gutterWidth: 27,
+      rightMargin: 382,
+      leftMargin: 377,
+    })
+  })
+
+  test('Recalculate left margin when right and left margins and grid width do not fit perfectly on canvas', () => {
+    const calcData = {
+      floorVals: true,
+      canvasWidth: 1920,
+      cols: 6,
+      colWidth: 171,
+      gutterWidth: 27,
+      rightMargin: 377,
+      leftMargin: 377,
+    }
+    const results = calcColWidth(calcData, true)
+
+    expect(results[0]).toMatchObject({
+      type: 'calcColWidth',
+      rightLeftMarginsSum: 759,
+      colWidth: 171,
+      colWidthsSum: 1026,
+      gridWidth: 1161,
+      gutterWidthsSum: 135,
+      leftMargin: 382,
+    })
+    expect(results[0].errs.length).toBe(0)
+
+    expect(calcData).toMatchObject({
+      canvasWidth: 1920,
+      cols: 6,
+      colWidth: 171,
+      gutterWidth: 27,
+      rightMargin: 377,
+      leftMargin: 382,
+    })
+  })
 })
 
 describe('calcGutterWidth', () => {
-  test('Successfully calculate with parameters similar to Bootstrap 1920x1080 grid', () => {
+  test('Successfully calculate with parameters for Bootstrap 1920x1080 grid', () => {
     const calcData = {
       canvasWidth: 1920,
       cols: 12,
-      colWidth: 81.25,
-      rightMargin: 390,
-      leftMargin: 390,
+      colWidth: 65,
+      rightMargin: 405,
+      leftMargin: 405,
     }
     const results = calcGutterWidth(calcData)
 
     expect(results[0]).toMatchObject({
       type: 'calcGutterWidth',
-      rightLeftMarginsSum: 780,
-      colWidthsSum: 975,
-      gridWidth: 1140,
-      gutterWidth: 15,
-      gutterWidthsSum: 165,
+      rightLeftMarginsSum: 810,
+      colWidthsSum: 780,
+      gridWidth: 1110,
+      gutterWidth: 30,
+      gutterWidthsSum: 330,
     })
     expect(results[0].errs.length).toBe(0)
 
     expect(calcData).toMatchObject({
       canvasWidth: 1920,
       cols: 12,
-      gutterWidth: 15,
-      rightMargin: 390,
-      leftMargin: 390,
+      colWidth: 65,
+      gutterWidth: 30,
+      rightMargin: 405,
+      leftMargin: 405,
     })
   })
 
@@ -266,7 +333,7 @@ describe('calcGutterWidth', () => {
       rightMargin: 390,
       leftMargin: 390,
     }
-    const results = calcGutterWidth(calcData, [
+    const results = calcGutterWidth(calcData, false, [
       'rightLeftMargins',
       'cols',
       'colWidth',
@@ -305,6 +372,8 @@ describe('calcGutterWidth', () => {
       gutterWidth: 0,
     })
   })
+
+  // TODO: test margin recalculations when right and left margins and grid width do not fit perfectly on canvas
 })
 
 describe('calcGridHeight', () => {
