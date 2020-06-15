@@ -216,10 +216,13 @@ const calcGutterWidth = (
   const rightLeftMarginsSum = currResult.rightLeftMarginsSum
 
   // Perform main calculations
-  const gutterWidth = floorVal(
-    floorVals,
-    (canvasWidth - rightLeftMarginsSum - colWidth * cols) / (cols - 1)
-  )
+  const gutterWidth =
+    cols === 1
+      ? 0
+      : floorVal(
+          floorVals,
+          (canvasWidth - rightLeftMarginsSum - colWidth * cols) / (cols - 1)
+        )
   const gutterWidthsSum = floorVal(floorVals, gutterWidth * (cols - 1))
   const colWidthsSum = floorVal(floorVals, colWidth * cols)
   const gridWidth = colWidthsSum + gutterWidthsSum

@@ -125,6 +125,10 @@ const validateInputs = (calcState) => {
   if (typeof leftMargin === 'number' && leftMargin > canvasWidth - 1) {
     calcState.leftMargin = canvasWidth - 1
   }
+
+  if (calcState.cols === 1) {
+    calcState.gutterWidth = 0
+  }
 }
 
 module.exports.validateInputs = validateInputs
